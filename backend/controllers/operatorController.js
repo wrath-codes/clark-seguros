@@ -40,7 +40,7 @@ const getOperator = asyncHandler(async (req, res) => {
 	//get operator with id and populate contact field
 	const operator = await Operator.findById(req.params.id).populate('contact')
 
-	//checks if there's a operator with that id
+	//checks if there's an operator with that id
 	if (operator) {
 		res.json(operator)
 	} else {

@@ -11,6 +11,7 @@ import { errorHandler, notFound } from './middleware/errorMiddleware.js'
 // @routes
 import contactRoutes from './routes/contactRoutes.js'
 import operatorRoutes from './routes/operatorRoutes.js'
+import planRoutes from './routes/planRoutes.js'
 
 const PORT = process.env.PORT || 5000
 
@@ -28,8 +29,9 @@ app.use(express.urlencoded({ extended: false }))
 app.set('json spaces', 2)
 
 // @routes
-app.use('/api/contacts', contactRoutes) //add contact routes
+app.use('/api/contacts', contactRoutes) // add contact routes
 app.use('/api/operators', operatorRoutes) // add operator routes
+app.use('/api/plans', planRoutes) // add plan routes
 
 // @error handling
 app.use(notFound)
