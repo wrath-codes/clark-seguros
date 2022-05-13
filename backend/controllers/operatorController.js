@@ -16,7 +16,7 @@ import Operator from '../models/operatorModel.js'
 // --------------------------------------------------------------
 const getOperators = asyncHandler(async (req, res) => {
 	//get all operators
-	const operators = await Operator.find({})
+	const operators = await Operator.find({}).populate('contact')
 
 	//checks if there are no operators
 	if (operators <= 0) {
@@ -82,15 +82,28 @@ const createOperator = asyncHandler(async (req, res) => {
 		!city ||
 		!cep ||
 		!state ||
-		!country ||
-		!contact
+		!country
 	) {
 		res.status(400)
 		throw new Error('Please add all fields for the Operator!')
 	}
 
-	// gets contact from contact collection
+	// gets contact from contact collection or create dummy data
 	const checkContact = await Contact.findById(contact)
+	const dummyContact = await new Contact({
+		name: {
+			firstName: 'firstName',
+			lastName: 'lastName'
+		},
+		cellphone: 'cellphone',
+		email: 'email',
+		kind: 'Operadora',
+		cnpj: cnpj
+	})
+
+	if (!contact) {
+		await Contact.create(dummyContact)
+	}
 
 	// creates operator with Contact
 	const operator = await Operator.create({
@@ -107,7 +120,7 @@ const createOperator = asyncHandler(async (req, res) => {
 			state: state,
 			country: country
 		},
-		contact: checkContact._id
+		contact: contact ? checkContact._id : dummyContact._id
 	})
 
 	const result = await Operator.findById(operator._id).populate('contact')
@@ -118,8 +131,8 @@ const createOperator = asyncHandler(async (req, res) => {
 
 //* -------------------------------------------------------------
 
-// @desc    Create a new Operator
-// @route   POST - /api/operators
+// @desc    Delete single Operator
+// @route   DELETE - /api/operators/:id
 // @access  Private
 // -------------------------------------------------------------
 const deleteOperator = asyncHandler(async (req, res) => {
@@ -145,4 +158,41 @@ const deleteOperator = asyncHandler(async (req, res) => {
 	res.status(200).json({ success: true })
 })
 
-export { getOperators, getOperator, createOperator, deleteOperator }
+//* -------------------------------------------------------------
+
+// @desc    Update single Operator
+// @route   PUT - /api/operators/:id
+// @access  Private
+// -------------------------------------------------------------
+const updateOperator = asyncHandler(async (req, res) => {
+	// get operator with id
+	const operator = await Operator.findById(req.params.id)
+
+	// check if operator exists
+	if (!operator) {
+		res.status(404)
+		throw new Error('Operator not found!')
+	}
+
+	// edits operator
+	const updatedOperator = await Operator.findByIdAndUpdate(
+		req.params.id,
+		req.body,
+		{
+			new: true
+		}
+	)
+
+	// response
+	res.status(200).json(updatedOperator)
+})
+
+//* -------------------------------------------------------------
+
+export {
+	getOperators,
+	getOperator,
+	createOperator,
+	deleteOperator,
+	updateOperator
+}

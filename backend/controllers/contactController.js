@@ -117,11 +117,11 @@ const updateContact = asyncHandler(async (req, res) => {
 
 	// checks if contact exists
 	if (!contact) {
-		res.status(303)
+		res.status(404)
 		throw new Error('Contact not found!')
 	}
 
-	// edits constact
+	// edits contact
 	const updatedContact = await Contact.findByIdAndUpdate(
 		req.params.id,
 		req.body,
