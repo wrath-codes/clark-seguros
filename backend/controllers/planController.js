@@ -1,10 +1,9 @@
-//* Contact Controller
+//* Plan Controller
 //* -------------------------------------------------------------
 // imports
 // @libraries
 import asyncHandler from 'express-async-handler'
 // @models
-import Operator from '../models/operatorModel.js'
 import Plan from '../models/planModel.js'
 
 //* @controller
@@ -81,4 +80,52 @@ const createPlan = asyncHandler(async (req, res) => {
 
 //* -------------------------------------------------------------
 
-export { getPlans, getPlan, createPlan }
+// @desc    Delete Single Plan
+// @route   DELETE - /api/plans/:id
+// @access  Private
+// --------------------------------------------------------------
+const deletePlan = asyncHandler(async (req, res) => {
+	// get plan with id
+	const plan = await Plan.findById(req.params.id)
+
+	// check if plan exists
+	if (!plan) {
+		res.status(404)
+		throw new Error('Plan not found!')
+	}
+
+	// delete plan
+	await plan.delete()
+
+	// success message response
+	res.status(200).json({ success: true })
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Delete Single Plan
+// @route   DELETE - /api/plans/:id
+// @access  Private
+// --------------------------------------------------------------
+const updatePlan = asyncHandler(async (req, res) => {
+	// get plan with id
+	const plan = await Plan.findById(req.params.id)
+
+	// check if plan exists
+	if (!plan) {
+		res.status(404)
+		throw new Error('Plan not found!')
+	}
+
+	// update plan
+	const updatedPlan = await Plan.findByIdAndUpdate(req.params.id, req.body, {
+		new: true
+	})
+
+	// response
+	res.status(200).json(updatedPlan)
+})
+
+//* -------------------------------------------------------------
+
+export { getPlans, getPlan, createPlan, deletePlan, updatePlan }

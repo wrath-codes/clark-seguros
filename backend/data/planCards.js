@@ -1,4 +1,4 @@
-const opticMarks = [
+const planCards = [
 	{
 		employee: '141.828.987-61',
 		identifier: '1',
@@ -22,4 +22,4 @@ const opticMarks = [
 	}
 ]
 
-export default opticMarks
+export default planCards

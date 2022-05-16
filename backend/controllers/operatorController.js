@@ -1,4 +1,4 @@
-//* Contact Controller
+//* Operator Controller
 //* -------------------------------------------------------------
 // imports
 // @libraries
@@ -6,6 +6,7 @@ import asyncHandler from 'express-async-handler'
 // @models
 import Contact from '../models/contactModel.js'
 import Operator from '../models/operatorModel.js'
+import Plan from '../models/planModel.js'
 
 //* @controller
 //* -------------------------------------------------------------
@@ -136,9 +137,10 @@ const createOperator = asyncHandler(async (req, res) => {
 // @access  Private
 // -------------------------------------------------------------
 const deleteOperator = asyncHandler(async (req, res) => {
-	// get operator with id
+	// get operator, contact and plans with id
 	const operator = await Operator.findById(req.params.id)
 	const contact = await Contact.findById(operator.contact)
+	const plans = await Plan.find({ operator: operator._id })
 
 	// checks if operator exists
 	if (!operator) {
@@ -149,6 +151,10 @@ const deleteOperator = asyncHandler(async (req, res) => {
 	//checks if contact exists and deletes it
 	if (contact) {
 		await contact.delete()
+	}
+
+	if (plans) {
+		await Plan.deleteMany({ operator: operator._id })
 	}
 
 	// delete operator
@@ -183,8 +189,12 @@ const updateOperator = asyncHandler(async (req, res) => {
 		}
 	)
 
+	const result = await Operator.findById(updatedOperator._id).populate(
+		'contact'
+	)
+
 	// response
-	res.status(200).json(updatedOperator)
+	res.status(200).json(result)
 })
 
 //* -------------------------------------------------------------

@@ -11,7 +11,7 @@ import plans from './data/plans.js'
 import employers from './data/employers.js'
 import contracts from './data/contracts.js'
 import employees from './data/employees.js'
-import opticMarks from './data/opticMarks.js'
+import planCards from './data/planCards.js'
 
 // @models
 import User from './models/userModel.js'
@@ -22,7 +22,7 @@ import Employment from './models/employmentModel.js'
 import Employee from './models/employeeModel.js'
 import Contact from './models/contactModel.js'
 import Contract from './models/contractModel.js'
-import OpticMark from './models/opticMarkModel.js'
+import PlanCard from './models/planCardModel.js'
 
 // @connection
 import connectDB from './config/db.js'
@@ -41,7 +41,7 @@ const importData = async () => {
 		await Plan.deleteMany()
 		await Operator.deleteMany()
 		await User.deleteMany()
-		await OpticMark.deleteMany()
+		await PlanCard.deleteMany()
 
 		// import users
 		const createdUsers = await User.insertMany(users)
@@ -96,17 +96,17 @@ const importData = async () => {
 		//? import contracts, adds respective employer and operator
 		let sampleContracts = []
 		for (let i = 0; i < contracts.length; i++) {
-			let operatorTo = await Operator.find({
+			let operatorTo = await Operator.findOne({
 				cnpj: contracts[i].operator
 			})
-			let employerTo = await Employer.find({
+			let employerTo = await Employer.findOne({
 				cnpj: contracts[i].employer
 			})
 			let startDate = new Date(contracts[i].startDate)
 			sampleContracts.push({
 				...contracts[i],
-				operator: operatorTo[0]._id,
-				employer: employerTo[0]._id
+				operator: operatorTo._id,
+				employer: employerTo._id
 			})
 		}
 		await Contract.insertMany(sampleContracts)
@@ -131,21 +131,21 @@ const importData = async () => {
 		console.log('Employees Imported!'.green.inverse)
 
 		//? import opticMarks, adds respective employee and plan
-		let sampleOpticMarks = []
-		for (let i = 0; i < opticMarks.length; i++) {
+		let samplePlanCards = []
+		for (let i = 0; i < planCards.length; i++) {
 			let employeeTo = await Employee.find({
-				cpf: opticMarks[i].employee
+				cpf: planCards[i].employee
 			})
 			let planTo = await Plan.find({
-				ansRegister: opticMarks[i].plan
+				ansRegister: planCards[i].plan
 			})
-			sampleOpticMarks.push({
-				...opticMarks[i],
+			samplePlanCards.push({
+				...planCards[i],
 				employee: employeeTo[0]._id,
 				plan: planTo[0]._id
 			})
 		}
-		await OpticMark.insertMany(sampleOpticMarks)
+		await PlanCard.insertMany(samplePlanCards)
 		console.log('Optic Marks Imported!'.green)
 
 		// End process message
@@ -169,7 +169,7 @@ const destroyData = async () => {
 		await Plan.deleteMany()
 		await Operator.deleteMany()
 		await User.deleteMany()
-		await OpticMark.deleteMany()
+		await PlanCard.deleteMany()
 
 		// End process message
 		console.log('Data Destroyed!'.red.underline.bold)

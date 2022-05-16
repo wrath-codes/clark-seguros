@@ -1,35 +1,27 @@
-//* Plan Routes
+//* Contract Routes
 //* -------------------------------
 // imports
 // @libraries
 import express from 'express'
 const router = express.Router()
 // @controller
-import {
-	getPlans,
-	getPlan,
-	createPlan,
-	deletePlan,
-	updatePlan
-} from '../controllers/planController.js'
+import { getContracts, getContract } from '../controllers/contractController.js'
 
 //* @controller
 //* -------------------------------------------------------------
 
-// @desc    Fetch All Plans | Create Plan
-// @route   GET/POST - /api/plans
+// @desc    Fetch All Contracts
+// @route   GET/POST - /api/contracts
 // @access  Private
 // --------------------------------------------------------------
-router.route('/').get(getPlans).post(createPlan)
-
+router.route('/').get(getContracts)
 //* -------------------------------------------------------------
 
-// @desc    Fetch Single Plan | Delete Single Plan | Update Single Plan
-// @route   GET - /api/plans/:id
+// @desc    Fetch Single Contract
+// @route   GET - /api/contracts/:id
 // @access  Private
 // --------------------------------------------------------------
-router.route('/:id').get(getPlan).delete(deletePlan).put(updatePlan)
+router.route('/:id').get(getContract)
 
 //* ------------------------------------------------------------
-
 export default router

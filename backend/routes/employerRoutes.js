@@ -1,4 +1,4 @@
-//* Plan Routes
+//* Employer Routes
 //* -------------------------------
 // imports
 // @libraries
@@ -6,30 +6,29 @@ import express from 'express'
 const router = express.Router()
 // @controller
 import {
-	getPlans,
-	getPlan,
-	createPlan,
-	deletePlan,
-	updatePlan
-} from '../controllers/planController.js'
+	getEmployers,
+	getEmployer,
+	createEmployer,
+	deleteEmployer,
+	updateEmployer
+} from '../controllers/employerController.js'
 
 //* @controller
 //* -------------------------------------------------------------
 
-// @desc    Fetch All Plans | Create Plan
-// @route   GET/POST - /api/plans
+// @desc    Fetch All Employers
+// @route   GET - /api/employers/
 // @access  Private
 // --------------------------------------------------------------
-router.route('/').get(getPlans).post(createPlan)
+router.route('/').get(getEmployers).post(createEmployer)
 
 //* -------------------------------------------------------------
 
-// @desc    Fetch Single Plan | Delete Single Plan | Update Single Plan
-// @route   GET - /api/plans/:id
+// @desc    Fetch Single Employer | Delete Single Employer | Update Single Employer
+// @route   GET - /api/employers/:id
 // @access  Private
 // --------------------------------------------------------------
-router.route('/:id').get(getPlan).delete(deletePlan).put(updatePlan)
-
+router.route('/:id').get(getEmployer).delete(deleteEmployer).put(updateEmployer)
 //* ------------------------------------------------------------
 
 export default router

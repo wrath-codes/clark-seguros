@@ -1,10 +1,10 @@
 //* -----------------------------------------------------------------------
-//*  opticMark Model -->
+//*  planCard Model -->
 
 // @imports
 import mongoose from 'mongoose'
 
-const opticMarkSchema = mongoose.Schema({
+const planCardSchema = mongoose.Schema({
 	employee: {
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,
@@ -42,6 +42,6 @@ const opticMarkSchema = mongoose.Schema({
 	}
 })
 
-const OpticMark = mongoose.model('OpticMark', opticMarkSchema)
+const PlanCard = mongoose.model('PlanCard', planCardSchema)
 
-export default OpticMark
+export default PlanCard
