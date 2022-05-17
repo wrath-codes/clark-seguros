@@ -1,4 +1,4 @@
-//* Contract Routes
+//* Employee Routes
 //* -------------------------------
 // imports
 // @libraries
@@ -6,28 +6,30 @@ import express from 'express'
 const router = express.Router()
 // @controller
 import {
-	getContracts,
-	getContract,
-	createContract,
-	endContract,
-	deleteContract
-} from '../controllers/contractController.js'
+	getEmployees,
+	getEmployee,
+	createEmployee,
+	deleteEmployee,
+	updateEmployee
+} from '../controllers/employeeController.js'
 
 //* @routes
 //* -------------------------------------------------------------
 
-// @desc    Fetch All Contracts | Create Single Contract
-// @route   GET/POST - /api/contracts
+// @desc    Fetch All Employees
+// @route   GET - /api/employees
 // @access  Private
 // --------------------------------------------------------------
-router.route('/').get(getContracts).post(createContract)
+router.route('/').get(getEmployees).post(createEmployee)
+
 //* -------------------------------------------------------------
 
-// @desc    Fetch Single Contract | Updates contract to history | Delete Single Contract
-// @route   GET - /api/contracts/:id
+// @desc    Fetch Single Employee | delete Single Employee
+// @route   GET - /api/employees/:id
 // @access  Private
 // --------------------------------------------------------------
-router.route('/:id').get(getContract).put(endContract).delete(deleteContract)
+router.route('/:id').get(getEmployee).delete(deleteEmployee).put(updateEmployee)
 
 //* ------------------------------------------------------------
+
 export default router

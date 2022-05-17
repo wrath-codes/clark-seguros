@@ -14,6 +14,7 @@ import operatorRoutes from './routes/operatorRoutes.js'
 import planRoutes from './routes/planRoutes.js'
 import employerRoutes from './routes/employerRoutes.js'
 import contractRoutes from './routes/contractRoutes.js'
+import employeeRoutes from './routes/employeeRoutes.js'
 
 const PORT = process.env.PORT || 5000
 
@@ -36,6 +37,7 @@ app.use('/api/operators', operatorRoutes) // add operator routes
 app.use('/api/plans', planRoutes) // add plan routes
 app.use('/api/employers', employerRoutes) // add employer routes
 app.use('/api/contracts', contractRoutes) // add contract routes
+app.use('/api/employees', employeeRoutes) // add employee routes
 
 // @error handling
 app.use(notFound)

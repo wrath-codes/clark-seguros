@@ -35,13 +35,15 @@ const getContracts = asyncHandler(async (req, res) => {
 
 //* -------------------------------------------------------------
 
-// @desc    Fetch All Contracts
-// @route   GET - /api/contracts
+// @desc    Fetch Single Contract
+// @route   GET - /api/contracts/:id
 // @access  Private
 // --------------------------------------------------------------
 const getContract = asyncHandler(async (req, res) => {
 	// get contract with id
 	const contract = await Contract.findById(req.params.id)
+		.populate('employer')
+		.populate('operator')
 
 	// checks if contract exists
 	if (contract) {
@@ -54,4 +56,172 @@ const getContract = asyncHandler(async (req, res) => {
 
 //* -------------------------------------------------------------
 
-export { getContracts, getContract }
+// @desc    Create Single Contract
+// @route   POST - /api/contracts
+// @access  Private
+// --------------------------------------------------------------
+const createContract = asyncHandler(async (req, res) => {
+	// destructure contract
+	const { operator, employer, identifier } = req.body
+
+	// check if operator exists
+	const checkOperator = await Operator.findById(operator)
+	if (!operator || !checkOperator) {
+		res.status(400)
+		throw new Error('Operator not found!')
+	}
+
+	// check if employer exists
+	const checkEmployer = await Employer.findById(employer)
+	if (!employer || !checkEmployer) {
+		res.status(400)
+		throw new Error('Employer not found!')
+	}
+	// checks if the contract identifier was inputed
+	if (!identifier) {
+		res.status(400)
+		throw new Error('Please add the contract identifier!')
+	}
+
+	// creates contract
+	const contract = await Contract.create({
+		operator: operator,
+		employer: employer,
+		identifier: identifier,
+		startDate: new Date()
+	})
+
+	if (contract) {
+		// increse number of contracts on employer
+		await Employer.findByIdAndUpdate(
+			{ _id: employer },
+			{
+				$inc: { numContracts: 1 }
+			},
+			{ new: true }
+		)
+		// increse number of contracts on operator
+		await Operator.findByIdAndUpdate(
+			{ _id: operator },
+			{
+				$inc: { numContracts: 1 }
+			},
+			{ new: true }
+		)
+		// adds contract to contract history}
+		await Employer.findByIdAndUpdate(
+			{ _id: employer },
+			{
+				$push: { contractHistory: contract._id }
+			},
+			{ new: true }
+		)
+	}
+
+	// complete result
+	const result = await Contract.findById(contract._id)
+		.populate('employer')
+		.populate('operator')
+
+	// response
+	res.status(200).json(result)
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Ends Single Contract
+// @route   PUT - /api/contracts/:id
+// @access  Private
+// --------------------------------------------------------------
+const endContract = asyncHandler(async (req, res) => {
+	// get contract with id
+	const contract = await Contract.findById(req.params.id)
+
+	// check if contract exists
+	if (!contract) {
+		res.status(400)
+		throw new Error('Contract not found!')
+	}
+
+	// get employer and decreases number of contracts
+	await Employer.findByIdAndUpdate(
+		{ _id: contract.employer },
+		{
+			$inc: { numContracts: -1 }
+		},
+		{ new: true }
+	)
+
+	// get operator and decreases number of contracts
+	await Operator.findByIdAndUpdate(
+		{ _id: contract.operator },
+		{
+			$inc: { numContracts: -1 }
+		},
+		{ new: true }
+	)
+
+	//updates contract history
+	const update = await Contract.findByIdAndUpdate(
+		{ _id: contract._id },
+		{
+			$set: {
+				endDate: new Date(),
+				isValid: false
+			}
+		},
+		{ new: true }
+	)
+
+	res.status(200).json({ success: true, update })
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Delete Single Contract
+// @route   DELETE - /api/contracts/:id
+// @access  Private
+// --------------------------------------------------------------
+const deleteContract = asyncHandler(async (req, res) => {
+	// get contract with id
+	const contract = await Contract.findById(req.params.id)
+
+	// check if contract exists
+	if (!contract) {
+		res.status(400)
+		throw new Error('Contract not found!')
+	}
+
+	// get employer and decreases number of contracts
+	await Employer.findByIdAndUpdate(
+		{ _id: contract.employer },
+		{
+			$inc: { numContracts: -1 }
+		},
+		{ new: true }
+	)
+
+	// get operator and decreases number of contracts
+	await Operator.findByIdAndUpdate(
+		{ _id: contract.operator },
+		{
+			$inc: { numContracts: -1 }
+		},
+		{ new: true }
+	)
+
+	//delete contract from database
+	await contract.delete()
+
+	res.status(200).json({ success: true, update })
+})
+
+//* -------------------------------------------------------------
+
+export {
+	getContracts,
+	getContract,
+	createContract,
+	endContract,
+	deleteContract
+}

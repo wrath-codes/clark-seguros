@@ -2,7 +2,9 @@
 //*  Employer Model -->
 
 // @imports
+import { ObjectId } from 'bson'
 import mongoose from 'mongoose'
+import Contract from './contractModel.js'
 
 const employerSchema = mongoose.Schema(
 	{
@@ -44,7 +46,21 @@ const employerSchema = mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
 			ref: 'User'
-		}
+		},
+		contractHistory: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				required: false,
+				ref: 'Contract'
+			}
+		],
+		employees: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				required: false,
+				ref: 'Employee'
+			}
+		]
 	},
 	{
 		timestamps: true

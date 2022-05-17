@@ -38,7 +38,14 @@ const contractSchema = mongoose.Schema(
 			type: Boolean,
 			required: true,
 			default: true
-		}
+		},
+		employees: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				required: false,
+				ref: 'Employee'
+			}
+		]
 	},
 	{
 		timestamps: true
