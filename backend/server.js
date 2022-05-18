@@ -15,6 +15,7 @@ import planRoutes from './routes/planRoutes.js'
 import employerRoutes from './routes/employerRoutes.js'
 import contractRoutes from './routes/contractRoutes.js'
 import employeeRoutes from './routes/employeeRoutes.js'
+import userRoutes from './routes/userRoutes.js'
 
 const PORT = process.env.PORT || 5000
 
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: false }))
 app.set('json spaces', 2)
 
 // @routes
+app.use('/api/users', userRoutes) // add user routes
 app.use('/api/contacts', contactRoutes) // add contact routes
 app.use('/api/operators', operatorRoutes) // add operator routes
 app.use('/api/plans', planRoutes) // add plan routes
@@ -46,8 +48,5 @@ app.use(errorHandler)
 // @server listen
 app.listen(
 	PORT,
-	console.log(
-		`Server running in ${process.env.NODE_ENV} mode on port ${PORT}!`.yellow
-			.bold
-	)
+	console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}!`.yellow.bold)
 )

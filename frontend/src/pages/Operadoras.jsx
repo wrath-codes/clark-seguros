@@ -1,23 +1,41 @@
 //*                  Navbar
 //* ----------------------------------------
 // @imports
-import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+// @features
+import { getOperators, reset } from '../features/operator/operatorSlice'
 // @components
 import OperadoraItem from '../components/operadoras/OperadoraItem'
-// @components
+import Spinner from '../components/layout/Spinner'
 
 const Operadoras = () => {
-	const [operators, setOperators] = useState([])
+	// states from operator reducer
+	const { operators, isLoading, isError, message, isSuccess } = useSelector(
+		(state) => state.operator
+	)
+	const dispatch = useDispatch()
 
 	useEffect(() => {
-		const fetchOperators = async () => {
-			const { data } = await axios.get('/api/operators')
-
-			setOperators(data)
+		return () => {
+			if (isSuccess) {
+				dispatch(reset())
+			}
 		}
-		fetchOperators()
-	}, [])
+	}, [dispatch, isSuccess])
+
+	//onGetOperators
+	useEffect(() => {
+		if (isError) {
+			toast.error(message)
+		}
+		dispatch(getOperators())
+	}, [dispatch, isError, message])
+
+	if (isLoading) {
+		return <Spinner />
+	}
 
 	return (
 		<>

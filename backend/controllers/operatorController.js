@@ -22,9 +22,7 @@ const getOperators = asyncHandler(async (req, res) => {
 	//checks if there are no operators
 	if (operators <= 0) {
 		res.status(400)
-		throw new Error(
-			`There are ${operators.length} operators in the database!`
-		)
+		throw new Error(`There are ${operators.length} operators in the database!`)
 	}
 
 	// response
@@ -181,20 +179,57 @@ const updateOperator = asyncHandler(async (req, res) => {
 	}
 
 	// edits operator
-	const updatedOperator = await Operator.findByIdAndUpdate(
-		req.params.id,
-		req.body,
-		{
-			new: true
-		}
-	)
+	const updatedOperator = await Operator.findByIdAndUpdate(req.params.id, req.body, {
+		new: true
+	})
 
-	const result = await Operator.findById(updatedOperator._id).populate(
-		'contact'
-	)
+	const result = await Operator.findById(updatedOperator._id).populate('contact')
 
 	// response
 	res.status(200).json(result)
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Update single Operator
+// @route   PUT - /api/operators/:id
+// @access  Private
+// -------------------------------------------------------------
+const getOperatorPlans = asyncHandler(async (req, res) => {
+	// get operator with id
+	const operator = await Operator.findById(req.params.id)
+
+	// check if operator exists
+	if (!operator) {
+		res.status(404)
+		throw new Error('Operator not found!')
+	}
+
+	const plans = await Plan.find({ operator: operator._id })
+	// return plans
+	res.status(200).json(plans)
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Update single Operator
+// @route   PUT - /api/operators/:id
+// @access  Private
+// -------------------------------------------------------------
+const getOperatorContact = asyncHandler(async (req, res) => {
+	// get operator with id
+	const operator = await Operator.findById(req.params.id)
+
+	// check if operator exists
+	if (!operator) {
+		res.status(404)
+		throw new Error('Operator not found!')
+	}
+
+	const contact = await Contact.findOne({ cnpj: operator.cnpj })
+
+	// return contact
+	res.status(200).json(contact)
 })
 
 //* -------------------------------------------------------------
@@ -204,5 +239,7 @@ export {
 	getOperator,
 	createOperator,
 	deleteOperator,
-	updateOperator
+	updateOperator,
+	getOperatorPlans,
+	getOperatorContact
 }

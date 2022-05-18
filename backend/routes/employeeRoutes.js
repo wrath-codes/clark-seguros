@@ -10,7 +10,9 @@ import {
 	getEmployee,
 	createEmployee,
 	deleteEmployee,
-	updateEmployee
+	updateEmployee,
+	updateEmployeeContract,
+	updateEmployeeEmployer
 } from '../controllers/employeeController.js'
 
 //* @routes
@@ -29,6 +31,22 @@ router.route('/').get(getEmployees).post(createEmployee)
 // @access  Private
 // --------------------------------------------------------------
 router.route('/:id').get(getEmployee).delete(deleteEmployee).put(updateEmployee)
+
+//* ------------------------------------------------------------
+
+// @desc   Updates Employer
+// @route   PUT - /api/employees/:id/:employerId
+// @access  Private
+// --------------------------------------------------------------
+router.route('/:id/change/employer/:employerId').put(updateEmployeeEmployer)
+
+//* ------------------------------------------------------------
+
+// @desc   Updates Contract
+// @route   PUT - /api/employees/:id/:contractId
+// @access  Private
+// --------------------------------------------------------------
+router.route('/:id/change/contract/:contractId').put(updateEmployeeContract)
 
 //* ------------------------------------------------------------
 

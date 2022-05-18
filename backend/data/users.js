@@ -9,7 +9,8 @@ const users = [
 		email: 'rvazn.ds@gmail.com',
 		password: bcrypt.hashSync('Quel6969!', 10),
 		cellphone: '(21)99710-5477',
-		isAdmin: true
+		isAdmin: true,
+		isStaff: true
 	},
 	{
 		name: {

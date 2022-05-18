@@ -31,6 +31,17 @@ const planCardSchema = mongoose.Schema(
 				value: { type: String, required: true }
 			}
 		],
+		planHistory: [
+			{
+				plan: {
+					type: mongoose.Schema.Types.ObjectId,
+					required: true,
+					ref: 'Plan'
+				},
+				isCurrent: { type: Boolean, required: true, default: true },
+				change: { type: Date, required: true }
+			}
+		],
 		kind: {
 			type: String,
 			required: true,

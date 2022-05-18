@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 
 const PlanoItem = ({ plano }) => {
 	const [isOpen, setIsOpen] = useState(false)
+
 	return (
 		<div className='card card-compact card-bordered bg-base-100 shadow-lg m-2'>
 			<div className='card-body'>
@@ -36,7 +37,7 @@ const PlanoItem = ({ plano }) => {
 								Registro ANS
 							</div>
 							<div className='text-sm stat-value'>
-								{plano.ans_register}
+								{plano.ansRegister}
 							</div>
 						</div>
 						<div className='stat'>

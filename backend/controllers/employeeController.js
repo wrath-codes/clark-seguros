@@ -241,6 +241,33 @@ const createEmployee = asyncHandler(async (req, res) => {
 			},
 			{ new: true }
 		)
+		// add current plan to planHistory
+		await PlanCard.findByIdAndUpdate(
+			{ _id: planCard._id },
+			{
+				$push: {
+					planHistory: {
+						plan: plan,
+						change: new Date()
+					}
+				}
+			},
+			{ new: true }
+		)
+
+		// add current employer to employment history
+		await Employee.findByIdAndUpdate(
+			{ _id: employee._id },
+			{
+				$push: {
+					employmentHistory: {
+						employer: employee.employer,
+						startDate: new Date()
+					}
+				}
+			},
+			{ new: true }
+		)
 	}
 
 	// prepare response
@@ -326,6 +353,199 @@ const updateEmployee = asyncHandler(async (req, res) => {
 		res.status(400)
 		throw new Error('Employee not found!')
 	}
+
+	const updatedEmployee = await Employee.findByIdAndUpdate(
+		req.params.id,
+		req.body,
+		{
+			new: true
+		}
+	)
+
+	const result = await Employee.findById(updatedEmployee._id)
+		.populate('employer')
+		.populate('contract')
+
+	res.status(200).json(result)
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Fetch Single Employee
+// @route   GET - /api/employees/:id
+// @access  Private
+// --------------------------------------------------------------
+const updateEmployeeEmployer = asyncHandler(async (req, res) => {
+	// get employee with id
+	const employee = await Employee.findById(req.params.id)
+
+	// checks if employee exists
+	if (!employee) {
+		res.status(400)
+		throw new Error('Employee not found!')
+	}
+
+	// checks if the employer is valid
+	const employer = await Employer.findById(req.params.employerId)
+
+	if (!employer) {
+		res.status(400)
+		throw new Error('Employer not found!')
+	}
+
+	// get employer and updates number of employees
+	await Employer.findByIdAndUpdate(
+		{ _id: employee.employer },
+		{
+			$inc: { numEmployees: -1 }
+		}
+	)
+	// gets employer and removes employee from
+	await Employer.findByIdAndUpdate(
+		{ _id: employee.employer },
+		{
+			$pull: {
+				employees: employee._id
+			}
+		}
+	)
+
+	// increase number of employees on employer with id = employerId
+	await Employer.findByIdAndUpdate(
+		{ _id: req.params.employerId },
+		{
+			$inc: { numEmployees: 1 }
+		},
+		{ new: true }
+	)
+	// add employee to employees list with id = employerId
+	await Employer.findByIdAndUpdate(
+		{ _id: req.params.employerId },
+		{
+			$push: {
+				employees: employee._id
+			}
+		},
+		{ new: true }
+	)
+
+	// updates employmentHistory
+	await Employee.findOneAndUpdate(
+		{
+			_id: employee._id,
+			employmentHistory: { $elemMatch: { employer: employee.employer } }
+		},
+		{
+			$set: {
+				'employmentHistory.$.exitDate': new Date()
+			}
+		},
+		{ new: true }
+	)
+
+	// updates employee employer
+	const updatedEmployee = await Employee.findByIdAndUpdate(
+		{ _id: req.params.id },
+		{
+			$set: { employer: req.params.employerId }
+		}
+	)
+
+	// adds new employer to employment history
+	await Employee.findByIdAndUpdate(
+		{ _id: employee._id },
+		{
+			$push: {
+				employmentHistory: {
+					employer: updatedEmployee.employer,
+					startDate: new Date()
+				}
+			}
+		},
+		{ new: true }
+	)
+
+	const result = await Employee.findById(req.params.id)
+		.populate('employer')
+		.populate('contract')
+
+	res.status(200).json(result)
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Fetch Single Employee
+// @route   GET - /api/employees/:id
+// @access  Private
+// --------------------------------------------------------------
+const updateEmployeeContract = asyncHandler(async (req, res) => {
+	// get employee with id
+	const employee = await Employee.findById(req.params.id)
+
+	// checks if employee exists
+	if (!employee) {
+		res.status(400)
+		throw new Error('Employee not found!')
+	}
+
+	//check if the contract is valid
+	const contract = await Contract.findById(req.params.contractId)
+	if (!contract) {
+		res.status(400)
+		throw new Error('Contract not found!')
+	}
+
+	// increase number of employees on contract
+	await Contract.findByIdAndUpdate(
+		{ _id: employee.contract },
+		{
+			$inc: { numEmployees: -1 }
+		},
+		{ new: true }
+	)
+	// add employee to employee list
+	await Contract.findByIdAndUpdate(
+		{ _id: employee.contract },
+		{
+			$pull: {
+				employees: employee._id
+			}
+		},
+		{ new: true }
+	)
+
+	// increase number of employees on contract with id = contractId
+	await Contract.findByIdAndUpdate(
+		{ _id: req.params.contractId },
+		{
+			$inc: { numEmployees: 1 }
+		},
+		{ new: true }
+	)
+	// add employee to employee list on contract with id = contractId
+	await Contract.findByIdAndUpdate(
+		{ _id: req.params.contractId },
+		{
+			$push: {
+				employees: employee._id
+			}
+		},
+		{ new: true }
+	)
+
+	// updates employee contract
+	const updatedEmployee = await Employee.findByIdAndUpdate(
+		{ _id: req.params.id },
+		{
+			$set: { contract: req.params.contractId }
+		}
+	)
+
+	const result = await Employee.findById(updatedEmployee._id)
+		.populate('employer')
+		.populate('contract')
+
+	res.status(200).json(result)
 })
 
 //* -------------------------------------------------------------
@@ -335,5 +555,7 @@ export {
 	getEmployee,
 	createEmployee,
 	deleteEmployee,
-	updateEmployee
+	updateEmployee,
+	updateEmployeeEmployer,
+	updateEmployeeContract
 }

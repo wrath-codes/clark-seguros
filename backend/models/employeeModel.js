@@ -80,7 +80,24 @@ const employeeSchema = mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
 			ref: 'Contract'
-		}
+		},
+		employmentHistory: [
+			{
+				employer: {
+					type: mongoose.Schema.Types.ObjectId,
+					required: true,
+					ref: 'Employer'
+				},
+				startDate: {
+					type: Date,
+					required: true
+				},
+				exitDate: {
+					type: Date,
+					required: false
+				}
+			}
+		]
 	},
 	{
 		timestamps: true

@@ -10,7 +10,9 @@ import {
 	getOperator,
 	createOperator,
 	deleteOperator,
-	updateOperator
+	updateOperator,
+	getOperatorPlans,
+	getOperatorContact
 } from '../controllers/operatorController.js'
 
 //* @controller
@@ -31,4 +33,21 @@ router.route('/').get(getOperators).post(createOperator)
 router.route('/:id').get(getOperator).delete(deleteOperator).put(updateOperator)
 
 //* -------------------------------------------------------------
+
+// @desc    Fetch Plans from Operator
+// @route   GET - /api/operators/:id/plans
+// @access  Private
+// --------------------------------------------------------------
+router.route('/:id/plans').get(getOperatorPlans)
+
+//* -------------------------------------------------------------
+
+// @desc    Fetch Contact from Operator
+// @route   GET - /api/operators/:id/contact
+// @access  Private
+// --------------------------------------------------------------
+router.route('/:id/contact').get(getOperatorContact)
+
+//* -------------------------------------------------------------
+
 export default router

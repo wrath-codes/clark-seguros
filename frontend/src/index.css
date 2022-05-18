@@ -34,7 +34,7 @@ body {
   width: 150px;
   height: 150px;
   border: 12px solid;
-  border-color: #007CBA transparent #51A8B1 transparent;
+  border-color: #2fccdd transparent #51A8B1 transparent;
   border-radius: 70%;
   animation: spin 1.75s linear infinite;
 }
