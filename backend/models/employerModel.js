@@ -10,12 +10,19 @@ const employerSchema = mongoose.Schema(
 	{
 		name: {
 			type: String,
-			required: true
+			required: [true, 'Por favor adicione o nome do Cliente'],
+			unique: true,
+			trim: true
 		},
+		slug: String,
 		cnpj: {
 			type: String,
-			required: true,
-			unique: true
+			required: [true, 'Por favor adicione o CNPJ'],
+			unique: true,
+			match: [
+				/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/,
+				'Por favor adicione um CNPJ válido!'
+			]
 		},
 		address: {
 			street: { type: String, required: true },
@@ -26,41 +33,7 @@ const employerSchema = mongoose.Schema(
 			cep: { type: String, required: true },
 			state: { type: String, required: true },
 			country: { type: String, required: true, default: 'Brasil' }
-		},
-		manager: {
-			type: mongoose.Schema.Types.ObjectId,
-			required: true,
-			ref: 'Contact'
-		},
-		numEmployees: {
-			type: Number,
-			required: true,
-			default: 0
-		},
-		numContracts: {
-			type: Number,
-			required: true,
-			default: 0
-		},
-		handler: {
-			type: mongoose.Schema.Types.ObjectId,
-			required: true,
-			ref: 'User'
-		},
-		contractHistory: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				required: false,
-				ref: 'Contract'
-			}
-		],
-		employees: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				required: false,
-				ref: 'Employee'
-			}
-		]
+		}
 	},
 	{
 		timestamps: true

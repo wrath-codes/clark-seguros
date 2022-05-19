@@ -9,8 +9,7 @@ const users = [
 		email: 'rvazn.ds@gmail.com',
 		password: bcrypt.hashSync('Quel6969!', 10),
 		cellphone: '(21)99710-5477',
-		isAdmin: true,
-		isStaff: true
+		role: 'admin'
 	},
 	{
 		name: {
@@ -20,7 +19,7 @@ const users = [
 		email: 'ronaldo@email.com',
 		password: bcrypt.hashSync('123456', 10),
 		cellphone: '(21)99286-9829',
-		isStaff: true
+		role: 'staff-all'
 	},
 	{
 		name: {
@@ -29,7 +28,8 @@ const users = [
 		},
 		email: 'ricardo@email.com',
 		password: bcrypt.hashSync('123456', 10),
-		cellphone: '(21)99660-6969'
+		cellphone: '(21)99660-6969',
+		role: 'client'
 	}
 ]
 

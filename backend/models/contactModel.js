@@ -9,25 +9,40 @@ const contactSchema = mongoose.Schema(
 		name: {
 			firstName: {
 				type: String,
-				required: true
+				required: [true, 'Por favor adicione o primeiro nome do contato'],
+				maxlength: [50, 'O primeiro nome não pode exceder 50 caracteres']
 			},
 			lastName: {
 				type: String,
-				required: true
+				required: [true, 'Por favor adicione o sobrenome do contato'],
+				maxlength: [200, 'O sobrenome não pode exceder 200 caracteres']
 			}
 		},
 		telephone: {
 			type: String,
-			required: false
+			required: [false, 'Por favor adicione o telefone'],
+			match: [
+				/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/,
+				'Por favor adicione um telefone válido!'
+			]
 		},
 		cellphone: {
 			type: String,
-			required: true
+			required: [true, 'Por favor adicione o celular'],
+			match: [
+				/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/,
+				,
+				'Por favor adicione um celular válido!'
+			]
 		},
 		email: {
 			type: String,
-			required: true,
-			unique: true
+			required: [true, 'Por favor adicione o email'],
+			unique: true,
+			match: [
+				/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+				'Por favor adicione um email válido!'
+			]
 		},
 		kind: {
 			type: String,
@@ -37,8 +52,12 @@ const contactSchema = mongoose.Schema(
 		},
 		cnpj: {
 			type: String,
-			required: true,
-			unique: true
+			required: [true, 'Por favor adicione o CNPJ'],
+			unique: true,
+			match: [
+				/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/,
+				'Por favor adicione um CNPJ válido!'
+			]
 		}
 	},
 	{

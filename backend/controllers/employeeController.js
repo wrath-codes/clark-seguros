@@ -9,6 +9,7 @@ import Contract from '../models/contractModel.js'
 import Employer from '../models/employerModel.js'
 import Employment from '../models/employmentModel.js'
 import PlanCard from '../models/planCardModel.js'
+import Plan from '../models/planModel.js'
 
 //* @controller
 //* -------------------------------------------------------------
@@ -19,16 +20,12 @@ import PlanCard from '../models/planCardModel.js'
 // --------------------------------------------------------------
 const getEmployees = asyncHandler(async (req, res) => {
 	// get all employees
-	const employees = await Employee.find({})
-		.populate('employer')
-		.populate('contract')
+	const employees = await Employee.find({}).populate('employer').populate('contract')
 
 	// check if there are no employees in the database
 	if (employees <= 0) {
 		res.status(400)
-		throw new Error(
-			`There are ${employees.length} employees in the database!`
-		)
+		throw new Error(`There are ${employees.length} employees in the database!`)
 	}
 
 	//response
@@ -131,15 +128,10 @@ const createEmployee = asyncHandler(async (req, res) => {
 	}
 
 	// check if plan information is entered
-	if (!plan || !cardIdentifier || !planValue || !kind || !lives) {
+	const checkPlan = await Plan.findById(plan)
+	if (!checkPlan || !plan || !cardIdentifier || !planValue || !kind || !lives) {
 		res.status(400)
 		throw new Error('Please add all the Plan required fields!')
-	}
-
-	// calculate age
-	const getAge = (dateStr) => {
-		let birthday = +new Date(dateStr)
-		return ~~((Date.now() - birthday) / 31557600000)
 	}
 
 	// creates employee
@@ -150,7 +142,6 @@ const createEmployee = asyncHandler(async (req, res) => {
 		},
 		cpf: cpf,
 		dateOfBirth: dateOfBirth,
-		age: getAge(dateOfBirth),
 		sex: sex,
 		maritalStatus: maritalStatus,
 		mothersName: {
@@ -174,51 +165,6 @@ const createEmployee = asyncHandler(async (req, res) => {
 	})
 
 	if (employee) {
-		// increase number of employees on employer
-		await Employer.findByIdAndUpdate(
-			{ _id: employer },
-			{
-				$inc: { numEmployees: 1 }
-			},
-			{ new: true }
-		)
-		// add employee to employees list
-		await Employer.findByIdAndUpdate(
-			{ _id: employer },
-			{
-				$push: {
-					employees: employee._id
-				}
-			},
-			{ new: true }
-		)
-
-		// increase number of employees on contract
-		await Contract.findByIdAndUpdate(
-			{ _id: contract },
-			{
-				$inc: { numEmployees: 1 }
-			},
-			{ new: true }
-		)
-		// add employee to employee list
-		await Contract.findByIdAndUpdate(
-			{ _id: contract },
-			{
-				$push: {
-					employees: employee._id
-				}
-			},
-			{ new: true }
-		)
-
-		// creates employment relationship
-		const employment = await Employment.create({
-			employer: employer,
-			employee: employee,
-			startDate: new Date()
-		})
-
 		const planCard = await PlanCard.create({
 			employee: employee,
 			plan: plan,
@@ -234,7 +180,7 @@ const createEmployee = asyncHandler(async (req, res) => {
 			{
 				$push: {
 					planValueHistory: {
-						change: employment.startDate,
+						change: new Date(),
 						value: planCard.planValue
 					}
 				}
@@ -254,42 +200,16 @@ const createEmployee = asyncHandler(async (req, res) => {
 			},
 			{ new: true }
 		)
-
-		// add current employer to employment history
-		await Employee.findByIdAndUpdate(
-			{ _id: employee._id },
-			{
-				$push: {
-					employmentHistory: {
-						employer: employee.employer,
-						startDate: new Date()
-					}
-				}
-			},
-			{ new: true }
-		)
 	}
 
 	// prepare response
 	const employeeResult = await Employee.findById(employee._id)
 		.populate('employer')
 		.populate('contract')
-	const employmentResult = await Employment.findOne({
-		employee: employee._id
-	})
-		.populate('employee')
-		.populate('employer')
-	const planCardResult = await PlanCard.findOne({
-		employee: employee._id
-	})
-		.populate('employee')
-		.populate('plan')
 
 	// response
 	res.status(200).json({
-		employee: employeeResult,
-		employment: employmentResult,
-		plan: planCardResult
+		employee: employeeResult
 	})
 })
 
@@ -308,27 +228,6 @@ const deleteEmployee = asyncHandler(async (req, res) => {
 		res.status(400)
 		throw new Error('Employee not found!')
 	}
-
-	// get employer and updates number of employees
-	await Employer.findByIdAndUpdate(
-		{ _id: employee.employer },
-		{
-			$inc: { numEmployees: -1 }
-		}
-	)
-
-	// get contract and updates number of employees
-	await Contract.findByIdAndUpdate(
-		{ _id: employee.contract },
-		{
-			$inc: { numEmployees: -1 }
-		}
-	)
-
-	// find and deletes employments and deletes it
-	await Employment.findOneAndDelete({ employee: employee._id })
-	// find and deletes employee's planCards
-	await PlanCard.findOneAndDelete({ employee: employee._id })
 
 	// delete employee from database
 	await employee.delete()
@@ -354,13 +253,9 @@ const updateEmployee = asyncHandler(async (req, res) => {
 		throw new Error('Employee not found!')
 	}
 
-	const updatedEmployee = await Employee.findByIdAndUpdate(
-		req.params.id,
-		req.body,
-		{
-			new: true
-		}
-	)
+	const updatedEmployee = await Employee.findByIdAndUpdate(req.params.id, req.body, {
+		new: true
+	})
 
 	const result = await Employee.findById(updatedEmployee._id)
 		.populate('employer')
@@ -400,7 +295,7 @@ const updateEmployeeEmployer = asyncHandler(async (req, res) => {
 			$inc: { numEmployees: -1 }
 		}
 	)
-	// gets employer and removes employee from
+	// gets employer and removes employee from employee list
 	await Employer.findByIdAndUpdate(
 		{ _id: employee.employer },
 		{
@@ -503,7 +398,7 @@ const updateEmployeeContract = asyncHandler(async (req, res) => {
 		},
 		{ new: true }
 	)
-	// add employee to employee list
+	// remove employee from employee list
 	await Contract.findByIdAndUpdate(
 		{ _id: employee.contract },
 		{

@@ -51,7 +51,39 @@ const planCardSchema = mongoose.Schema(
 			type: Number,
 			required: true,
 			default: 1
-		}
+		},
+		employer: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'Employer'
+		},
+		contract: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'Contract'
+		},
+		employmentHistory: [
+			{
+				employer: {
+					type: mongoose.Schema.Types.ObjectId,
+					required: true,
+					ref: 'Employer'
+				},
+				startDate: {
+					type: Date,
+					required: true
+				},
+				exitDate: {
+					type: Date,
+					required: false
+				},
+				isCurrent: {
+					type: Boolean,
+					required: true,
+					default: true
+				}
+			}
+		]
 	},
 	{
 		timestamps: true

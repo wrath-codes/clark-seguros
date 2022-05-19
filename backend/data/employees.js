@@ -26,9 +26,7 @@ const employees = [
 			country: 'Brasil'
 		},
 		email: 'rvazn.ds@gmail.com',
-		cellphone: '(21)99710-5477',
-		employer: '18.591.097/0001-10',
-		contract: '1'
+		cellphone: '(21)99710-5477'
 	},
 	{
 		name: {
@@ -57,9 +55,7 @@ const employees = [
 			country: 'Brasil'
 		},
 		email: 'raquel.borcard@gmail.com',
-		cellphone: '(21)98107-2407',
-		employer: '18.591.097/0001-10',
-		contract: '1'
+		cellphone: '(21)98107-2407'
 	},
 	{
 		name: {
@@ -88,9 +84,7 @@ const employees = [
 			country: 'Brasil'
 		},
 		email: 'rronaldo@me.com',
-		cellphone: '(21)99286-9829',
-		employer: '18.591.097/0001-10',
-		contract: '1'
+		cellphone: '(21)99286-9829'
 	}
 ]
 

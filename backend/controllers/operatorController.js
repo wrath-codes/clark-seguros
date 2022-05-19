@@ -68,7 +68,9 @@ const createOperator = asyncHandler(async (req, res) => {
 		cep,
 		state,
 		country,
-		contact
+		contact,
+		username,
+		password
 	} = req.body
 
 	if (
@@ -119,7 +121,11 @@ const createOperator = asyncHandler(async (req, res) => {
 			state: state,
 			country: country
 		},
-		contact: contact ? checkContact._id : dummyContact._id
+		contact: contact ? checkContact._id : dummyContact._id,
+		login: {
+			username: username ? username : 'username',
+			password: password ? password : 'password'
+		}
 	})
 
 	const result = await Operator.findById(operator._id).populate('contact')

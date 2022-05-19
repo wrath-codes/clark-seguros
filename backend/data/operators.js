@@ -12,7 +12,11 @@ const operators = [
 			state: 'RJ',
 			country: 'Brasil'
 		},
-		website: 'https://planodesaudegolden.com.br/'
+		website: 'https://planodesaudegolden.com.br/',
+		login: {
+			username: 'goldencross',
+			password: '123456'
+		}
 	},
 	{
 		name: 'AMIL ASSISTÊNCIA MÉDICA INTERNACIONAL SA',
@@ -27,11 +31,15 @@ const operators = [
 			state: 'RJ',
 			country: 'Brasil'
 		},
-		website: 'https://amilonlinerj.com.br/'
+		website: 'https://amilonlinerj.com.br/',
+		login: {
+			username: 'amil',
+			password: '123456'
+		}
 	},
 	{
 		name: 'GLOBAL SAUDE',
-		cnpj: '04.165719/0001-33',
+		cnpj: '04.165.719/0001-33',
 		address: {
 			street: 'Rua Major Marquês Braga',
 			streetNumber: '23',
@@ -42,7 +50,11 @@ const operators = [
 			state: 'RJ',
 			country: 'Brasil'
 		},
-		website: 'https://www.globalsaude.com.br/'
+		website: 'https://www.globalsaude.com.br/',
+		login: {
+			username: 'globalsaude',
+			password: '123456'
+		}
 	},
 	{
 		name: 'SÃO FRANCISCO SISTEMAS DE SAUDE',
@@ -57,7 +69,11 @@ const operators = [
 			state: 'SP',
 			country: 'Brasil'
 		},
-		website: 'https://www.saofranciscosaude.com.br/'
+		website: 'https://www.saofranciscosaude.com.br/',
+		login: {
+			username: 'saofranciscosaude',
+			password: '123456'
+		}
 	},
 	{
 		name: 'NOTREDAME INTERMÉDICA SAUDE',
@@ -72,7 +88,11 @@ const operators = [
 			state: 'SP',
 			country: 'Brasil'
 		},
-		website: 'https://intermedica.rio.br/'
+		website: 'https://intermedica.rio.br/',
+		login: {
+			username: 'intermedica',
+			password: '123456'
+		}
 	},
 	{
 		name: 'ASSIM SAUDE',
@@ -87,7 +107,11 @@ const operators = [
 			state: 'RJ',
 			country: 'Brasil'
 		},
-		website: 'https://assim.com.br/'
+		website: 'https://assim.com.br/',
+		login: {
+			username: 'assim',
+			password: '123456'
+		}
 	}
 ]
 

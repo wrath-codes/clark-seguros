@@ -13,12 +13,14 @@ const planSchema = mongoose.Schema(
 		},
 		name: {
 			type: String,
-			required: true
+			required: [true, 'Por favor adicione o nome do plano']
 		},
+		slug: String,
 		ansRegister: {
 			type: String,
 			required: true,
-			unique: true
+			unique: true,
+			match: [/^\d{9}$/, 'Por favor adicione um registro ANS válido!']
 		},
 		kind: {
 			type: String,
@@ -28,12 +30,7 @@ const planSchema = mongoose.Schema(
 		reach: {
 			type: String,
 			required: [true, 'Por favor selecione uma abrangência'],
-			enum: [
-				'Grupo de Municipios',
-				'Estadual',
-				'Grupo de Estados',
-				'Nacional'
-			]
+			enum: ['Grupo de Municipios', 'Estadual', 'Grupo de Estados', 'Nacional']
 		}
 	},
 	{

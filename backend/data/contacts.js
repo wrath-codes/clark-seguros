@@ -1,14 +1,14 @@
 const contacts = [
 	{
 		name: { firstName: 'Fernanda', lastName: 'Hess' },
-		cellphone: '21976076629',
+		cellphone: '(21)97607-6629',
 		email: 'fhesse@goldencross.com.br',
 		kind: 'Operadora',
 		cnpj: '01.518.211/0001-83'
 	},
 	{
 		name: { firstName: 'Simone', lastName: 'Ceolin' },
-		cellphone: '21971279233',
+		cellphone: '(21)97127-9233',
 		email: 'sceolin@amil.com.br',
 		kind: 'Operadora',
 		cnpj: '29.309.127/0001-79'
@@ -18,7 +18,7 @@ const contacts = [
 		cellphone: '(21)97677-6987',
 		email: 'jpinto@globalsaude.com.br',
 		kind: 'Operadora',
-		cnpj: '04.165719/0001-33'
+		cnpj: '04.165.719/0001-33'
 	},
 	{
 		name: { firstName: 'Jane', lastName: 'Doe' },

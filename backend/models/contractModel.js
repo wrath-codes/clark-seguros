@@ -29,23 +29,15 @@ const contractSchema = mongoose.Schema(
 			type: Date,
 			required: false
 		},
-		numEmployees: {
-			type: Number,
-			required: true,
-			default: 0
-		},
 		isValid: {
 			type: Boolean,
 			required: true,
 			default: true
 		},
-		employees: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				required: false,
-				ref: 'Employee'
-			}
-		]
+		contractFile: {
+			type: String,
+			default: 'no-photo.jpg'
+		}
 	},
 	{
 		timestamps: true
