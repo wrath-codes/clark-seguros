@@ -88,7 +88,6 @@ const importData = async () => {
 				employer: employer._id
 			})
 		}
-
 		await Contract.insertMany(sampleContracts)
 		console.log('Contracts Imported!'.green)
 
@@ -97,20 +96,21 @@ const importData = async () => {
 		console.log('Employees Imported!'.green.inverse)
 
 		//? create plan cards
-		const samplePlanCards = planCards.map(async (planCard) => {
-			const employee = await Employee.findOne({ cpf: planCard.employee })
-			const plan = await Plan.findOne({ ansRegister: planCard.plan })
-			const employer = await Employer.findOne({ cnpj: planCard.employer })
-			const contract = await Contract.findOne({ identifier: planCard.contract })
+		let samplePlanCards = []
+		for (let i = 0; i < planCards.length; i++) {
+			const employee = await Employee.findOne({ cpf: planCards[i].employee })
+			const plan = await Plan.findOne({ ansRegister: planCards[i].plan })
+			const employer = await Employer.findOne({ cnpj: planCards[i].employer })
+			const contract = await Contract.findOne({ identifier: planCards[i].contract })
 
-			return {
-				...planCard,
+			samplePlanCards.push({
+				...planCards[i],
 				employee: employee,
 				employer: employer,
 				contract: contract,
 				plan: plan
-			}
-		})
+			})
+		}
 
 		await PlanCard.insertMany(samplePlanCards)
 		console.log('Plan Cards Imported!'.green)
