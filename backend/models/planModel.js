@@ -3,6 +3,7 @@
 
 // @imports
 import mongoose from 'mongoose'
+import slugify from 'slugify'
 
 const planSchema = mongoose.Schema(
 	{
@@ -37,6 +38,12 @@ const planSchema = mongoose.Schema(
 		timestamps: true
 	}
 )
+
+// create plan slug from the name
+planSchema.pre('save', function (next) {
+	this.slug = slugify(this.name, { lower: true })
+	next()
+})
 
 const Plan = mongoose.model('Plan', planSchema)
 

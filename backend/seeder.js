@@ -51,7 +51,14 @@ const importData = async () => {
 		console.log('Contacts Imported'.green)
 
 		//? import operators
-		await Operator.insertMany(operators)
+		let sampleOperators = []
+		for (let i = 0; i < operators.length; i++) {
+			await Operator.create({
+				...operators[i]
+			})
+		}
+
+		// await Operator.insertMany(operators)
 		console.log('Operators Imported!'.green.inverse)
 
 		//? import plans and adds respective operators
@@ -60,7 +67,7 @@ const importData = async () => {
 			const operator = await Operator.findOne({
 				cnpj: plans[i].operator
 			})
-			samplePlans.push({
+			await Plan.create({
 				...plans[i],
 				operator: operator._id
 			})
@@ -69,7 +76,13 @@ const importData = async () => {
 		console.log('Plans Imported!'.green)
 
 		//? import employers
-		await Employer.insertMany(employers)
+		let sampleEmployers = []
+		for (let i = 0; i < employers.length; i++) {
+			await Employer.create({
+				...employers[i]
+			})
+		}
+		// await Employer.insertMany(employers)
 		console.log('Employers Imported!'.green.inverse)
 
 		//? import contracts, adds respective employer and operator
@@ -105,10 +118,26 @@ const importData = async () => {
 
 			samplePlanCards.push({
 				...planCards[i],
-				employee: employee,
-				employer: employer,
-				contract: contract,
-				plan: plan
+				employee: employee._id,
+				employer: employer._id,
+				contract: contract._id,
+				plan: plan._id,
+				employmentHistory: {
+					employer: employer._id,
+					startDate: new Date()
+				},
+				planHistory: {
+					plan: plan._id,
+					change: new Date()
+				},
+				planValueHistory: {
+					value: planCards[i].planValue,
+					change: new Date()
+				},
+				contractHistory: {
+					contract: contract._id,
+					startDate: new Date()
+				}
 			})
 		}
 

@@ -17,7 +17,15 @@ import Plan from '../models/planModel.js'
 // --------------------------------------------------------------
 const getOperators = asyncHandler(async (req, res) => {
 	//get all operators
-	const operators = await Operator.find({}).populate('contact')
+	let query
+
+	let queryStr = JSON.stringify(req.query)
+	queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`)
+
+	console.log(queryStr)
+
+	query = Operator.find(JSON.parse(queryStr))
+	const operators = await query
 
 	//checks if there are no operators
 	if (operators <= 0) {
@@ -26,7 +34,12 @@ const getOperators = asyncHandler(async (req, res) => {
 	}
 
 	// response
-	res.json(operators)
+	res.status(200).json({
+		success: true,
+		msg: 'Show all operators',
+		count: operators.length,
+		data: operators
+	})
 })
 
 //* -------------------------------------------------------------
@@ -37,11 +50,16 @@ const getOperators = asyncHandler(async (req, res) => {
 // --------------------------------------------------------------
 const getOperator = asyncHandler(async (req, res) => {
 	//get operator with id and populate contact field
-	const operator = await Operator.findById(req.params.id).populate('contact')
+	const operator = await Operator.findById(req.params.id)
 
 	//checks if there's an operator with that id
 	if (operator) {
-		res.json(operator)
+		res.status(200).json({
+			success: true,
+			msg: `Show operator ${operator.name}`,
+			count: operator.length,
+			data: operator
+		})
 	} else {
 		res.status(404)
 		throw new Error('Operator not found!')
@@ -68,7 +86,6 @@ const createOperator = asyncHandler(async (req, res) => {
 		cep,
 		state,
 		country,
-		contact,
 		username,
 		password
 	} = req.body
@@ -89,23 +106,6 @@ const createOperator = asyncHandler(async (req, res) => {
 		throw new Error('Please add all fields for the Operator!')
 	}
 
-	// gets contact from contact collection or create dummy data
-	const checkContact = await Contact.findById(contact)
-	const dummyContact = await new Contact({
-		name: {
-			firstName: 'firstName',
-			lastName: 'lastName'
-		},
-		cellphone: 'cellphone',
-		email: 'email',
-		kind: 'Operadora',
-		cnpj: cnpj
-	})
-
-	if (!contact) {
-		await Contact.create(dummyContact)
-	}
-
 	// creates operator with Contact
 	const operator = await Operator.create({
 		name: name,
@@ -121,17 +121,19 @@ const createOperator = asyncHandler(async (req, res) => {
 			state: state,
 			country: country
 		},
-		contact: contact ? checkContact._id : dummyContact._id,
 		login: {
 			username: username ? username : 'username',
 			password: password ? password : 'password'
 		}
 	})
 
-	const result = await Operator.findById(operator._id).populate('contact')
-
 	// response
-	res.status(200).json(result)
+	res.status(201).json({
+		success: true,
+		msg: `Operator ${operator.name} created`,
+		count: operator.length,
+		data: operator
+	})
 })
 
 //* -------------------------------------------------------------
@@ -143,7 +145,7 @@ const createOperator = asyncHandler(async (req, res) => {
 const deleteOperator = asyncHandler(async (req, res) => {
 	// get operator, contact and plans with id
 	const operator = await Operator.findById(req.params.id)
-	const contact = await Contact.findById(operator.contact)
+	const contact = await Contact.findOne({ cnpj: operator.cnpj })
 	const plans = await Plan.find({ operator: operator._id })
 
 	// checks if operator exists
@@ -165,7 +167,11 @@ const deleteOperator = asyncHandler(async (req, res) => {
 	await operator.delete()
 
 	// success message response
-	res.status(200).json({ success: true })
+	res.status(200).json({
+		success: true,
+		msg: `Operator ${operator.name} deleted`,
+		count: operator.length
+	})
 })
 
 //* -------------------------------------------------------------
@@ -178,6 +184,13 @@ const updateOperator = asyncHandler(async (req, res) => {
 	// get operator with id
 	const operator = await Operator.findById(req.params.id)
 
+	// find operator's contact and change it's cnpj to operators cnpj
+	const contact = await Contact.findOne({ cnpj: operator.cnpj })
+	if (!contact) {
+		res.status(404)
+		throw new Error('Contact not found!')
+	}
+
 	// check if operator exists
 	if (!operator) {
 		res.status(404)
@@ -189,10 +202,22 @@ const updateOperator = asyncHandler(async (req, res) => {
 		new: true
 	})
 
-	const result = await Operator.findById(updatedOperator._id).populate('contact')
+	await Contact.findOneAndUpdate(
+		{ cnpj: contact.cnpj },
+		{
+			$set: {
+				cnpj: updatedOperator.cnpj
+			}
+		}
+	)
 
 	// response
-	res.status(200).json(result)
+	res.status(200).json({
+		success: true,
+		msg: `Operator ${operator.name} updated`,
+		count: updatedOperator.length,
+		data: updatedOperator
+	})
 })
 
 //* -------------------------------------------------------------
@@ -213,7 +238,12 @@ const getOperatorPlans = asyncHandler(async (req, res) => {
 
 	const plans = await Plan.find({ operator: operator._id })
 	// return plans
-	res.status(200).json(plans)
+	res.status(200).json({
+		success: true,
+		msg: `Show ${operator.name} plans`,
+		count: plans.length,
+		data: plans
+	})
 })
 
 //* -------------------------------------------------------------
@@ -232,10 +262,20 @@ const getOperatorContact = asyncHandler(async (req, res) => {
 		throw new Error('Operator not found!')
 	}
 
+	// checa se operadora tem contato
 	const contact = await Contact.findOne({ cnpj: operator.cnpj })
+	if (!contact) {
+		res.status(404)
+		throw new Error('Contact not found!')
+	}
 
 	// return contact
-	res.status(200).json(contact)
+	res.status(200).json({
+		success: true,
+		msg: `Show ${operator.name} contact`,
+		count: contact.length,
+		data: contact
+	})
 })
 
 //* -------------------------------------------------------------

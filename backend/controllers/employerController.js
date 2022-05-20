@@ -19,15 +19,11 @@ import User from '../models/userModel.js'
 const getEmployers = asyncHandler(async (req, res) => {
 	// get employers and populate manager and handler fields
 	const employers = await Employer.find({})
-		.populate('manager')
-		.populate('handler')
 
 	// checks if there are no employers
 	if (employers <= 0) {
 		res.status(400)
-		throw new Error(
-			`There are ${employers.length} employers in the database!`
-		)
+		throw new Error(`There are ${employers.length} employers in the database!`)
 	}
 
 	// response
@@ -44,9 +40,6 @@ const getEmployers = asyncHandler(async (req, res) => {
 const getEmployer = asyncHandler(async (req, res) => {
 	// get employer with id and populate manager and handler fields
 	const employer = await Employer.findById(req.params.id)
-		.populate('manager')
-		.populate('handler')
-
 	// check if there's an employer with that id
 	if (employer) {
 		res.json(employer)
@@ -75,9 +68,7 @@ const createEmployer = asyncHandler(async (req, res) => {
 		city,
 		cep,
 		state,
-		country,
-		manager,
-		handler
+		country
 	} = req.body
 
 	// checks if all required fields are filled
@@ -96,33 +87,6 @@ const createEmployer = asyncHandler(async (req, res) => {
 		throw new Error('Please add all fields for the Employer!')
 	}
 
-	// gets manager from contact collection or create dummy data
-	const checkManager = await Contact.findById(manager)
-	const dummyManager = await new Contact({
-		name: {
-			firstName: 'firstName',
-			lastName: 'lastName'
-		},
-		cellphone: 'cellphone',
-		email: 'email',
-		kind: 'Cliente',
-		cnpj: cnpj
-	})
-
-	// checks if manager exists otherwise create dummyManager
-	if (!manager) {
-		await Contact.create(dummyManager)
-	}
-
-	// create employer with manager and user
-	const user = await User.findById(handler)
-
-	// checks if user exists
-	if (!user) {
-		res.status(404)
-		throw new Error('Handler does not exist!')
-	}
-
 	const employer = await Employer.create({
 		name: name,
 		cnpj: cnpj,
@@ -135,17 +99,11 @@ const createEmployer = asyncHandler(async (req, res) => {
 			cep: cep,
 			state: state,
 			country: country
-		},
-		manager: manager ? checkManager._id : dummyManager._id,
-		handler: user._id
+		}
 	})
 
-	const result = await Employer.findById(employer._id)
-		.populate('manager')
-		.populate('handler')
-
 	// response
-	res.status(200).json(result)
+	res.status(200).json(employer)
 })
 
 //* -------------------------------------------------------------
@@ -158,17 +116,11 @@ const createEmployer = asyncHandler(async (req, res) => {
 const deleteEmployer = asyncHandler(async (req, res) => {
 	// get employer and it's contact with id
 	const employer = await Employer.findById(req.params.id)
-	const manager = await Contact.findById(employer.manager)
 
 	// checks if employer exists
 	if (!employer) {
 		res.status(404)
 		throw new Error('Employer not found!')
-	}
-
-	// checks of manager exists and deletes it
-	if (manager) {
-		await manager.delete()
 	}
 
 	// delete employer
@@ -196,13 +148,9 @@ const updateEmployer = asyncHandler(async (req, res) => {
 	}
 
 	// edits employer
-	const updatedEmployer = await Employer.findByIdAndUpdate(
-		req.params.id,
-		req.body,
-		{
-			new: true
-		}
-	)
+	const updatedEmployer = await Employer.findByIdAndUpdate(req.params.id, req.body, {
+		new: true
+	})
 
 	const result = await Employer.findById(updatedEmployer._id)
 		.populate('manager')
@@ -214,10 +162,4 @@ const updateEmployer = asyncHandler(async (req, res) => {
 
 //* -------------------------------------------------------------
 
-export {
-	getEmployers,
-	getEmployer,
-	createEmployer,
-	deleteEmployer,
-	updateEmployer
-}
+export { getEmployers, getEmployer, createEmployer, deleteEmployer, updateEmployer }

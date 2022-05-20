@@ -7,7 +7,6 @@ import asyncHandler from 'express-async-handler'
 import Employee from '../models/employeeModel.js'
 import Contract from '../models/contractModel.js'
 import Employer from '../models/employerModel.js'
-import Employment from '../models/employmentModel.js'
 import PlanCard from '../models/planCardModel.js'
 import Plan from '../models/planModel.js'
 

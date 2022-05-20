@@ -3,6 +3,7 @@
 
 // @imports
 import mongoose from 'mongoose'
+import slugify from 'slugify'
 
 const operatorSchema = mongoose.Schema(
 	{
@@ -50,6 +51,12 @@ const operatorSchema = mongoose.Schema(
 		timestamps: true
 	}
 )
+
+// create operator slug from the name
+operatorSchema.pre('save', function (next) {
+	this.slug = slugify(this.name, { lower: true })
+	next()
+})
 
 const Operator = mongoose.model('Operator', operatorSchema)
 

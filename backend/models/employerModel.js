@@ -2,9 +2,8 @@
 //*  Employer Model -->
 
 // @imports
-import { ObjectId } from 'bson'
 import mongoose from 'mongoose'
-import Contract from './contractModel.js'
+import slugify from 'slugify'
 
 const employerSchema = mongoose.Schema(
 	{
@@ -39,6 +38,12 @@ const employerSchema = mongoose.Schema(
 		timestamps: true
 	}
 )
+
+// create employer slug from the name
+employerSchema.pre('save', function (next) {
+	this.slug = slugify(this.name, { lower: true })
+	next()
+})
 
 const Employer = mongoose.model('Employer', employerSchema)
 
