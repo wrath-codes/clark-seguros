@@ -46,10 +46,6 @@ const importData = async () => {
 		console.log('Users Imported!'.green.inverse)
 		const adminUser = createdUsers[0]._id
 
-		// import contacts
-		const createdContacts = await Contact.insertMany(contacts)
-		console.log('Contacts Imported'.green)
-
 		//? import operators
 		let sampleOperators = []
 		for (let i = 0; i < operators.length; i++) {
@@ -59,7 +55,7 @@ const importData = async () => {
 		}
 
 		// await Operator.insertMany(operators)
-		console.log('Operators Imported!'.green.inverse)
+		console.log('Operators Imported!'.green)
 
 		//? import plans and adds respective operators
 		let samplePlans = []
@@ -73,7 +69,7 @@ const importData = async () => {
 			})
 		}
 		await Plan.insertMany(samplePlans)
-		console.log('Plans Imported!'.green)
+		console.log('Plans Imported!'.green.inverse)
 
 		//? import employers
 		let sampleEmployers = []
@@ -83,7 +79,24 @@ const importData = async () => {
 			})
 		}
 		// await Employer.insertMany(employers)
-		console.log('Employers Imported!'.green.inverse)
+		console.log('Employers Imported!'.green)
+
+		// import contacts
+		let sampleContacts = []
+		for (let i = 0; i < contacts.length; i++) {
+			const operator = await Operator.findOne({ cnpj: contacts[i].cnpj })
+			const employer = await Employer.findOne({ cnpj: contacts[i].cnpj })
+			await Contact.create({
+				name: contacts[i].name,
+				cellphone: contacts[i].cellphone,
+				telephone: contacts[i].telephone && contacts[i].telephone,
+				email: contacts[i].email,
+				kind: contacts[i].kind,
+				operator: operator && operator._id,
+				employer: employer && employer._id
+			})
+		}
+		console.log('Contacts Imported'.green.inverse)
 
 		//? import contracts, adds respective employer and operator
 		let sampleContracts = []

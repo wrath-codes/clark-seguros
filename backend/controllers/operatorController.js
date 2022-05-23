@@ -15,16 +15,80 @@ import Plan from '../models/planModel.js'
 // @route   GET - /api/operators
 // @access  Private
 // --------------------------------------------------------------
-const getOperators = asyncHandler(async (req, res) => {
+const getOperators = asyncHandler(async (req, res, next) => {
 	//get all operators
 	let query
 
-	let queryStr = JSON.stringify(req.query)
+	// copy req.query
+	const reqQuery = { ...req.query }
+
+	// fields to exclude
+	const removeFields = ['select', 'sort', 'page', 'limit']
+
+	// loop over removeFields and delete them from reqQuery
+	removeFields.forEach((param) => delete reqQuery[param])
+
+	//create query string
+	let queryStr = JSON.stringify(reqQuery)
+
+	// create operators ($gt | $gte | $lt | $lte | $in)
 	queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`)
 
-	console.log(queryStr)
-
+	// finding resource
 	query = Operator.find(JSON.parse(queryStr))
+		.populate({
+			path: 'plans',
+			select: 'name ansRegister'
+		})
+		.populate({
+			path: 'contracts',
+			select: 'employer identifier'
+		})
+		.populate({
+			path: 'contact',
+			select: 'name cellphone'
+		})
+
+	// select fields
+	if (req.query.select) {
+		const fields = req.query.select.split(',').join(' ')
+		query = query.select(fields)
+	}
+	// sort
+	if (req.query.sort) {
+		const sortBy = req.query.sort.split(',').join(' ')
+		query = query.sort(sortBy)
+	} else {
+		query = query.sort('-createdAt')
+	}
+
+	// pagination
+	const page = parseInt(req.query.page, 10) || 1
+	const limit = parseInt(req.query.limit, 10) || 24
+	const startIndex = (page - 1) * limit
+	const endIndex = page * limit
+	const total = await Operator.countDocuments()
+
+	// pagination result
+	const pagination = {}
+
+	if (endIndex < total) {
+		pagination.next = {
+			page: page + 1,
+			limit
+		}
+	}
+
+	if (startIndex > 0) {
+		pagination.prev = {
+			page: page - 1,
+			limit
+		}
+	}
+
+	query = query.skip(startIndex).limit(limit)
+
+	// Executing query
 	const operators = await query
 
 	//checks if there are no operators
@@ -38,6 +102,7 @@ const getOperators = asyncHandler(async (req, res) => {
 		success: true,
 		msg: 'Show all operators',
 		count: operators.length,
+		pagination,
 		data: operators
 	})
 })
@@ -48,9 +113,9 @@ const getOperators = asyncHandler(async (req, res) => {
 // @route   GET - /api/operators/:id
 // @access  Private
 // --------------------------------------------------------------
-const getOperator = asyncHandler(async (req, res) => {
+const getOperator = asyncHandler(async (req, res, next) => {
 	//get operator with id and populate contact field
-	const operator = await Operator.findById(req.params.id)
+	const operator = await Operator.findById(req.params.operatorId)
 
 	//checks if there's an operator with that id
 	if (operator) {
@@ -72,7 +137,7 @@ const getOperator = asyncHandler(async (req, res) => {
 // @route   POST - /api/operators
 // @access  Private
 // -------------------------------------------------------------
-const createOperator = asyncHandler(async (req, res) => {
+const createOperator = asyncHandler(async (req, res, next) => {
 	// destructure operator
 	const {
 		name,
@@ -142,9 +207,9 @@ const createOperator = asyncHandler(async (req, res) => {
 // @route   DELETE - /api/operators/:id
 // @access  Private
 // -------------------------------------------------------------
-const deleteOperator = asyncHandler(async (req, res) => {
+const deleteOperator = asyncHandler(async (req, res, next) => {
 	// get operator, contact and plans with id
-	const operator = await Operator.findById(req.params.id)
+	const operator = await Operator.findById(req.params.operatorId)
 	const contact = await Contact.findOne({ cnpj: operator.cnpj })
 	const plans = await Plan.find({ operator: operator._id })
 
@@ -164,7 +229,7 @@ const deleteOperator = asyncHandler(async (req, res) => {
 	}
 
 	// delete operator
-	await operator.delete()
+	await operator.remove()
 
 	// success message response
 	res.status(200).json({
@@ -180,16 +245,9 @@ const deleteOperator = asyncHandler(async (req, res) => {
 // @route   PUT - /api/operators/:id
 // @access  Private
 // -------------------------------------------------------------
-const updateOperator = asyncHandler(async (req, res) => {
+const updateOperator = asyncHandler(async (req, res, next) => {
 	// get operator with id
-	const operator = await Operator.findById(req.params.id)
-
-	// find operator's contact and change it's cnpj to operators cnpj
-	const contact = await Contact.findOne({ cnpj: operator.cnpj })
-	if (!contact) {
-		res.status(404)
-		throw new Error('Contact not found!')
-	}
+	const operator = await Operator.findById(req.params.operatorId)
 
 	// check if operator exists
 	if (!operator) {
@@ -198,18 +256,9 @@ const updateOperator = asyncHandler(async (req, res) => {
 	}
 
 	// edits operator
-	const updatedOperator = await Operator.findByIdAndUpdate(req.params.id, req.body, {
+	const updatedOperator = await Operator.findByIdAndUpdate(req.params.operatorId, req.body, {
 		new: true
 	})
-
-	await Contact.findOneAndUpdate(
-		{ cnpj: contact.cnpj },
-		{
-			$set: {
-				cnpj: updatedOperator.cnpj
-			}
-		}
-	)
 
 	// response
 	res.status(200).json({
@@ -217,32 +266,6 @@ const updateOperator = asyncHandler(async (req, res) => {
 		msg: `Operator ${operator.name} updated`,
 		count: updatedOperator.length,
 		data: updatedOperator
-	})
-})
-
-//* -------------------------------------------------------------
-
-// @desc    Update single Operator
-// @route   PUT - /api/operators/:id
-// @access  Private
-// -------------------------------------------------------------
-const getOperatorPlans = asyncHandler(async (req, res) => {
-	// get operator with id
-	const operator = await Operator.findById(req.params.id)
-
-	// check if operator exists
-	if (!operator) {
-		res.status(404)
-		throw new Error('Operator not found!')
-	}
-
-	const plans = await Plan.find({ operator: operator._id })
-	// return plans
-	res.status(200).json({
-		success: true,
-		msg: `Show ${operator.name} plans`,
-		count: plans.length,
-		data: plans
 	})
 })
 
@@ -286,6 +309,5 @@ export {
 	createOperator,
 	deleteOperator,
 	updateOperator,
-	getOperatorPlans,
 	getOperatorContact
 }

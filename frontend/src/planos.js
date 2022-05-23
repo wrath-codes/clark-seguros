@@ -33,6 +33,13 @@ const operadoras = [
 		ans_register: '482995196',
 		reach: 'Grupo de Municipios',
 		operator_id: '6'
+	},
+	{
+		_id: '0',
+		name: 'Favor adicionar um plano',
+		ans_register: '000000000',
+		reach: 'Grupo de Municipios',
+		operator_id: '0'
 	}
 ]
 

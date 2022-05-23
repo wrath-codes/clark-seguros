@@ -40,9 +40,22 @@ const contractSchema = mongoose.Schema(
 		}
 	},
 	{
+		toJSON: { virtuals: true },
+		toObject: { virtuals: true }
+	},
+	{
 		timestamps: true
 	}
 )
+
+// add employees field
+contractSchema.virtual('employees', {
+	ref: 'PlanCard',
+	localField: '_id',
+	foreignField: 'contract',
+	justOne: false,
+	populated: true
+})
 
 const Contract = mongoose.model('Contract', contractSchema)
 

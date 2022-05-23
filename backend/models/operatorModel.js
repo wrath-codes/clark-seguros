@@ -48,6 +48,10 @@ const operatorSchema = mongoose.Schema(
 		}
 	},
 	{
+		toJSON: { virtuals: true },
+		toObject: { virtuals: true }
+	},
+	{
 		timestamps: true
 	}
 )
@@ -56,6 +60,46 @@ const operatorSchema = mongoose.Schema(
 operatorSchema.pre('save', function (next) {
 	this.slug = slugify(this.name, { lower: true })
 	next()
+})
+
+// cascade delete plans when operator is deleted
+operatorSchema.pre('remove', async function (next) {
+	await this.model('Plan').deleteMany({ operator: this._id })
+	await this.model('Contact').deleteMany({ operator: this._id })
+
+	await this.model('Contract').updateMany(
+		{ operator: this._id },
+		{
+			$set: {
+				endDate: new Date(),
+				isValid: false
+			}
+		},
+		{ new: true }
+	)
+})
+
+// reverse populate with virtuals
+// add plans field
+operatorSchema.virtual('plans', {
+	ref: 'Plan',
+	localField: '_id',
+	foreignField: 'operator',
+	justOne: false
+})
+// add contracts field
+operatorSchema.virtual('contracts', {
+	ref: 'Contract',
+	localField: '_id',
+	foreignField: 'operator',
+	justOne: false
+})
+// add contact field
+operatorSchema.virtual('contact', {
+	ref: 'Contact',
+	localField: '_id',
+	foreignField: 'operator',
+	justOne: false
 })
 
 const Operator = mongoose.model('Operator', operatorSchema)

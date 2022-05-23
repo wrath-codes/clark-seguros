@@ -3,17 +3,23 @@
 // imports
 // @libraries
 import express from 'express'
-const router = express.Router()
 // @controller
 import {
 	getOperators,
 	getOperator,
 	createOperator,
 	deleteOperator,
-	updateOperator,
-	getOperatorPlans,
-	getOperatorContact
+	updateOperator
 } from '../controllers/operatorController.js'
+// include other resource routers
+import planRouter from './planRoutes.js'
+import contactRouter from './contactRoutes.js'
+
+const router = express.Router()
+
+// re-route into other resource routers
+router.use('/:operatorId/plans', planRouter) // add routes to plans
+router.use('/:operatorId/contacts', contactRouter) // add routes to contact
 
 //* @controller
 //* -------------------------------------------------------------
@@ -30,23 +36,7 @@ router.route('/').get(getOperators).post(createOperator)
 // @route   GET|DELETE|PUT - /api/operators/:id
 // @access  Private
 // --------------------------------------------------------------
-router.route('/:id').get(getOperator).delete(deleteOperator).put(updateOperator)
-
-//* -------------------------------------------------------------
-
-// @desc    Fetch Plans from Operator
-// @route   GET - /api/operators/:id/plans
-// @access  Private
-// --------------------------------------------------------------
-router.route('/:id/plans').get(getOperatorPlans)
-
-//* -------------------------------------------------------------
-
-// @desc    Fetch Contact from Operator
-// @route   GET - /api/operators/:id/contact
-// @access  Private
-// --------------------------------------------------------------
-router.route('/:id/contact').get(getOperatorContact)
+router.route('/:operatorId').get(getOperator).delete(deleteOperator).put(updateOperator)
 
 //* -------------------------------------------------------------
 

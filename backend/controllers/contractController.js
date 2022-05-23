@@ -17,16 +17,12 @@ import Operator from '../models/operatorModel.js'
 // --------------------------------------------------------------
 const getContracts = asyncHandler(async (req, res) => {
 	// get all contracts
-	const contracts = await Contract.find({})
-		.populate('employer')
-		.populate('operator')
+	const contracts = await Contract.find({}).populate('employer').populate('operator')
 
 	// check if there are no contracts in the database
 	if (contracts <= 0) {
 		res.status(400)
-		throw new Error(
-			`There are ${contracts.length} contracts in the database!`
-		)
+		throw new Error(`There are ${contracts.length} contracts in the database!`)
 	}
 
 	// response
@@ -42,8 +38,30 @@ const getContracts = asyncHandler(async (req, res) => {
 const getContract = asyncHandler(async (req, res) => {
 	// get contract with id
 	const contract = await Contract.findById(req.params.id)
-		.populate('employer')
-		.populate('operator')
+		.populate({
+			path: 'employer',
+			select: 'name cnpj'
+		})
+		.populate({
+			path: 'operator',
+			select: 'name cnpj'
+		})
+		.populate({
+			path: 'employees',
+			select: 'employee',
+			populate: {
+				path: 'employee',
+				select: 'name cpf'
+			}
+		})
+		.populate({
+			path: 'employees',
+			select: 'plan',
+			populate: {
+				path: 'plan',
+				select: 'name ansRegister'
+			}
+		})
 
 	// checks if contract exists
 	if (contract) {
@@ -143,24 +161,6 @@ const endContract = asyncHandler(async (req, res) => {
 		throw new Error('Contract not found!')
 	}
 
-	// get employer and decreases number of contracts
-	await Employer.findByIdAndUpdate(
-		{ _id: contract.employer },
-		{
-			$inc: { numContracts: -1 }
-		},
-		{ new: true }
-	)
-
-	// get operator and decreases number of contracts
-	await Operator.findByIdAndUpdate(
-		{ _id: contract.operator },
-		{
-			$inc: { numContracts: -1 }
-		},
-		{ new: true }
-	)
-
 	//updates contract history
 	const update = await Contract.findByIdAndUpdate(
 		{ _id: contract._id },
@@ -218,10 +218,4 @@ const deleteContract = asyncHandler(async (req, res) => {
 
 //* -------------------------------------------------------------
 
-export {
-	getContracts,
-	getContract,
-	createContract,
-	endContract,
-	deleteContract
-}
+export { getContracts, getContract, createContract, endContract, deleteContract }

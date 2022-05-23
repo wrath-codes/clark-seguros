@@ -3,6 +3,7 @@
 // imports
 // @libraries
 import asyncHandler from 'express-async-handler'
+import Operator from '../models/operatorModel.js'
 // @models
 import Plan from '../models/planModel.js'
 
@@ -11,11 +12,26 @@ import Plan from '../models/planModel.js'
 
 // @desc    Fetch All Plans
 // @route   GET - /api/plans
+// @route 	GET - /api/operators/:operatorId/plans
 // @access  Private
 // --------------------------------------------------------------
-const getPlans = asyncHandler(async (req, res) => {
+const getPlans = asyncHandler(async (req, res, next) => {
 	// get all plans
-	const plans = await Plan.find({}).populate('operator')
+	let query
+
+	if (req.params.operatorId) {
+		query = Plan.find({ operator: req.params.operatorId }).populate({
+			path: 'operator',
+			select: 'name cnpj'
+		})
+	} else {
+		query = Plan.find({}).populate({
+			path: 'operator',
+			select: 'name cnpj'
+		})
+	}
+
+	const plans = await query
 
 	// check if there are no plans in the database
 	if (plans <= 0) {
@@ -24,7 +40,12 @@ const getPlans = asyncHandler(async (req, res) => {
 	}
 
 	// response
-	res.json(plans)
+	res.status(200).json({
+		success: true,
+		msg: 'Show all plans',
+		count: plans.length,
+		data: plans
+	})
 })
 
 //* -------------------------------------------------------------
@@ -35,47 +56,60 @@ const getPlans = asyncHandler(async (req, res) => {
 // --------------------------------------------------------------
 const getPlan = asyncHandler(async (req, res) => {
 	// get all plans
-	const plan = await Plan.findById(req.params.id).populate('operator')
-
+	const plan = await Plan.findById(req.params.id).populate({
+		path: 'operator',
+		select: 'name cnpj'
+	})
 	// checks if there's a plan with that id
 	if (plan) {
-		res.json(plan)
+		// response
+		res.status(200).json({
+			success: true,
+			msg: `Show plan ${plan._id}`,
+			data: plan
+		})
 	} else {
 		res.status(404)
-		throw new Error('Plan not found!')
+		throw new Error(`No plan with id of !${plan._id}`)
 	}
 })
 
 //* -------------------------------------------------------------
 
 // @desc    Fetch Single Plan
-// @route   GET - /api/plans/:id
+// @route   POST - /api/plans/
+// @route   POST - /api/operators/:operatorId/plans
 // @access  Private
 // --------------------------------------------------------------
 const createPlan = asyncHandler(async (req, res) => {
+	//get operator id from params
+	req.body.operator = req.params.operatorId
+
+	// gets operator drom database
+	const operator = await Operator.findById(req.params.operatorId)
+
+	if (!operator) {
+		res.status(400)
+		throw new Error(`No operator with the id of ${req.params.operatorId}!`)
+	}
+
 	// destructure plan
-	const { name, ansRegister, kind, reach, operator } = req.body
+	const { name, ansRegister, kind, reach } = req.body
 
 	if (!name || !ansRegister || !kind || !reach) {
 		res.status(400)
 		throw new Error('Please add all fields for the Plan!')
 	}
-	if (!operator) {
-		res.status(400)
-		throw new Error('Make sure the Operator exists!')
-	}
 
 	// creates plan
-	const plan = await Plan.create({
-		name: name,
-		ansRegister: ansRegister,
-		kind: kind,
-		reach: reach,
-		operator: operator
-	})
+	const plan = await Plan.create(req.body)
 
 	// response
-	res.status(200).json(plan)
+	res.status(201).json({
+		success: true,
+		msg: `Plan | ${plan.name} - created wint id: ${plan._id} `,
+		data: plan
+	})
 })
 
 //* -------------------------------------------------------------

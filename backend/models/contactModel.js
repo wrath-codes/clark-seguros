@@ -50,14 +50,15 @@ const contactSchema = mongoose.Schema(
 			enum: ['Operadora', 'Cliente'],
 			default: 'Cliente'
 		},
-		cnpj: {
-			type: String,
-			required: [true, 'Por favor adicione o CNPJ'],
-			unique: true,
-			match: [
-				/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/,
-				'Por favor adicione um CNPJ válido!'
-			]
+		operator: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: false,
+			ref: 'Operator'
+		},
+		employer: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: false,
+			ref: 'employer'
 		}
 	},
 	{

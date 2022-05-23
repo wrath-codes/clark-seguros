@@ -7,6 +7,9 @@ import asyncHandler from 'express-async-handler'
 import Employer from '../models/employerModel.js'
 import Contact from '../models/contactModel.js'
 import User from '../models/userModel.js'
+import Plan from '../models/planModel.js'
+import Employee from '../models/employeeModel.js'
+import PlanCard from '../models/planCardModel.js'
 
 //* @controller
 //* -------------------------------------------------------------
@@ -17,8 +20,33 @@ import User from '../models/userModel.js'
 // --------------------------------------------------------------
 
 const getEmployers = asyncHandler(async (req, res) => {
+	// create query
 	// get employers and populate manager and handler fields
 	const employers = await Employer.find({})
+		.populate({
+			path: 'contact',
+			select: 'name cellphone'
+		})
+		.populate({
+			path: 'contact',
+			select: 'name cellphone'
+		})
+		.populate({
+			path: 'employees',
+			select: 'employee plan',
+			populate: {
+				path: 'employee plan  identifier planValue kind',
+				select: 'name cpf ansRegister employer identifier  '
+			}
+		})
+		.populate({
+			path: 'contracts',
+			select: 'operator identifier isValid',
+			populate: {
+				path: 'operator',
+				select: 'name cnpj'
+			}
+		})
 
 	// checks if there are no employers
 	if (employers <= 0) {
@@ -27,7 +55,12 @@ const getEmployers = asyncHandler(async (req, res) => {
 	}
 
 	// response
-	res.json(employers)
+	res.status(200).json({
+		success: true,
+		msg: 'Show all employers',
+		count: employers.length,
+		data: employers
+	})
 })
 
 //* -------------------------------------------------------------
@@ -40,9 +73,61 @@ const getEmployers = asyncHandler(async (req, res) => {
 const getEmployer = asyncHandler(async (req, res) => {
 	// get employer with id and populate manager and handler fields
 	const employer = await Employer.findById(req.params.id)
+		.populate({
+			path: 'contact',
+			select: 'name cellphone'
+		})
+		.populate({
+			path: 'employees',
+			select: 'employee plan contract',
+			populate: {
+				path: 'employee plan contract identifier planValue kind',
+				select: 'name cpf ansRegister employer identifier operator '
+			}
+		})
+		.populate({
+			path: 'contracts',
+			select: 'operator identifier isValid',
+			populate: {
+				path: 'operator',
+				select: 'name cnpj'
+			}
+		})
 	// check if there's an employer with that id
 	if (employer) {
-		res.json(employer)
+		// response
+		res.status(200).json({
+			success: true,
+			msg: `Show employer ${employer._id}`,
+			data: employer
+		})
+	} else {
+		res.status(404)
+		throw new Error('Employer not found!')
+	}
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Fetch Single Employer
+// @route   GET - /api/employers/:id
+// @access  Private
+// --------------------------------------------------------------
+
+const getEmployerStats = asyncHandler(async (req, res) => {
+	// get employer with id and populate manager and handler fields
+	const employer = await Employer.findById(req.params.id)
+	// plans used distict
+	const plansUsed = await PlanCard.find({ employer: employer._id }).distinct('plan')
+
+	// check if there's an employer with that id
+	if (employer) {
+		res.status(200).json({
+			success: true,
+			msg: `Stats for employer ${employer._id}`,
+			plans: plansUsed,
+			plansCount: plansUsed.length
+		})
 	} else {
 		res.status(404)
 		throw new Error('Employer not found!')
@@ -103,7 +188,11 @@ const createEmployer = asyncHandler(async (req, res) => {
 	})
 
 	// response
-	res.status(200).json(employer)
+	res.status(201).json({
+		success: true,
+		msg: `Show employer ${employer._id}`,
+		data: employer
+	})
 })
 
 //* -------------------------------------------------------------
@@ -127,7 +216,11 @@ const deleteEmployer = asyncHandler(async (req, res) => {
 	await employer.delete()
 
 	// success message response
-	res.status(200).json({ success: true })
+	res.status(200).json({
+		success: true,
+		msg: `Employer ${employer.name} deleted`,
+		count: employer.length
+	})
 })
 
 //* -------------------------------------------------------------
@@ -152,14 +245,27 @@ const updateEmployer = asyncHandler(async (req, res) => {
 		new: true
 	})
 
-	const result = await Employer.findById(updatedEmployer._id)
-		.populate('manager')
-		.populate('handler')
+	const result = await Employer.findById(updatedEmployer._id).populate({
+		path: 'contact',
+		select: 'name cellphone'
+	})
 
 	// response
-	res.status(200).json(result)
+	res.status(200).json({
+		success: true,
+		msg: `Employer ${employer.name} updated`,
+		count: updatedEmployer.length,
+		data: updatedEmployer
+	})
 })
 
 //* -------------------------------------------------------------
 
-export { getEmployers, getEmployer, createEmployer, deleteEmployer, updateEmployer }
+export {
+	getEmployers,
+	getEmployer,
+	createEmployer,
+	deleteEmployer,
+	updateEmployer,
+	getEmployerStats
+}

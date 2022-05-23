@@ -15,18 +15,37 @@ import Contact from '../models/contactModel.js'
 // --------------------------------------------------------------
 const getContacts = asyncHandler(async (req, res) => {
 	// gets all contacts
-	const contacts = await Contact.find({})
+	let query
+
+	if (req.params.operatorId) {
+		query = Contact.find({ operator: req.params.operatorId }).populate({
+			path: 'operator',
+			select: 'name cnpj'
+		})
+	} else {
+		query = Contact.find({}).populate({
+			path: 'operator',
+			select: 'name cnpj'
+		})
+	}
+
+	const contacts = await query
 
 	//checks if there are no contacts
 	if (contacts.length <= 0) {
 		res.status(400)
-		throw new Error(
-			`There are ${contacts.length} contacts in the database!`
-		)
+		throw new Error(`There are ${contacts.length} contacts in the database!`)
 	}
 
 	// response
-	res.json(contacts)
+	res.status(200).json({
+		success: true,
+		msg: req.params.operatorId
+			? `${contacts.length} contacts found for operator ${req.params.operatorId}`
+			: 'Show all Contacts',
+		count: contacts.length,
+		data: contacts
+	})
 })
 //* -------------------------------------------------------------
 
@@ -43,8 +62,11 @@ const getContact = asyncHandler(async (req, res) => {
 		// response
 		res.json(contact)
 	} else {
-		res.status(404)
-		throw new Error('Contact not found!')
+		res.status(200).json({
+			success: true,
+			msg: `Show Contact ${contact._id} info`,
+			data: contact
+		})
 	}
 })
 
@@ -56,8 +78,7 @@ const getContact = asyncHandler(async (req, res) => {
 // --------------------------------------------------------------
 const createContact = asyncHandler(async (req, res) => {
 	// destructure contact
-	const { firstName, lastName, telephone, cellphone, email, kind, cnpj } =
-		req.body
+	const { firstName, lastName, telephone, cellphone, email, kind, cnpj } = req.body
 
 	// checks if all fields are in
 	if (!firstName || !lastName || !cellphone || !email || !kind || !cnpj) {
@@ -79,7 +100,11 @@ const createContact = asyncHandler(async (req, res) => {
 	})
 
 	//response
-	res.status(201).json(contact)
+	res.status(201).json({
+		success: true,
+		msg: `Contact ${contact._id} created`,
+		data: contact
+	})
 })
 
 //* -------------------------------------------------------------
@@ -102,7 +127,10 @@ const deleteContact = asyncHandler(async (req, res) => {
 	await contact.delete()
 
 	// success message response
-	res.status(200).json({ success: true })
+	res.status(201).json({
+		success: true,
+		msg: `Contact ${contact._id} deleted`
+	})
 })
 
 //* -------------------------------------------------------------
@@ -122,16 +150,16 @@ const updateContact = asyncHandler(async (req, res) => {
 	}
 
 	// edits contact
-	const updatedContact = await Contact.findByIdAndUpdate(
-		req.params.id,
-		req.body,
-		{
-			new: true
-		}
-	)
+	const updatedContact = await Contact.findByIdAndUpdate(req.params.id, req.body, {
+		new: true
+	})
 
 	// response
-	res.status(200).json(updatedContact)
+	res.status(201).json({
+		success: true,
+		msg: `Contact ${updatedContact.name} updated`,
+		data: updatedContact
+	})
 })
 
 //* -------------------------------------------------------------

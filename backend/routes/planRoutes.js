@@ -3,7 +3,6 @@
 // imports
 // @libraries
 import express from 'express'
-const router = express.Router()
 // @controller
 import {
 	getPlans,
@@ -12,6 +11,8 @@ import {
 	deletePlan,
 	updatePlan
 } from '../controllers/planController.js'
+
+const router = express.Router({ mergeParams: true })
 
 //* @controller
 //* -------------------------------------------------------------

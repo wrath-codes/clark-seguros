@@ -108,6 +108,10 @@ const planCardSchema = mongoose.Schema(
 		]
 	},
 	{
+		toJSON: { virtuals: true },
+		toObject: { virtuals: true }
+	},
+	{
 		timestamps: true
 	}
 )

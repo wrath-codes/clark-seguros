@@ -3,21 +3,20 @@
 // imports
 // @libraries
 import express from 'express'
-const router = express.Router()
 // @controller
 import {
 	getEmployers,
 	getEmployer,
 	createEmployer,
 	deleteEmployer,
-	updateEmployer
+	updateEmployer,
+	getEmployerStats
 } from '../controllers/employerController.js'
 
-//* @controller
-//* -------------------------------------------------------------
+const router = express.Router()
 
-// @desc    Fetch All Employers
-// @route   GET - /api/employers/
+//* routes
+
 // @access  Private
 // --------------------------------------------------------------
 router.route('/').get(getEmployers).post(createEmployer)
@@ -29,6 +28,13 @@ router.route('/').get(getEmployers).post(createEmployer)
 // @access  Private
 // --------------------------------------------------------------
 router.route('/:id').get(getEmployer).delete(deleteEmployer).put(updateEmployer)
+//* ------------------------------------------------------------
+
+// @desc    Fetch Employer's Stats
+// @route   GET - /api/employers/:id/stats
+// @access  Private
+// --------------------------------------------------------------
+router.route('/:id/stats').get(getEmployerStats)
 //* ------------------------------------------------------------
 
 export default router
