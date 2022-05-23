@@ -65,7 +65,12 @@ const getContract = asyncHandler(async (req, res) => {
 
 	// checks if contract exists
 	if (contract) {
-		res.json(contract)
+		res.status(200).json({
+			success: true,
+			msg: `Show contract ${contract.name}`,
+			count: contract.length,
+			data: contract
+		})
 	} else {
 		res.status(404)
 		throw new Error('Contract not found!')
