@@ -54,7 +54,7 @@ const getPlans = asyncHandler(async (req, res, next) => {
 // @route   GET - /api/plans/:id
 // @access  Private
 // --------------------------------------------------------------
-const getPlan = asyncHandler(async (req, res) => {
+const getPlan = asyncHandler(async (req, res, next) => {
 	// get all plans
 	const plan = await Plan.findById(req.params.id).populate({
 		path: 'operator',
@@ -81,7 +81,7 @@ const getPlan = asyncHandler(async (req, res) => {
 // @route   POST - /api/operators/:operatorId/plans
 // @access  Private
 // --------------------------------------------------------------
-const createPlan = asyncHandler(async (req, res) => {
+const createPlan = asyncHandler(async (req, res, next) => {
 	//get operator id from params
 	req.body.operator = req.params.operatorId
 
@@ -118,7 +118,7 @@ const createPlan = asyncHandler(async (req, res) => {
 // @route   DELETE - /api/plans/:id
 // @access  Private
 // --------------------------------------------------------------
-const deletePlan = asyncHandler(async (req, res) => {
+const deletePlan = asyncHandler(async (req, res, next) => {
 	// get plan with id
 	const plan = await Plan.findById(req.params.id)
 
@@ -141,7 +141,7 @@ const deletePlan = asyncHandler(async (req, res) => {
 // @route   DELETE - /api/plans/:id
 // @access  Private
 // --------------------------------------------------------------
-const updatePlan = asyncHandler(async (req, res) => {
+const updatePlan = asyncHandler(async (req, res, next) => {
 	// get plan with id
 	const plan = await Plan.findById(req.params.id)
 

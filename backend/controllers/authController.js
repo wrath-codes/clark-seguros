@@ -14,7 +14,7 @@ import User from '../models/userModel.js'
 // @access  Private
 // --------------------------------------------------------------
 
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res, next) => {
 	// destructure user data
 	const { name, email, cellphone, password, role } = req.body
 
@@ -67,7 +67,7 @@ const registerUser = asyncHandler(async (req, res) => {
 // @access  Public
 // --------------------------------------------------------------
 
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res, next) => {
 	// destructure user data
 	const { email, password } = req.body
 

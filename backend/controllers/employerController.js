@@ -3,6 +3,9 @@
 // imports
 // @libraries
 import asyncHandler from 'express-async-handler'
+import path from 'path'
+// @utils
+import { uploadFile } from '../utils/uploadFile.js'
 // @models
 import Employer from '../models/employerModel.js'
 import Contact from '../models/contactModel.js'
@@ -19,7 +22,7 @@ import PlanCard from '../models/planCardModel.js'
 // @access  Private
 // --------------------------------------------------------------
 
-const getEmployers = asyncHandler(async (req, res) => {
+const getEmployers = asyncHandler(async (req, res, next) => {
 	// create query
 	// get employers and populate manager and handler fields
 	const employers = await Employer.find({})
@@ -70,7 +73,7 @@ const getEmployers = asyncHandler(async (req, res) => {
 // @access  Private
 // --------------------------------------------------------------
 
-const getEmployer = asyncHandler(async (req, res) => {
+const getEmployer = asyncHandler(async (req, res, next) => {
 	// get employer with id and populate manager and handler fields
 	const employer = await Employer.findById(req.params.id)
 		.populate({
@@ -109,39 +112,12 @@ const getEmployer = asyncHandler(async (req, res) => {
 
 //* -------------------------------------------------------------
 
-// @desc    Fetch Single Employer
-// @route   GET - /api/employers/:id
-// @access  Private
-// --------------------------------------------------------------
-
-const getEmployerStats = asyncHandler(async (req, res) => {
-	// get employer with id and populate manager and handler fields
-	const employer = await Employer.findById(req.params.id)
-	// plans used distict
-	const plansUsed = await PlanCard.find({ employer: employer._id }).distinct('plan')
-
-	// check if there's an employer with that id
-	if (employer) {
-		res.status(200).json({
-			success: true,
-			msg: `Stats for employer ${employer._id}`,
-			plans: plansUsed,
-			plansCount: plansUsed.length
-		})
-	} else {
-		res.status(404)
-		throw new Error('Employer not found!')
-	}
-})
-
-//* -------------------------------------------------------------
-
 // @desc    Create single Employer
 // @route   POST - /api/employers
 // @access  Private
 // --------------------------------------------------------------
 
-const createEmployer = asyncHandler(async (req, res) => {
+const createEmployer = asyncHandler(async (req, res, next) => {
 	// destructure employer
 	const {
 		name,
@@ -202,7 +178,7 @@ const createEmployer = asyncHandler(async (req, res) => {
 // @access  Private
 // --------------------------------------------------------------
 
-const deleteEmployer = asyncHandler(async (req, res) => {
+const deleteEmployer = asyncHandler(async (req, res, next) => {
 	// get employer and it's contact with id
 	const employer = await Employer.findById(req.params.id)
 
@@ -230,7 +206,7 @@ const deleteEmployer = asyncHandler(async (req, res) => {
 // @access  Private
 // --------------------------------------------------------------
 
-const updateEmployer = asyncHandler(async (req, res) => {
+const updateEmployer = asyncHandler(async (req, res, next) => {
 	// get employer
 	const employer = await Employer.findById(req.params.id)
 
@@ -261,11 +237,69 @@ const updateEmployer = asyncHandler(async (req, res) => {
 
 //* -------------------------------------------------------------
 
+// @desc    Upload Photo for Employer
+// @route   PUT - /api/employers/:id/photo
+// @access  Private
+// --------------------------------------------------------------
+
+const photoUploadEmployer = asyncHandler(async (req, res, next) => {
+	// get employer and it's contact with id
+	const employer = await Employer.findById(req.params.id)
+
+	// checks if employer exists
+	if (!employer) {
+		res.status(404)
+		throw new Error('Employer not found!')
+	}
+
+	// check if file was uploaded
+	if (!req.files) {
+		res.status(400)
+		throw new Error('Please upload a file!')
+	}
+
+	const file = req.files.file
+
+	// make sure the image is a photo
+	if (!file.mimetype.startsWith('image')) {
+		res.status(400)
+		throw new Error('Only images are accepted!')
+	}
+
+	// check file size
+	if (file.size > process.env.MAX_FILE_UPLOAD) {
+		res.status(400)
+		throw new Error(`Please upload a image with less than ${process.env.MAX_FILE_UPLOAD}!`)
+	}
+
+	// create custom file name
+	file.name = `photo_employer_${employer._id}${path.parse(file.name).ext}`
+
+	// upload to aws
+	await uploadFile(file)
+
+	await Employer.findByIdAndUpdate(req.params.id, {
+		photo: process.env.AWS_URL + file.name
+	})
+
+	const updatedEmployer = await Employer.findById(req.params.id)
+
+	// success message response
+	res.status(200).json({
+		success: true,
+		msg: `Employer ${updatedEmployer.name} photo updated`,
+		data: updatedEmployer
+	})
+	// })
+})
+
+//* -------------------------------------------------------------
+
 export {
 	getEmployers,
 	getEmployer,
 	createEmployer,
 	deleteEmployer,
 	updateEmployer,
-	getEmployerStats
+	photoUploadEmployer
 }

@@ -5,6 +5,9 @@ import express from 'express'
 import { config } from 'dotenv'
 import colors from 'colors'
 import morgan from 'morgan'
+import fileupload from 'express-fileupload'
+import path from 'path'
+
 // @db
 import connectDB from './config/db.js'
 // @middleware
@@ -16,6 +19,7 @@ import planRoutes from './routes/planRoutes.js'
 import employerRoutes from './routes/employerRoutes.js'
 import contractRoutes from './routes/contractRoutes.js'
 import employeeRoutes from './routes/employeeRoutes.js'
+import planCardRoutes from './routes/planCardRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 
 const PORT = process.env.PORT || 5000
@@ -38,6 +42,9 @@ if (process.env.NODE_ENV === 'development') {
 	app.use(morgan('dev'))
 }
 
+// file uploading
+app.use(fileupload())
+
 // @routes
 app.use('/api/auth', authRoutes) // add auth routes
 app.use('/api/contacts', contactRoutes) // add contact routes
@@ -46,6 +53,7 @@ app.use('/api/plans', planRoutes) // add plan routes
 app.use('/api/employers', employerRoutes) // add employer routes
 app.use('/api/contracts', contractRoutes) // add contract routes
 app.use('/api/employees', employeeRoutes) // add employee routes
+app.use('/api/plan-cards', planCardRoutes) // add planCard routes
 
 // @error handling
 app.use(notFound)

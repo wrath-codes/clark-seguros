@@ -45,6 +45,10 @@ const operatorSchema = mongoose.Schema(
 			cep: { type: String, required: true },
 			state: { type: String, required: true },
 			country: { type: String, required: true, default: 'Brasil' }
+		},
+		photo: {
+			type: String,
+			default: 'no-photo.jpg'
 		}
 	},
 	{

@@ -22,13 +22,13 @@ const planCardSchema = mongoose.Schema(
 			ref: 'Plan'
 		},
 		planValue: {
-			type: String,
+			type: Number,
 			required: true
 		},
 		planValueHistory: [
 			{
 				change: { type: Date, required: true },
-				value: { type: String, required: true }
+				value: { type: Number, required: true }
 			}
 		],
 		planHistory: [
@@ -39,7 +39,14 @@ const planCardSchema = mongoose.Schema(
 					ref: 'Plan'
 				},
 				isCurrent: { type: Boolean, required: true, default: true },
-				change: { type: Date, required: true }
+				startDate: {
+					type: Date,
+					required: true
+				},
+				exitDate: {
+					type: Date,
+					required: false
+				}
 			}
 		],
 		kind: {
@@ -115,6 +122,65 @@ const planCardSchema = mongoose.Schema(
 		timestamps: true
 	}
 )
+
+// static method to get average plan costs for employer
+planCardSchema.statics.getAverageCost = async function (employerId) {
+	console.log('calculating average cost...'.blue)
+
+	const obj = await this.aggregate([
+		{
+			$match: { employer: employerId }
+		},
+		{
+			$group: {
+				_id: '$employer',
+				averageCost: { $avg: '$planValue' }
+			}
+		}
+	])
+	try {
+		await this.model('Employer').findByIdAndUpdate(employerId, {
+			averageCost: obj[0].averageCost
+		})
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+// static method to get sim of plan costs for employer
+planCardSchema.statics.getSumCost = async function (employerId) {
+	console.log('calculating sum cost...'.magenta)
+	const obj = await this.aggregate([
+		{
+			$match: { employer: employerId }
+		},
+		{
+			$group: {
+				_id: '$employer',
+				sumCost: { $sum: '$planValue' }
+			}
+		}
+	])
+	try {
+		await this.model('Employer').findByIdAndUpdate(employerId, {
+			sumCost: obj[0].sumCost
+		})
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+// call getAverageCost and getSumCost after save
+planCardSchema.post('save', async function () {
+	this.constructor.getAverageCost(this.employer)
+	this.constructor.getSumCost(this.employer)
+})
+
+// call getAverageCost and getSumCost after remove
+planCardSchema.pre('remove', async function () {
+	this.constructor.getAverageCost(this.employer)
+	this.constructor.getSumCost(this.employer)
+})
 
 const PlanCard = mongoose.model('PlanCard', planCardSchema)
 

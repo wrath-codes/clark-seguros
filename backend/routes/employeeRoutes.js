@@ -3,16 +3,14 @@
 // imports
 // @libraries
 import express from 'express'
-const router = express.Router()
+const router = express.Router({ mergeParams: true })
 // @controller
 import {
 	getEmployees,
 	getEmployee,
 	createEmployee,
 	deleteEmployee,
-	updateEmployee,
-	updateEmployeeContract,
-	updateEmployeeEmployer
+	updateEmployee
 } from '../controllers/employeeController.js'
 
 //* @routes
@@ -31,22 +29,6 @@ router.route('/').get(getEmployees).post(createEmployee)
 // @access  Private
 // --------------------------------------------------------------
 router.route('/:id').get(getEmployee).delete(deleteEmployee).put(updateEmployee)
-
-//* ------------------------------------------------------------
-
-// @desc   Updates Employer
-// @route   PUT - /api/employees/:id/:employerId
-// @access  Private
-// --------------------------------------------------------------
-router.route('/:id/change/employer/:employerId').put(updateEmployeeEmployer)
-
-//* ------------------------------------------------------------
-
-// @desc   Updates Contract
-// @route   PUT - /api/employees/:id/:contractId
-// @access  Private
-// --------------------------------------------------------------
-router.route('/:id/change/contract/:contractId').put(updateEmployeeContract)
 
 //* ------------------------------------------------------------
 

@@ -13,7 +13,7 @@ import Contact from '../models/contactModel.js'
 // @route   GET - /api/contacts
 // @access  Private
 // --------------------------------------------------------------
-const getContacts = asyncHandler(async (req, res) => {
+const getContacts = asyncHandler(async (req, res, next) => {
 	// gets all contacts
 	let query
 
@@ -53,7 +53,7 @@ const getContacts = asyncHandler(async (req, res) => {
 // @route   GET - /api/contacts/:id
 // @access  Private
 // --------------------------------------------------------------
-const getContact = asyncHandler(async (req, res) => {
+const getContact = asyncHandler(async (req, res, next) => {
 	// gets contact with id
 	const contact = await Contact.findById(req.params.id)
 
@@ -76,7 +76,7 @@ const getContact = asyncHandler(async (req, res) => {
 // @route   POST - /api/contacts
 // @access  Private
 // --------------------------------------------------------------
-const createContact = asyncHandler(async (req, res) => {
+const createContact = asyncHandler(async (req, res, next) => {
 	// destructure contact
 	const { firstName, lastName, telephone, cellphone, email, kind, cnpj } = req.body
 
@@ -113,7 +113,7 @@ const createContact = asyncHandler(async (req, res) => {
 // @route   DELETE - /api/contacts/:id
 // @access  Private
 // --------------------------------------------------------------
-const deleteContact = asyncHandler(async (req, res) => {
+const deleteContact = asyncHandler(async (req, res, next) => {
 	// get contact with id
 	const contact = await Contact.findById(req.params.id)
 
@@ -139,7 +139,7 @@ const deleteContact = asyncHandler(async (req, res) => {
 // @route   PUT - /api/contacts/:id
 // @access  Private
 // --------------------------------------------------------------
-const updateContact = asyncHandler(async (req, res) => {
+const updateContact = asyncHandler(async (req, res, next) => {
 	// get contact with id
 	const contact = await Contact.findById(req.params.id)
 

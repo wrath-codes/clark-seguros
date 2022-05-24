@@ -32,6 +32,12 @@ const employerSchema = mongoose.Schema(
 			cep: { type: String, required: true },
 			state: { type: String, required: true },
 			country: { type: String, required: true, default: 'Brasil' }
+		},
+		averageCost: Number,
+		sumCost: Number,
+		photo: {
+			type: String,
+			default: 'no-photo.jpg'
 		}
 	},
 	{

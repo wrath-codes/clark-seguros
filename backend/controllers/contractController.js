@@ -15,7 +15,7 @@ import Operator from '../models/operatorModel.js'
 // @route   GET - /api/contracts
 // @access  Private
 // --------------------------------------------------------------
-const getContracts = asyncHandler(async (req, res) => {
+const getContracts = asyncHandler(async (req, res, next) => {
 	// get all contracts
 	const contracts = await Contract.find({}).populate('employer').populate('operator')
 
@@ -35,7 +35,7 @@ const getContracts = asyncHandler(async (req, res) => {
 // @route   GET - /api/contracts/:id
 // @access  Private
 // --------------------------------------------------------------
-const getContract = asyncHandler(async (req, res) => {
+const getContract = asyncHandler(async (req, res, next) => {
 	// get contract with id
 	const contract = await Contract.findById(req.params.id)
 		.populate({
@@ -67,7 +67,7 @@ const getContract = asyncHandler(async (req, res) => {
 	if (contract) {
 		res.status(200).json({
 			success: true,
-			msg: `Show contract ${contract.name}`,
+			msg: `Show contract ${contract.identifier}`,
 			count: contract.length,
 			data: contract
 		})
@@ -83,7 +83,7 @@ const getContract = asyncHandler(async (req, res) => {
 // @route   POST - /api/contracts
 // @access  Private
 // --------------------------------------------------------------
-const createContract = asyncHandler(async (req, res) => {
+const createContract = asyncHandler(async (req, res, next) => {
 	// destructure contract
 	const { operator, employer, identifier } = req.body
 
@@ -114,40 +114,39 @@ const createContract = asyncHandler(async (req, res) => {
 		startDate: new Date()
 	})
 
-	if (contract) {
-		// increse number of contracts on employer
-		await Employer.findByIdAndUpdate(
-			{ _id: employer },
-			{
-				$inc: { numContracts: 1 }
-			},
-			{ new: true }
-		)
-		// increse number of contracts on operator
-		await Operator.findByIdAndUpdate(
-			{ _id: operator },
-			{
-				$inc: { numContracts: 1 }
-			},
-			{ new: true }
-		)
-		// adds contract to contract history}
-		await Employer.findByIdAndUpdate(
-			{ _id: employer },
-			{
-				$push: { contractHistory: contract._id }
-			},
-			{ new: true }
-		)
-	}
-
 	// complete result
 	const result = await Contract.findById(contract._id)
-		.populate('employer')
-		.populate('operator')
+		.populate({
+			path: 'employer',
+			select: 'name cnpj'
+		})
+		.populate({
+			path: 'operator',
+			select: 'name cnpj'
+		})
+		.populate({
+			path: 'employees',
+			select: 'employee',
+			populate: {
+				path: 'employee',
+				select: 'name cpf'
+			}
+		})
+		.populate({
+			path: 'employees',
+			select: 'plan',
+			populate: {
+				path: 'plan',
+				select: 'name ansRegister'
+			}
+		})
 
 	// response
-	res.status(200).json(result)
+	res.status(200).json({
+		success: true,
+		msg: `Contract ${contract.identifier} created`,
+		data: contract
+	})
 })
 
 //* -------------------------------------------------------------
@@ -156,7 +155,7 @@ const createContract = asyncHandler(async (req, res) => {
 // @route   PUT - /api/contracts/:id
 // @access  Private
 // --------------------------------------------------------------
-const endContract = asyncHandler(async (req, res) => {
+const endContract = asyncHandler(async (req, res, next) => {
 	// get contract with id
 	const contract = await Contract.findById(req.params.id)
 
@@ -187,7 +186,7 @@ const endContract = asyncHandler(async (req, res) => {
 // @route   DELETE - /api/contracts/:id
 // @access  Private
 // --------------------------------------------------------------
-const deleteContract = asyncHandler(async (req, res) => {
+const deleteContract = asyncHandler(async (req, res, next) => {
 	// get contract with id
 	const contract = await Contract.findById(req.params.id)
 
@@ -196,24 +195,6 @@ const deleteContract = asyncHandler(async (req, res) => {
 		res.status(400)
 		throw new Error('Contract not found!')
 	}
-
-	// get employer and decreases number of contracts
-	await Employer.findByIdAndUpdate(
-		{ _id: contract.employer },
-		{
-			$inc: { numContracts: -1 }
-		},
-		{ new: true }
-	)
-
-	// get operator and decreases number of contracts
-	await Operator.findByIdAndUpdate(
-		{ _id: contract.operator },
-		{
-			$inc: { numContracts: -1 }
-		},
-		{ new: true }
-	)
 
 	//delete contract from database
 	await contract.delete()

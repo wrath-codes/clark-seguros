@@ -25,7 +25,8 @@ const employeeSchema = mongoose.Schema(
 		cpf: {
 			type: String,
 			required: [true, 'Please add an cpf'],
-			match: [/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/, 'Please add an valid cpf number']
+			match: [/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/, 'Please add an valid cpf number'],
+			unique: true
 		},
 		dateOfBirth: {
 			type: Date,
@@ -96,6 +97,23 @@ const employeeSchema = mongoose.Schema(
 		timestamps: true
 	}
 )
+
+// cascade delete planCard
+employeeSchema.pre('remove', async function (next) {
+	await this.model('PlanCard').findOneAndDelete({ employee: this._id })
+})
+
+// pre save get age
+employeeSchema.pre('save', async function (next) {
+	this.age = Math.floor((Date.now() - this.dateOfBirth.getTime()) / (1000 * 3600 * 24 * 365))
+})
+
+employeeSchema.virtual('planCard', {
+	ref: 'PlanCard',
+	localField: '_id',
+	foreignField: 'employee',
+	justOne: true
+})
 
 const Employee = mongoose.model('Employee', employeeSchema)
 

@@ -10,10 +10,15 @@ import {
 	createEmployer,
 	deleteEmployer,
 	updateEmployer,
-	getEmployerStats
+	photoUploadEmployer
 } from '../controllers/employerController.js'
+// include other resource routers
+import employeeRouter from './employeeRoutes.js'
 
 const router = express.Router()
+
+// re-route into other resource routers
+router.use('/:employerId/employees', employeeRouter) // add employee routes
 
 //* routes
 
@@ -30,11 +35,11 @@ router.route('/').get(getEmployers).post(createEmployer)
 router.route('/:id').get(getEmployer).delete(deleteEmployer).put(updateEmployer)
 //* ------------------------------------------------------------
 
-// @desc    Fetch Employer's Stats
-// @route   GET - /api/employers/:id/stats
+// @desc    Upload Photo for Employer
+// @route   PUT - /api/employers/:id/photo
 // @access  Private
 // --------------------------------------------------------------
-router.route('/:id/stats').get(getEmployerStats)
+router.route('/:id/photo').put(photoUploadEmployer)
 //* ------------------------------------------------------------
 
 export default router

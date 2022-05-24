@@ -141,7 +141,7 @@ const importData = async () => {
 				},
 				planHistory: {
 					plan: plan._id,
-					change: new Date()
+					startDate: new Date()
 				},
 				planValueHistory: {
 					value: planCards[i].planValue,
@@ -152,6 +152,29 @@ const importData = async () => {
 					startDate: new Date()
 				}
 			})
+			// PlanCard.create({
+			// 	...planCards[i],
+			// 	employee: employee._id,
+			// 	employer: employer._id,
+			// 	contract: contract._id,
+			// 	plan: plan._id,
+			// 	employmentHistory: {
+			// 		employer: employer._id,
+			// 		startDate: new Date()
+			// 	},
+			// 	planHistory: {
+			// 		plan: plan._id,
+			// 		startDate: new Date()
+			// 	},
+			// 	planValueHistory: {
+			// 		value: planCards[i].planValue,
+			// 		change: new Date()
+			// 	},
+			// 	contractHistory: {
+			// 		contract: contract._id,
+			// 		startDate: new Date()
+			// 	}
+			// })
 		}
 
 		await PlanCard.insertMany(samplePlanCards)

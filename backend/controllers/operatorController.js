@@ -3,6 +3,9 @@
 // imports
 // @libraries
 import asyncHandler from 'express-async-handler'
+import path from 'path'
+// @utils
+import { uploadFile } from '../utils/uploadFile.js'
 // @models
 import Contact from '../models/contactModel.js'
 import Operator from '../models/operatorModel.js'
@@ -271,33 +274,56 @@ const updateOperator = asyncHandler(async (req, res, next) => {
 
 //* -------------------------------------------------------------
 
-// @desc    Update single Operator
+// @desc    Photo Upload Operator
 // @route   PUT - /api/operators/:id
 // @access  Private
 // -------------------------------------------------------------
-const getOperatorContact = asyncHandler(async (req, res) => {
-	// get operator with id
-	const operator = await Operator.findById(req.params.id)
+const photoUploadOperator = asyncHandler(async (req, res, next) => {
+	// get operator, contact and plans with id
+	const operator = await Operator.findById(req.params.operatorId)
 
-	// check if operator exists
+	// checks if operator exists
 	if (!operator) {
 		res.status(404)
 		throw new Error('Operator not found!')
 	}
 
-	// checa se operadora tem contato
-	const contact = await Contact.findOne({ cnpj: operator.cnpj })
-	if (!contact) {
-		res.status(404)
-		throw new Error('Contact not found!')
+	// check if file was uploaded
+	if (!req.files) {
+		res.status(400)
+		throw new Error('Please upload a file!')
 	}
 
-	// return contact
+	const file = req.files.file
+
+	// make sure the image is a photo
+	if (!file.mimetype.startsWith('image')) {
+		res.status(400)
+		throw new Error('Only images are accepted!')
+	}
+
+	// check file size
+	if (file.size > process.env.MAX_FILE_UPLOAD) {
+		res.status(400)
+		throw new Error(`Please upload a image with less than ${process.env.MAX_FILE_UPLOAD}!`)
+	}
+
+	// create custom file name
+	file.name = `photo_operator_${operator._id}${path.parse(file.name).ext}`
+
+	// upload to aws
+	await uploadFile(file)
+
+	// creates path to image
+	const updatedOperator = await Operator.findByIdAndUpdate(req.params.operatorId, {
+		photo: process.env.AWS_URL + file.name
+	})
+
+	// success message response
 	res.status(200).json({
 		success: true,
-		msg: `Show ${operator.name} contact`,
-		count: contact.length,
-		data: contact
+		msg: `Operator ${updatedOperator.name} photo updated`,
+		data: updatedOperator
 	})
 })
 
@@ -309,5 +335,5 @@ export {
 	createOperator,
 	deleteOperator,
 	updateOperator,
-	getOperatorContact
+	photoUploadOperator
 }
