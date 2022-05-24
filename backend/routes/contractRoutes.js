@@ -10,7 +10,8 @@ import {
 	getContract,
 	createContract,
 	endContract,
-	deleteContract
+	deleteContract,
+	fileUploadContract
 } from '../controllers/contractController.js'
 
 //* @routes
@@ -28,6 +29,14 @@ router.route('/').get(getContracts).post(createContract)
 // @access  Private
 // --------------------------------------------------------------
 router.route('/:id').get(getContract).put(endContract).delete(deleteContract)
+
+//* ------------------------------------------------------------
+
+// @desc    Upload Contract File
+// @route   PUT - /api/contracts/:id/file
+// @access  Private
+// --------------------------------------------------------------
+router.route('/:id/file').put(fileUploadContract)
 
 //* ------------------------------------------------------------
 export default router

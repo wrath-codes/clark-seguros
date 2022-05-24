@@ -3,6 +3,9 @@
 // imports
 // @libraries
 import asyncHandler from 'express-async-handler'
+import path from 'path'
+// @utils
+import { uploadFile } from '../utils/uploadFile.js'
 // @models
 import Contract from '../models/contractModel.js'
 import Employer from '../models/employerModel.js'
@@ -177,7 +180,12 @@ const endContract = asyncHandler(async (req, res, next) => {
 		{ new: true }
 	)
 
-	res.status(200).json({ success: true, update })
+	// response
+	res.status(200).json({
+		success: true,
+		msg: `Contract ${contract.identifier} ended`,
+		data: update
+	})
 })
 
 //* -------------------------------------------------------------
@@ -199,9 +207,77 @@ const deleteContract = asyncHandler(async (req, res, next) => {
 	//delete contract from database
 	await contract.delete()
 
-	res.status(200).json({ success: true, update })
+	// response
+	res.status(200).json({
+		success: true,
+		msg: `Contract ${req.params.id} deleted`
+	})
 })
 
 //* -------------------------------------------------------------
 
-export { getContracts, getContract, createContract, endContract, deleteContract }
+// @desc    Upload Contract File
+// @route   PUT - /api/contracts/:id/file
+// @access  Private
+// -------------------------------------------------------------
+const fileUploadContract = asyncHandler(async (req, res, next) => {
+	// get contract with id
+	const contract = await Contract.findById(req.params.id)
+
+	// check if contract exists
+	if (!contract) {
+		res.status(400)
+		throw new Error('Contract not found!')
+	}
+
+	// check if file was uploaded
+	if (!req.files) {
+		res.status(400)
+		throw new Error('Please upload a file!')
+	}
+
+	const file = req.files.file
+
+	// make sure the image is a photo
+	if (!file.mimetype.includes('pdf')) {
+		res.status(400)
+		throw new Error('Only pdfs are accepted!')
+	}
+
+	// check file size
+	if (file.size > process.env.MAX_FILE_UPLOAD) {
+		res.status(400)
+		throw new Error(`Please upload a image with less than ${process.env.MAX_FILE_UPLOAD}!`)
+	}
+
+	// create custom file name
+	file.name = `file_contract_${contract._id}${path.parse(file.name).ext}`
+
+	// upload to aws
+	await uploadFile(file)
+
+	// creates path to image
+	await Contract.findByIdAndUpdate(req.params.id, {
+		contractFile: process.env.AWS_URL + file.name
+	})
+
+	const updatedContract = await Contract.findById(req.params.id)
+
+	// response
+	res.status(200).json({
+		success: true,
+		msg: `Contract ${req.params.id} file uploaded`,
+		data: updatedContract
+	})
+})
+
+//* -------------------------------------------------------------
+
+export {
+	getContracts,
+	getContract,
+	createContract,
+	endContract,
+	deleteContract,
+	fileUploadContract
+}

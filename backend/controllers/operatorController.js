@@ -19,95 +19,13 @@ import Plan from '../models/planModel.js'
 // @access  Private
 // --------------------------------------------------------------
 const getOperators = asyncHandler(async (req, res, next) => {
-	//get all operators
-	let query
-
-	// copy req.query
-	const reqQuery = { ...req.query }
-
-	// fields to exclude
-	const removeFields = ['select', 'sort', 'page', 'limit']
-
-	// loop over removeFields and delete them from reqQuery
-	removeFields.forEach((param) => delete reqQuery[param])
-
-	//create query string
-	let queryStr = JSON.stringify(reqQuery)
-
-	// create operators ($gt | $gte | $lt | $lte | $in)
-	queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`)
-
-	// finding resource
-	query = Operator.find(JSON.parse(queryStr))
-		.populate({
-			path: 'plans',
-			select: 'name ansRegister'
-		})
-		.populate({
-			path: 'contracts',
-			select: 'employer identifier'
-		})
-		.populate({
-			path: 'contact',
-			select: 'name cellphone'
-		})
-
-	// select fields
-	if (req.query.select) {
-		const fields = req.query.select.split(',').join(' ')
-		query = query.select(fields)
-	}
-	// sort
-	if (req.query.sort) {
-		const sortBy = req.query.sort.split(',').join(' ')
-		query = query.sort(sortBy)
-	} else {
-		query = query.sort('-createdAt')
-	}
-
-	// pagination
-	const page = parseInt(req.query.page, 10) || 1
-	const limit = parseInt(req.query.limit, 10) || 24
-	const startIndex = (page - 1) * limit
-	const endIndex = page * limit
-	const total = await Operator.countDocuments()
-
-	// pagination result
-	const pagination = {}
-
-	if (endIndex < total) {
-		pagination.next = {
-			page: page + 1,
-			limit
-		}
-	}
-
-	if (startIndex > 0) {
-		pagination.prev = {
-			page: page - 1,
-			limit
-		}
-	}
-
-	query = query.skip(startIndex).limit(limit)
-
-	// Executing query
-	const operators = await query
-
-	//checks if there are no operators
-	if (operators <= 0) {
+	// checks if there are no operators
+	if (res.advancedResults.length <= 0) {
 		res.status(400)
-		throw new Error(`There are ${operators.length} operators in the database!`)
+		throw new Error(`There are ${res.advancedResults.length} employers in the database!`)
 	}
-
 	// response
-	res.status(200).json({
-		success: true,
-		msg: 'Show all operators',
-		count: operators.length,
-		pagination,
-		data: operators
-	})
+	res.status(200).json(res.advancedResults)
 })
 
 //* -------------------------------------------------------------

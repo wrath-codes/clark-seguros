@@ -23,13 +23,9 @@ import PlanCard from '../models/planCardModel.js'
 // --------------------------------------------------------------
 
 const getEmployers = asyncHandler(async (req, res, next) => {
-	// create query
 	// get employers and populate manager and handler fields
 	const employers = await Employer.find({})
-		.populate({
-			path: 'contact',
-			select: 'name cellphone'
-		})
+
 		.populate({
 			path: 'contact',
 			select: 'name cellphone'
@@ -38,8 +34,8 @@ const getEmployers = asyncHandler(async (req, res, next) => {
 			path: 'employees',
 			select: 'employee plan',
 			populate: {
-				path: 'employee plan  identifier planValue kind',
-				select: 'name cpf ansRegister employer identifier  '
+				path: 'employee plan identifier planValue kind',
+				select: 'name cpf ansRegister employer identifier'
 			}
 		})
 		.populate({

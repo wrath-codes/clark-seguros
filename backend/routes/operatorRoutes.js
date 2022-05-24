@@ -12,6 +12,11 @@ import {
 	updateOperator,
 	photoUploadOperator
 } from '../controllers/operatorController.js'
+// include middleware
+import { advancedResults } from '../middleware/advancedResults.js'
+import { protect, authorize } from '../middleware/authProtectMiddleware.js'
+// @import Operator Model
+import Operator from '../models/operatorModel.js'
 // include other resource routers
 import planRouter from './planRoutes.js'
 import contactRouter from './contactRoutes.js'
@@ -29,7 +34,18 @@ router.use('/:operatorId/contacts', contactRouter) // add routes to contact
 // @route   GET|POST - /api/operators
 // @access  Private
 // --------------------------------------------------------------
-router.route('/').get(getOperators).post(createOperator)
+router
+	.route('/')
+	.get(
+		protect,
+		authorize('admin', 'staff-health', 'staff-all'),
+		advancedResults(Operator, {
+			path: 'plans contracts contact',
+			select: 'name ansRegister employer identifier name cellphone'
+		}),
+		getOperators
+	)
+	.post(protect, authorize('admin', 'staff-health', 'staff-all'), createOperator)
 
 //* -------------------------------------------------------------
 
@@ -37,7 +53,11 @@ router.route('/').get(getOperators).post(createOperator)
 // @route   GET|DELETE|PUT - /api/operators/:id
 // @access  Private
 // --------------------------------------------------------------
-router.route('/:operatorId').get(getOperator).delete(deleteOperator).put(updateOperator)
+router
+	.route('/:operatorId')
+	.get(protect, authorize('admin', 'staff-health', 'staff-all'), getOperator)
+	.delete(protect, authorize('admin', 'staff-health', 'staff-all'), deleteOperator)
+	.put(protect, authorize('admin', 'staff-health', 'staff-all'), updateOperator)
 
 //* -------------------------------------------------------------
 
@@ -45,7 +65,9 @@ router.route('/:operatorId').get(getOperator).delete(deleteOperator).put(updateO
 // @route   PUT - /api/operators/:id
 // @access  Private
 // --------------------------------------------------------------
-router.route('/:operatorId/photo').put(photoUploadOperator)
+router
+	.route('/:operatorId/photo')
+	.put(protect, authorize('admin', 'staff-health', 'staff-all'), photoUploadOperator)
 
 //* -------------------------------------------------------------
 

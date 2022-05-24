@@ -7,6 +7,7 @@ import colors from 'colors'
 import morgan from 'morgan'
 import fileupload from 'express-fileupload'
 import path from 'path'
+import cookieParser from 'cookie-parser'
 
 // @db
 import connectDB from './config/db.js'
@@ -36,6 +37,9 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 // idententation setup
 app.set('json spaces', 2)
+
+// cookie parser
+app.use(cookieParser())
 
 // dev logging middleware
 if (process.env.NODE_ENV === 'development') {
