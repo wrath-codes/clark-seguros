@@ -22,6 +22,7 @@ import contractRoutes from './routes/contractRoutes.js'
 import employeeRoutes from './routes/employeeRoutes.js'
 import planCardRoutes from './routes/planCardRoutes.js'
 import authRoutes from './routes/authRoutes.js'
+import userRoutes from './routes/userRoutes.js'
 
 const PORT = process.env.PORT || 5000
 
@@ -58,6 +59,7 @@ app.use('/api/employers', employerRoutes) // add employer routes
 app.use('/api/contracts', contractRoutes) // add contract routes
 app.use('/api/employees', employeeRoutes) // add employee routes
 app.use('/api/plan-cards', planCardRoutes) // add planCard routes
+app.use('/api/users', userRoutes) // add admin user routes
 
 // @error handling
 app.use(notFound)
