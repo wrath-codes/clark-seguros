@@ -13,6 +13,14 @@ import {
 	deleteContract,
 	fileUploadContract
 } from '../controllers/contractController.js'
+// @models
+import Contract from '../models/contractModel.js'
+// @middleware
+import { protect, authorize } from '../middleware/authProtectMiddleware.js'
+import { advancedResults } from '../middleware/advancedResults.js'
+// uses
+router.use(protect)
+router.use(authorize('admin', 'staff-all', 'staff-health'))
 
 //* @routes
 //* -------------------------------------------------------------
@@ -21,7 +29,10 @@ import {
 // @route   GET/POST - /api/contracts
 // @access  Private
 // --------------------------------------------------------------
-router.route('/').get(getContracts).post(createContract)
+router
+	.route('/')
+	.get(advancedResults(Contract, { path: 'employer operator' }), getContracts)
+	.post(createContract)
 //* -------------------------------------------------------------
 
 // @desc    Fetch Single Contract | Updates contract to history | Delete Single Contract

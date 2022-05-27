@@ -80,6 +80,18 @@ const getEmployee = asyncHandler(async (req, res, next) => {
 			}
 		})
 		.populate('age')
+		.populate({
+			path: 'planCard',
+			select: 'kind identifier planValue planHistory planValueHistory employmentHistory contractHistory',
+			populate: {
+				path: 'employmentHistory contractHistory planHistory',
+				select: 'name cnpj ansRegister identifier plan employer operator',
+				populate: {
+					path: 'employer operator',
+					select: 'name cnpj ansRegister identifier'
+				}
+			}
+		})
 
 	// check if there are no employees in the database
 	if (employee) {
@@ -294,8 +306,8 @@ const createEmployee = asyncHandler(async (req, res, next) => {
 	// response
 	res.status(200).json({
 		success: true,
-		msg: `Employee ${employee._id} created`,
-		data: employee
+		msg: `Employee ${employeeResult._id} created`,
+		data: employeeResult
 	})
 })
 
@@ -357,8 +369,8 @@ const updateEmployee = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({
 		success: true,
-		msg: `Employee ${employee._id} updated`,
-		data: employee
+		msg: `Employee ${result._id} updated`,
+		data: result
 	})
 })
 

@@ -12,6 +12,11 @@ import {
 	updateContact,
 	deleteContact
 } from '../controllers/contactController.js'
+// @middleware
+import { protect, authorize } from '../middleware/authProtectMiddleware.js'
+// uses
+router.use(protect)
+router.use(authorize('admin', 'staff-all', 'staff-health'))
 
 //* @routes
 //* -------------------------------------------------------------

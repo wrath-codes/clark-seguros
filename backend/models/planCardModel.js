@@ -127,6 +127,10 @@ const planCardSchema = mongoose.Schema(
 planCardSchema.statics.getAverageCost = async function (employerId) {
 	console.log('calculating average cost...'.blue)
 
+	const employeeCount = await this.model('PlanCard')
+		.find({ employer: employerId })
+		.countDocuments()
+
 	const obj = await this.aggregate([
 		{
 			$match: { employer: employerId }
@@ -139,9 +143,15 @@ planCardSchema.statics.getAverageCost = async function (employerId) {
 		}
 	])
 	try {
-		await this.model('Employer').findByIdAndUpdate(employerId, {
-			averageCost: obj[0].averageCost
-		})
+		if (employeeCount <= 0) {
+			await this.model('Employer').findByIdAndUpdate(employerId, {
+				averageCost: undefined
+			})
+		} else {
+			await this.model('Employer').findByIdAndUpdate(employerId, {
+				averageCost: obj[0].averageCost
+			})
+		}
 	} catch (error) {
 		console.error(error)
 	}
@@ -150,6 +160,10 @@ planCardSchema.statics.getAverageCost = async function (employerId) {
 // static method to get sim of plan costs for employer
 planCardSchema.statics.getSumCost = async function (employerId) {
 	console.log('calculating sum cost...'.magenta)
+	const employeeCount = await this.model('PlanCard')
+		.find({ employer: employerId })
+		.countDocuments()
+
 	const obj = await this.aggregate([
 		{
 			$match: { employer: employerId }
@@ -162,9 +176,15 @@ planCardSchema.statics.getSumCost = async function (employerId) {
 		}
 	])
 	try {
-		await this.model('Employer').findByIdAndUpdate(employerId, {
-			sumCost: obj[0].sumCost
-		})
+		if (employeeCount <= 0) {
+			await this.model('Employer').findByIdAndUpdate(employerId, {
+				sumCost: undefined
+			})
+		} else {
+			await this.model('Employer').findByIdAndUpdate(employerId, {
+				sumCost: obj[0].sumCost
+			})
+		}
 	} catch (error) {
 		console.error(error)
 	}
@@ -176,7 +196,7 @@ planCardSchema.post('save', async function () {
 	this.constructor.getSumCost(this.employer)
 })
 
-// call getAverageCost and getSumCost after remove
+// call getAverageCost and getSumCost before remove
 planCardSchema.pre('remove', async function () {
 	this.constructor.getAverageCost(this.employer)
 	this.constructor.getSumCost(this.employer)

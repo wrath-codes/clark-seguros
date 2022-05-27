@@ -8,6 +8,7 @@ const router = express.Router()
 import {
 	registerUser,
 	loginUser,
+	logoutUser,
 	getMe,
 	forgotPassword,
 	resetPassword,
@@ -34,8 +35,15 @@ router.route('/register').post(protect, authorize('admin'), registerUser)
 // --------------------------------------------------------------
 router.route('/login').post(loginUser)
 
-//* -------------------------------------------------------------
+//* -------------------------------------------------------------'
 
+// @desc    Log User Out / Clear Cookie
+// @route   GET - /api/auth/logout
+// @access  Private
+// --------------------------------------------------------------
+router.route('/logout').get(protect, logoutUser)
+
+//* ------------------------------------------------------------
 // @desc    Get Current User
 // @route   POST - /api/auth/me
 // @access  Private
@@ -48,7 +56,7 @@ router.route('/me').get(protect, getMe)
 // @route   POST - /api/auth/forgotpassword
 // @access  Private
 // --------------------------------------------------------------
-router.route('/forgotpassword').post(protect, forgotPassword)
+router.route('/forgotpassword').post(forgotPassword)
 
 //* -------------------------------------------------------------
 

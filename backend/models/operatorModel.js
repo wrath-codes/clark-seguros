@@ -66,6 +66,13 @@ operatorSchema.pre('save', function (next) {
 	next()
 })
 
+operatorSchema.pre('update', function (next) {
+	if (this.isModified('name')) {
+		this.slug = slugify(this.name, { lower: true })
+		next()
+	}
+})
+
 // cascade delete plans when operator is deleted
 operatorSchema.pre('remove', async function (next) {
 	await this.model('Plan').deleteMany({ operator: this._id })

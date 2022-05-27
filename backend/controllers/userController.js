@@ -27,7 +27,7 @@ const getUsers = asyncHandler(async (req, res, next) => {
 
 const getUser = asyncHandler(async (req, res, next) => {
 	//
-	const user = await User.findById(req.user.id)
+	const user = await User.findById(req.params.id)
 
 	res.status(200).json({
 		success: true,
@@ -44,8 +44,32 @@ const getUser = asyncHandler(async (req, res, next) => {
 // --------------------------------------------------------------
 
 const createUser = asyncHandler(async (req, res, next) => {
-	//
-	const user = await User.create(req.body)
+	// destructure user data
+	const { name, email, cellphone, password, role } = req.body
+
+	// validation
+	if (!name || !email || !password || !cellphone) {
+		res.status(400)
+		throw new Error('Please Include all fields!')
+	}
+
+	// checks if user exists
+	const checkUser = await User.findOne({ email: email })
+	if (checkUser) {
+		res.status(409)
+		throw new Error('User with this email already exists')
+	}
+
+	const user = await User.create({
+		name: {
+			firstName: name.firstName,
+			lastName: name.lastName
+		},
+		cellphone,
+		email,
+		password,
+		role
+	})
 
 	res.status(201).json({
 		success: true,
@@ -70,7 +94,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({
 		success: true,
-		message: `User ${user._id} created`,
+		message: `User ${user._id} updated`,
 		data: user
 	})
 })

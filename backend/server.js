@@ -8,6 +8,13 @@ import morgan from 'morgan'
 import fileupload from 'express-fileupload'
 import path from 'path'
 import cookieParser from 'cookie-parser'
+import mongoSanitize from 'express-mongo-sanitize'
+import helmet from 'helmet'
+// @ts-ignore
+import xss from 'xss-clean'
+import rateLimit from 'express-rate-limit'
+import hpp from 'hpp'
+import cors from 'cors'
 
 // @db
 import connectDB from './config/db.js'
@@ -49,17 +56,33 @@ if (process.env.NODE_ENV === 'development') {
 
 // file uploading
 app.use(fileupload())
+// sanitize mongo data / prevent sql injections
+app.use(mongoSanitize())
+// set security headers
+app.use(helmet())
+// prevent xss attacks
+app.use(xss())
+// rate limiting
+const limiter = rateLimit({
+	windowMs: 10 * 60 * 1000, // 10 min
+	max: 500 // 500 requests
+})
+app.use(limiter)
+// prevent http param pollution
+app.use(hpp())
+// enable CORS
+app.use(cors())
 
 // @routes
-app.use('/api/auth', authRoutes) // add auth routes
-app.use('/api/contacts', contactRoutes) // add contact routes
-app.use('/api/operators', operatorRoutes) // add operator routes
-app.use('/api/plans', planRoutes) // add plan routes
-app.use('/api/employers', employerRoutes) // add employer routes
-app.use('/api/contracts', contractRoutes) // add contract routes
-app.use('/api/employees', employeeRoutes) // add employee routes
-app.use('/api/plan-cards', planCardRoutes) // add planCard routes
-app.use('/api/users', userRoutes) // add admin user routes
+app.use('/api/v1/auth', authRoutes) // add auth routes
+app.use('/api/v1/contacts', contactRoutes) // add contact routes
+app.use('/api/v1/operators', operatorRoutes) // add operator routes
+app.use('/api/v1/plans', planRoutes) // add plan routes
+app.use('/api/v1/employers', employerRoutes) // add employer routes
+app.use('/api/v1/contracts', contractRoutes) // add contract routes
+app.use('/api/v1/employees', employeeRoutes) // add employee routes
+app.use('/api/v1/plan-cards', planCardRoutes) // add planCard routes
+app.use('/api/v1/users', userRoutes) // add admin user routes
 
 // @error handling
 app.use(notFound)

@@ -11,6 +11,11 @@ import {
 } from '../controllers/planCardController.js'
 
 const router = express.Router()
+// @middleware
+import { protect, authorize } from '../middleware/authProtectMiddleware.js'
+// uses
+router.use(protect)
+router.use(authorize('admin', 'staff-all', 'staff-health'))
 
 //* routes
 //* -------------------------------------------------------------

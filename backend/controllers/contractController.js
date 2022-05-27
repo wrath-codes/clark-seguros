@@ -19,17 +19,14 @@ import Operator from '../models/operatorModel.js'
 // @access  Private
 // --------------------------------------------------------------
 const getContracts = asyncHandler(async (req, res, next) => {
-	// get all contracts
-	const contracts = await Contract.find({}).populate('employer').populate('operator')
-
 	// check if there are no contracts in the database
-	if (contracts <= 0) {
+	if (res.advancedResults.length <= 0) {
 		res.status(400)
-		throw new Error(`There are ${contracts.length} contracts in the database!`)
+		throw new Error(`There are ${res.advancedResults.length} contracts in the database!`)
 	}
 
 	// response
-	res.json(contracts)
+	res.status(200).json(res.advancedResults)
 })
 
 //* -------------------------------------------------------------

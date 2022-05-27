@@ -4,6 +4,7 @@
 // @libraries
 import asyncHandler from 'express-async-handler'
 import path from 'path'
+import slugify from 'slugify'
 // @utils
 import { uploadFile } from '../utils/uploadFile.js'
 // @models
@@ -217,15 +218,41 @@ const updateEmployer = asyncHandler(async (req, res, next) => {
 		new: true
 	})
 
-	const result = await Employer.findById(updatedEmployer._id).populate({
-		path: 'contact',
-		select: 'name cellphone'
-	})
+	const result = await Employer.findById(updatedEmployer._id)
+		.populate({
+			path: 'contact',
+			select: 'name cellphone'
+		})
+		.populate({
+			path: 'contact',
+			select: 'name cellphone'
+		})
+		.populate({
+			path: 'employees',
+			select: 'employee plan contract',
+			populate: {
+				path: 'employee plan contract identifier planValue kind',
+				select: 'name cpf ansRegister employer identifier operator '
+			}
+		})
+		.populate({
+			path: 'contracts',
+			select: 'operator identifier isValid',
+			populate: {
+				path: 'operator',
+				select: 'name cnpj'
+			}
+		})
+
+	// changes slugs
+	updatedEmployer.slug = slugify(updatedEmployer.name, { lower: true })
+	// saves updated slug
+	updatedEmployer.save({ validateBeforeSave: false })
 
 	// response
 	res.status(200).json({
 		success: true,
-		msg: `Employer ${employer.name} updated`,
+		msg: `Employer ${updatedEmployer.name} updated`,
 		count: updatedEmployer.length,
 		data: updatedEmployer
 	})

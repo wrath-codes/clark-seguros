@@ -3,6 +3,7 @@
 // imports
 // @libraries
 import express from 'express'
+const router = express.Router()
 // @controller
 import {
 	getEmployers,
@@ -14,8 +15,11 @@ import {
 } from '../controllers/employerController.js'
 // include other resource routers
 import employeeRouter from './employeeRoutes.js'
-
-const router = express.Router()
+// @middleware
+import { protect, authorize } from '../middleware/authProtectMiddleware.js'
+// uses
+router.use(protect)
+router.use(authorize('admin', 'staff-all', 'staff-health'))
 
 // re-route into other resource routers
 router.use('/:employerId/employees', employeeRouter) // add employee routes

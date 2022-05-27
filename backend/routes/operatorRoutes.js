@@ -3,6 +3,7 @@
 // imports
 // @libraries
 import express from 'express'
+const router = express.Router()
 // @controller
 import {
 	getOperators,
@@ -21,7 +22,9 @@ import Operator from '../models/operatorModel.js'
 import planRouter from './planRoutes.js'
 import contactRouter from './contactRoutes.js'
 
-const router = express.Router()
+// uses
+router.use(protect)
+router.use(authorize('admin', 'staff-all', 'staff-health'))
 
 // re-route into other resource routers
 router.use('/:operatorId/plans', planRouter) // add routes to plans
@@ -37,15 +40,13 @@ router.use('/:operatorId/contacts', contactRouter) // add routes to contact
 router
 	.route('/')
 	.get(
-		protect,
-		authorize('admin', 'staff-health', 'staff-all'),
 		advancedResults(Operator, {
 			path: 'plans contracts contact',
 			select: 'name ansRegister employer identifier name cellphone'
 		}),
 		getOperators
 	)
-	.post(protect, authorize('admin', 'staff-health', 'staff-all'), createOperator)
+	.post(createOperator)
 
 //* -------------------------------------------------------------
 
@@ -53,11 +54,7 @@ router
 // @route   GET|DELETE|PUT - /api/operators/:id
 // @access  Private
 // --------------------------------------------------------------
-router
-	.route('/:operatorId')
-	.get(protect, authorize('admin', 'staff-health', 'staff-all'), getOperator)
-	.delete(protect, authorize('admin', 'staff-health', 'staff-all'), deleteOperator)
-	.put(protect, authorize('admin', 'staff-health', 'staff-all'), updateOperator)
+router.route('/:operatorId').get(getOperator).delete(deleteOperator).put(updateOperator)
 
 //* -------------------------------------------------------------
 
@@ -65,9 +62,7 @@ router
 // @route   PUT - /api/operators/:id
 // @access  Private
 // --------------------------------------------------------------
-router
-	.route('/:operatorId/photo')
-	.put(protect, authorize('admin', 'staff-health', 'staff-all'), photoUploadOperator)
+router.route('/:operatorId/photo').put(photoUploadOperator)
 
 //* -------------------------------------------------------------
 

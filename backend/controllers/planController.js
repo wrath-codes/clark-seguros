@@ -3,9 +3,10 @@
 // imports
 // @libraries
 import asyncHandler from 'express-async-handler'
-import Operator from '../models/operatorModel.js'
+import slugify from 'slugify'
 // @models
 import Plan from '../models/planModel.js'
+import Operator from '../models/operatorModel.js'
 
 //* @controller
 //* -------------------------------------------------------------
@@ -154,10 +155,22 @@ const updatePlan = asyncHandler(async (req, res, next) => {
 	// update plan
 	const updatedPlan = await Plan.findByIdAndUpdate(req.params.id, req.body, {
 		new: true
+	}).populate({
+		path: 'operator',
+		select: 'name cnpj'
 	})
 
+	// changes slugs
+	updatedPlan.slug = slugify(updatedPlan.name, { lower: true })
+	// saves updated slug
+	updatedPlan.save({ validateBeforeSave: false })
+
 	// response
-	res.status(200).json(updatedPlan)
+	res.status(200).json({
+		success: true,
+		msg: `Plan ${updatedPlan.name} updated`,
+		data: updatedPlan
+	})
 })
 
 //* -------------------------------------------------------------

@@ -4,6 +4,7 @@
 // @libraries
 import asyncHandler from 'express-async-handler'
 import path from 'path'
+import slugify from 'slugify'
 // @utils
 import { uploadFile } from '../utils/uploadFile.js'
 // @models
@@ -37,6 +38,18 @@ const getOperators = asyncHandler(async (req, res, next) => {
 const getOperator = asyncHandler(async (req, res, next) => {
 	//get operator with id and populate contact field
 	const operator = await Operator.findById(req.params.operatorId)
+		.populate({
+			path: 'plans contact',
+			select: 'name cnpj cellphone ansRegister'
+		})
+		.populate({
+			path: 'contracts',
+			select: 'employer identifier employees',
+			populate: {
+				path: 'employer',
+				select: 'name cnpj '
+			}
+		})
 
 	//checks if there's an operator with that id
 	if (operator) {
@@ -180,11 +193,28 @@ const updateOperator = asyncHandler(async (req, res, next) => {
 	const updatedOperator = await Operator.findByIdAndUpdate(req.params.operatorId, req.body, {
 		new: true
 	})
+		.populate({
+			path: 'plans contact',
+			select: 'name cnpj cellphone ansRegister'
+		})
+		.populate({
+			path: 'contracts',
+			select: 'employer identifier employees',
+			populate: {
+				path: 'employer',
+				select: 'name cnpj '
+			}
+		})
+
+	// changes slugs
+	updatedOperator.slug = slugify(updatedOperator.name, { lower: true })
+	// saves updated slug
+	updatedOperator.save({ validateBeforeSave: false })
 
 	// response
 	res.status(200).json({
 		success: true,
-		msg: `Operator ${operator.name} updated`,
+		msg: `Operator ${updatedOperator.name} updated`,
 		count: updatedOperator.length,
 		data: updatedOperator
 	})
@@ -233,9 +263,15 @@ const photoUploadOperator = asyncHandler(async (req, res, next) => {
 	await uploadFile(file)
 
 	// creates path to image
-	const updatedOperator = await Operator.findByIdAndUpdate(req.params.operatorId, {
-		photo: process.env.AWS_URL + file.name
-	})
+	const updatedOperator = await Operator.findByIdAndUpdate(
+		req.params.operatorId,
+		{
+			photo: process.env.AWS_URL + file.name
+		},
+		{
+			new: true
+		}
+	)
 
 	// success message response
 	res.status(200).json({

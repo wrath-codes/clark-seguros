@@ -22,7 +22,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
 	const { name, email, cellphone, password, role } = req.body
 
 	// validation
-	if (!name || !email || !password || !cellphone || !role) {
+	if (!name || !email || !password || !cellphone) {
 		res.status(400)
 		throw new Error('Please Include all fields!')
 	}
@@ -96,6 +96,25 @@ const loginUser = asyncHandler(async (req, res, next) => {
 		res.status(400)
 		throw new Error('Invalid user data!')
 	}
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Log User Out / Clear Cookie
+// @route   GET - /api/auth/logout
+// @access  Private
+// --------------------------------------------------------------
+
+const logoutUser = asyncHandler(async (req, res, next) => {
+	res.cookie('token', 'none', {
+		expires: new Date(Date.now() + 10 * 1000),
+		httpOnly: true
+	})
+
+	res.status(200).json({
+		success: true,
+		data: {}
+	})
 })
 
 //* -------------------------------------------------------------
@@ -292,5 +311,6 @@ export {
 	forgotPassword,
 	resetPassword,
 	updateDetails,
-	updatePassword
+	updatePassword,
+	logoutUser
 }

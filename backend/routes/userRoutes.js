@@ -42,6 +42,3 @@ router.route('/:id').get(getUser).put(updateUser).delete(deleteUser)
 //* -------------------------------------------------------------
 
 export default router
-
-// "email":"rvazn.ds@gmail.com",
-//     "password": "Quel6969!
