@@ -5,6 +5,8 @@
 import asyncHandler from 'express-async-handler'
 // @models
 import Contact from '../models/contactModel.js'
+import Employer from '../models/employerModel.js'
+import Operator from '../models/operatorModel.js'
 
 //* @controller
 //* -------------------------------------------------------------
@@ -24,7 +26,7 @@ const getContacts = asyncHandler(async (req, res, next) => {
 		})
 	} else {
 		query = Contact.find({}).populate({
-			path: 'operator',
+			path: 'operator employer',
 			select: 'name cnpj'
 		})
 	}
@@ -85,9 +87,13 @@ const createContact = asyncHandler(async (req, res, next) => {
 		res.status(400)
 		throw new Error('Please add all fields for the Contact!')
 	}
+	// find operator
+	const operator = await Operator.findOne({ cnpj: cnpj })
+	// find employer
+	const employer = await Employer.findOne({ cnpj: cnpj })
 
 	// create the contact
-	const contact = await Contact.create({
+	let contact = {
 		name: {
 			firstName: firstName,
 			lastName: lastName
@@ -95,15 +101,35 @@ const createContact = asyncHandler(async (req, res, next) => {
 		telephone: telephone,
 		cellphone: cellphone,
 		email: email,
-		kind: kind,
-		cnpj: cnpj
+		kind: kind
+	}
+	if (operator) {
+		contact = {
+			...contact,
+			operator: operator._id
+		}
+	} else if (employer) {
+		contact = {
+			...contact,
+			employer: employer._id
+		}
+	} else {
+		res.status(400)
+		throw new Error('CNPJ for Contact not found!')
+	}
+
+	const contactCreate = await Contact.create(contact)
+
+	const result = await Contact.findById(contactCreate._id).populate({
+		path: 'operator employer',
+		select: 'name cnpj'
 	})
 
 	//response
 	res.status(201).json({
 		success: true,
-		msg: `Contact ${contact._id} created`,
-		data: contact
+		msg: `Contact ${result._id} created`,
+		data: result
 	})
 })
 
@@ -152,12 +178,15 @@ const updateContact = asyncHandler(async (req, res, next) => {
 	// edits contact
 	const updatedContact = await Contact.findByIdAndUpdate(req.params.id, req.body, {
 		new: true
+	}).populate({
+		path: 'operator employer',
+		select: 'name cnpj'
 	})
 
 	// response
 	res.status(201).json({
 		success: true,
-		msg: `Contact ${updatedContact.name} updated`,
+		msg: `Contact ${updatedContact.name.firstName} ${updatedContact.name.lastName} updated`,
 		data: updatedContact
 	})
 })

@@ -144,8 +144,8 @@ const createContract = asyncHandler(async (req, res, next) => {
 	// response
 	res.status(200).json({
 		success: true,
-		msg: `Contract ${contract.identifier} created`,
-		data: contract
+		msg: `Contract ${result.identifier} created`,
+		data: result
 	})
 })
 

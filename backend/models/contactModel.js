@@ -58,7 +58,7 @@ const contactSchema = mongoose.Schema(
 		employer: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: false,
-			ref: 'employer'
+			ref: 'Employer'
 		}
 	},
 	{
