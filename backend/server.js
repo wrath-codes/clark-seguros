@@ -7,6 +7,7 @@ import colors from 'colors'
 import morgan from 'morgan'
 import fileupload from 'express-fileupload'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import cookieParser from 'cookie-parser'
 import mongoSanitize from 'express-mongo-sanitize'
 import helmet from 'helmet'
@@ -15,6 +16,10 @@ import xss from 'xss-clean'
 import rateLimit from 'express-rate-limit'
 import hpp from 'hpp'
 import cors from 'cors'
+
+// @path fix
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // @db
 import connectDB from './config/db.js'
@@ -74,6 +79,7 @@ app.use(hpp())
 app.use(cors())
 
 // @routes
+app.use(express.static(__dirname + '/public'))
 app.use('/api/v1/auth', authRoutes) // add auth routes
 app.use('/api/v1/contacts', contactRoutes) // add contact routes
 app.use('/api/v1/operators', operatorRoutes) // add operator routes

@@ -38,3 +38,11 @@ body {
   border-radius: 70%;
   animation: spin 1.75s linear infinite;
 }
+
+.carousel-img {
+  height: 85%;
+}
+
+.zindex {
+  z-index: 100;
+}

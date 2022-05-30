@@ -3,114 +3,131 @@
 // @imports
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 // @icons
 import { FaUser } from 'react-icons/fa'
-
+// @components
 import Logo from './Logo'
+// @flowbite
+import { Dropdown, Navbar, Avatar, Label, TextInput, Checkbox, Button } from 'flowbite-react'
 
-function Navbar({ title }) {
+function NavbarClark({ title }) {
+	const [formData, setFormData] = useState({
+		email: '',
+		password: ''
+	})
+
+	const { email, password } = formData
+
 	return (
-		<nav className='navbar shadow-lg bg-base text-gray-500 justify-around'>
-			<div className='container 2xl'>
-				<div className='flex-none px-2 mx-2'>
-					<Logo className='inline mr-3' />
-					<Link to='/' className='text-lg font-bold align-middle'>
-						{title}
-					</Link>
-				</div>
-				<div className='flex-1 px-2 mx-2 just'>
-					<div className='flex justify-end'>
-						<Link
-							to='/'
-							className='btn btn-ghost btn-sm rounded-btn'
-						>
-							Home
-						</Link>
-						<Link
-							to='/about'
-							className='btn btn-ghost btn-sm rounded-btn'
-						>
-							Quem Somos?
-						</Link>
-						<Link
-							to='/products'
-							className='btn btn-ghost btn-sm rounded-btn'
-						>
-							Produtos
-						</Link>
-						<Link
-							to='/contact'
-							className='btn btn-ghost btn-sm rounded-btn'
-						>
-							Contato
-						</Link>
-						<Link
-							to='/resolution'
-							className='btn btn-ghost btn-sm rounded-btn'
-						>
-							Resolução 382/2020
-						</Link>
+		<Navbar
+			fluid={true}
+			rounded={true}
+			className='shadow-lg text-gray-500  bg-base-100 top-0 z-50 alig'
+		>
+			<Link to='/' className='inline-flex'>
+				<Logo className='mr-5' />
+				<span className=' text-xl font-semibold dark:text-white'>{title}</span>
+			</Link>
 
-						{/* <Link to='/health' className='dropdown dropdown-end'>
-							<label
-								tabindex='0'
-								class='btn btn-ghost btn-sm rounded-btn'
-							>
-								Saude
-							</label>
-							<ul
-								tabindex='0'
-								class='mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52'
-							>
-								<li>
-									<Link to='/health/operators'>
-										Operadoras
-									</Link>
-								</li>
-								<li>
-									<Link to='/health/plans'>Planos</Link>
-								</li>
-								<li>
-									<Link to='/health/clients'>Clientes</Link>
-								</li>
-								<li>
-									<Link to='/health/beneficiaries'>
-										Beneficiarios
-									</Link>
-								</li>
-							</ul>
-						</Link> */}
-					</div>
-				</div>
-				{/* <div className='flex justify-end '>
-					<div className='form-control'>
-						<input
-							type='text'
-							name='search'
-							className='input input-bordered'
-							placeholder='Buscar...'
-						/>
-					</div>
-				</div> */}
-				<div className='flex px-2 mx-2'>
-					<div className='flex btn btn-ghost btn-sm justify-end text-secondary align-bottom'>
-						<FaUser />
-						<Link to='/login' className='mx-2'>
-							Login
-						</Link>
-					</div>
-				</div>
+			<div className='flex md:order-2'>
+				<Navbar.Toggle />
 			</div>
-		</nav>
+			<Navbar.Collapse>
+				<Link to='/' className='btn btn-ghost btn-sm rounded-btn'>
+					Home
+				</Link>
+				<Link to='/about' className='btn btn-ghost btn-sm rounded-btn'>
+					Quem Somos?
+				</Link>
+				<Link to='/products' className='btn btn-ghost btn-sm rounded-btn'>
+					Produtos
+				</Link>
+				<Link to='/contact' className='btn btn-ghost btn-sm rounded-btn'>
+					Contato
+				</Link>
+				<Link to='/resolution' className='btn btn-ghost btn-sm rounded-btn'>
+					Resolução 382/2020
+				</Link>
+
+				{/* <Dropdown
+					arrowIcon={false}
+					inline={true}
+					placement='bottom'
+					label={
+						<div className='btn btn-ghost btn-sm rounded-btn text-secondary align-middle'>
+							<FaUser />
+							<Link to='/login' className='mx-2'>
+								Login
+							</Link>
+						</div>
+					}
+				>
+					<Dropdown.Header>
+						<span className='block text-sm'>Bonnie Green</span>
+						<span className='block truncate text-sm font-medium'>
+							name@flowbite.com
+						</span>
+					</Dropdown.Header>
+					<Dropdown.Item>Dashboard</Dropdown.Item>
+					<Dropdown.Item>Settings</Dropdown.Item>
+					<Dropdown.Item>Earnings</Dropdown.Item>
+					<Dropdown.Divider />
+					<Dropdown.Item>Sign out</Dropdown.Item>
+				</Dropdown>
+				 */}
+				<Dropdown
+					arrowIcon={false}
+					inline={true}
+					placement='bottom'
+					label={
+						<div className='btn btn-ghost btn-sm rounded-btn text-secondary align-middle'>
+							<FaUser />
+							<Link to='/login' className='mx-2'>
+								Login
+							</Link>
+						</div>
+					}
+				>
+					<Dropdown.Item>
+						<form className='flex flex-col gap-4'>
+							<div>
+								<TextInput
+									id='email'
+									type='email'
+									placeholder='Email'
+									required={true}
+								/>
+							</div>
+							<div>
+								<TextInput
+									id='password'
+									type='password'
+									placeholder='Password'
+									required={true}
+								/>
+							</div>
+							<div className='flex items-center gap-2'>
+								<Checkbox id='remember' />
+								<Label htmlFor='remember'>Remember me</Label>
+							</div>
+							<button className='btn btn-secondary text-center' type='submit'>
+								Entrar
+							</button>
+						</form>
+					</Dropdown.Item>
+				</Dropdown>
+			</Navbar.Collapse>
+		</Navbar>
 	)
 }
 
-Navbar.defaultProps = {
+NavbarClark.defaultProps = {
 	title: 'Clark Seguros'
 }
 
-Navbar.propTypes = {
+NavbarClark.propTypes = {
 	title: PropTypes.string
 }
 
-export default Navbar
+export default NavbarClark
