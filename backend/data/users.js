@@ -19,7 +19,7 @@ const users = [
 		email: 'ronaldo@email.com',
 		password: bcrypt.hashSync('123456', 10),
 		cellphone: '(21)99286-9829',
-		role: 'staff-all'
+		role: 'staff'
 	},
 	{
 		name: {

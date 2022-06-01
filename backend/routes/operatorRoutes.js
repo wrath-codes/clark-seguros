@@ -24,7 +24,7 @@ import contactRouter from './contactRoutes.js'
 
 // uses
 router.use(protect)
-router.use(authorize('admin', 'staff-all', 'staff-health'))
+router.use(authorize('admin', 'staff'))
 
 // re-route into other resource routers
 router.use('/:operatorId/plans', planRouter) // add routes to plans
@@ -42,7 +42,7 @@ router
 	.get(
 		advancedResults(Operator, {
 			path: 'plans contracts contact',
-			select: 'name ansRegister employer identifier name cellphone'
+			select: 'name ansRegister employer identifier name email cellphone'
 		}),
 		getOperators
 	)

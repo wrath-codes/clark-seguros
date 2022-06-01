@@ -10,22 +10,21 @@ import operatorService from './operatorService'
 const initialState = {
 	operators: [],
 	operator: {},
-	plans: [],
-	contact: {},
 	isError: false,
 	isSuccess: false,
 	isLoading: false,
 	message: ''
 }
 
-//* --------------------------------------
+//* -----------------------------------------------------------------------
 
 // @desc get operators
-// --------------------------------------
+// ------------------------------------------------------------------------
 export const getOperators = createAsyncThunk('operators/getAll', async (_, thunkAPI) => {
 	try {
+		const token = thunkAPI.getState().auth.user.token
 		// get operators
-		return await operatorService.getOperators()
+		return await operatorService.getOperators(token)
 	} catch (error) {
 		const message =
 			(error.response && error.response.data && error.response.data.message) ||
@@ -37,11 +36,12 @@ export const getOperators = createAsyncThunk('operators/getAll', async (_, thunk
 })
 
 // @desc get operator
-// --------------------------------------
+// ------------------------------------------------------------------------
 export const getOperator = createAsyncThunk('operators/get', async (operatorId, thunkAPI) => {
 	try {
+		const token = thunkAPI.getState().auth.user.token
 		// get operators
-		return await operatorService.getOperator(operatorId)
+		return await operatorService.getOperator(operatorId, token)
 	} catch (error) {
 		const message =
 			(error.response && error.response.data && error.response.data.message) ||
@@ -52,16 +52,15 @@ export const getOperator = createAsyncThunk('operators/get', async (operatorId, 
 	}
 })
 
-//* --------------------------------------
-
-// @desc get operator plans
-// --------------------------------------
-export const getOperatorPlans = createAsyncThunk(
-	'operators/getPlans',
-	async (operatorId, thunkAPI) => {
+// @desc creates an operator from data
+// ------------------------------------------------------------------------
+export const createOperator = createAsyncThunk(
+	'operators/create',
+	async (operatorData, thunkAPI) => {
 		try {
+			const token = thunkAPI.getState().auth.user.token
 			// get operators
-			return await operatorService.getOperatorPlans(operatorId)
+			return await operatorService.createOperator(operatorData, token)
 		} catch (error) {
 			const message =
 				(error.response && error.response.data && error.response.data.message) ||
@@ -73,28 +72,7 @@ export const getOperatorPlans = createAsyncThunk(
 	}
 )
 
-//* --------------------------------------
-
-// @desc get operator plans
-// --------------------------------------
-export const getOperatorContact = createAsyncThunk(
-	'operators/getContact',
-	async (operatorId, thunkAPI) => {
-		try {
-			// get operators
-			return await operatorService.getOperatorContact(operatorId)
-		} catch (error) {
-			const message =
-				(error.response && error.response.data && error.response.data.message) ||
-				error.message ||
-				error.toString()
-
-			return thunkAPI.rejectWithValue(message)
-		}
-	}
-)
-
-//* --------------------------------------
+//* -----------------------------------------------------------------------
 
 // @operator slice
 export const operatorSlice = createSlice({
@@ -105,13 +83,25 @@ export const operatorSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
+			.addCase(createOperator.pending, (state) => {
+				state.isLoading = true
+			})
+			.addCase(createOperator.fulfilled, (state) => {
+				state.isLoading = false
+				state.isSuccess = true
+			})
+			.addCase(createOperator.rejected, (state, action) => {
+				state.isLoading = false
+				state.isError = true
+				state.message = action.payload.data
+			})
 			.addCase(getOperators.pending, (state) => {
 				state.isLoading = true
 			})
 			.addCase(getOperators.fulfilled, (state, action) => {
 				state.isLoading = false
 				state.isSuccess = true
-				state.operators = action.payload
+				state.operators = action.payload.data
 			})
 			.addCase(getOperators.rejected, (state, action) => {
 				state.isLoading = false
@@ -124,35 +114,9 @@ export const operatorSlice = createSlice({
 			.addCase(getOperator.fulfilled, (state, action) => {
 				state.isLoading = false
 				state.isSuccess = true
-				state.operator = action.payload
+				state.operator = action.payload.data
 			})
 			.addCase(getOperator.rejected, (state, action) => {
-				state.isLoading = false
-				state.isError = true
-				state.message = action.payload
-			})
-			.addCase(getOperatorPlans.pending, (state) => {
-				state.isLoading = true
-			})
-			.addCase(getOperatorPlans.fulfilled, (state, action) => {
-				state.isLoading = false
-				state.isSuccess = true
-				state.plans = action.payload
-			})
-			.addCase(getOperatorPlans.rejected, (state, action) => {
-				state.isLoading = false
-				state.isError = true
-				state.message = action.payload
-			})
-			.addCase(getOperatorContact.pending, (state) => {
-				state.isLoading = true
-			})
-			.addCase(getOperatorContact.fulfilled, (state, action) => {
-				state.isLoading = false
-				state.isSuccess = true
-				state.contact = action.payload
-			})
-			.addCase(getOperatorContact.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload
@@ -160,7 +124,7 @@ export const operatorSlice = createSlice({
 	}
 })
 
-//* --------------------------------------
+//* -----------------------------------------------------------------------
 
 //@exports
 export const { reset } = operatorSlice.actions

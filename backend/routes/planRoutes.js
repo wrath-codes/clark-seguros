@@ -18,7 +18,7 @@ const router = express.Router({ mergeParams: true })
 import { protect, authorize } from '../middleware/authProtectMiddleware.js'
 // uses
 router.use(protect)
-router.use(authorize('admin', 'staff-all', 'staff-health'))
+router.use(authorize('admin', 'staff'))
 
 //* @controller
 //* -------------------------------------------------------------

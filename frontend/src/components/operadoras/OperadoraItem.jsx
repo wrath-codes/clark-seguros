@@ -36,21 +36,23 @@ const OperadoraItem = ({ operadora }) => {
 					<p className='text-lg align-middle col-span-1'>Contact</p>
 				</button>
 				{isOpen && (
-					<div className='text-left'>
-						<h4 className='text-md text-gray-600'>
-							<strong>Nome: </strong>
-							{operadora.contact.name?.firstName}{' '}
-							{operadora.contact.name?.lastName}
-						</h4>
-						<h4 className='text-md text-gray-600'>
-							<strong>Telephone: </strong>
-							{operadora.contact.cellphone}
-						</h4>
-						<h4 className='text-md text-gray-600'>
-							<strong>Email: </strong>
-							{operadora.contact.email}
-						</h4>
-					</div>
+					<>
+						<div className='text-left'>
+							<h4 className='text-md text-gray-600'>
+								<strong>Nome: </strong>
+								{operadora.contact.name?.firstName}{' '}
+								{operadora.contact.name?.lastName}
+							</h4>
+							<h4 className='text-md text-gray-600'>
+								<strong>Telephone: </strong>
+								{operadora.contact.cellphone}
+							</h4>
+							<h4 className='text-md text-gray-600'>
+								<strong>Email: </strong>
+								{operadora.contact.email}
+							</h4>
+						</div>
+					</>
 				)}
 			</div>
 		</div>

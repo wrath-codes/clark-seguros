@@ -19,7 +19,7 @@ import employeeRouter from './employeeRoutes.js'
 import { protect, authorize } from '../middleware/authProtectMiddleware.js'
 // uses
 router.use(protect)
-router.use(authorize('admin', 'staff-all', 'staff-health'))
+router.use(authorize('admin', 'staff'))
 
 // re-route into other resource routers
 router.use('/:employerId/employees', employeeRouter) // add employee routes

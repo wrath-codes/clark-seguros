@@ -25,7 +25,7 @@ import { protect, authorize } from '../middleware/authProtectMiddleware.js'
 // @route   POST - /api/auth/register
 // @access  Private / Admin
 // --------------------------------------------------------------
-router.route('/register').post(protect, authorize('admin'), registerUser)
+router.route('/register').post(registerUser)
 
 //* -------------------------------------------------------------
 

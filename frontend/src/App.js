@@ -7,10 +7,13 @@ import 'react-toastify/dist/ReactToastify.css'
 // @components
 import NavbarClark from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
+import PrivateRoute from './components/PrivateRoute'
 // @pages
 import Operadoras from './pages/Operadoras'
 import Operadora from './pages/Operadora'
 import Home from './pages/Home'
+import Login from './pages/Login'
+import AdicionarOperadora from './pages/AdicionarOperadora'
 
 //* ----------------------------------------
 
@@ -20,14 +23,33 @@ const App = () => {
 			<Router>
 				<div className='flex flex-col justify-between h-screen'>
 					<NavbarClark />
-					<main className='container mx-auto px-3 py-5 flex-grow text-center mt-16'>
+					<main className='container relative mx-auto px-3 py-5 flex-1  p-5 text-center mt-10 h-max'>
 						<Routes>
 							<Route exact path='/' element={<Home />} />
-							<Route path='/health/operators' element={<Operadoras />} />
+
+							<Route path='/health/operators' element={<PrivateRoute />}>
+								<Route path='/health/operators' element={<Operadoras />} />
+							</Route>
+							<Route
+								path='/health/operators/add-operator'
+								element={<PrivateRoute />}
+							>
+								<Route
+									path='/health/operators/add-operator'
+									element={<AdicionarOperadora />}
+								/>
+							</Route>
 							<Route
 								path='/health/operators/:operatorId'
-								element={<Operadora />}
-							/>
+								element={<PrivateRoute />}
+							>
+								<Route
+									path='/health/operators/:operatorId'
+									element={<Operadora />}
+								/>
+							</Route>
+
+							<Route path='/login' element={<Login />} />
 						</Routes>
 					</main>
 					<Footer />

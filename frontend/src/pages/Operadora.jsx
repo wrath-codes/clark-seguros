@@ -6,19 +6,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 // @features
-import {
-	getOperator,
-	getOperatorPlans,
-	getOperatorContact,
-	reset
-} from '../features/operator/operatorSlice'
+import { getOperator, reset } from '../features/operator/operatorSlice'
 // @components
 import PlanoItem from '../components/planos/PlanoItem'
 import Spinner from '../components/layout/Spinner'
+import BackButton from '../components/layout/BackButton'
 
 const Operadora = () => {
 	// @reducers
-	const { operator, contact, plans, isSuccess, isError, isLoading, message } = useSelector(
+	const { operator, isSuccess, isError, isLoading, message } = useSelector(
 		(state) => state.operator
 	)
 	const dispatch = useDispatch()
@@ -37,8 +33,6 @@ const Operadora = () => {
 			toast.error(message)
 		}
 		dispatch(getOperator(operatorId))
-		dispatch(getOperatorPlans(operatorId))
-		dispatch(getOperatorContact(operatorId))
 	}, [dispatch, operatorId, isError, message])
 
 	if (isLoading) {
@@ -47,9 +41,7 @@ const Operadora = () => {
 
 	return (
 		<>
-			<Link to='/health/operators' className='btn btn-outline btn-secondary'>
-				voltar
-			</Link>
+			<BackButton url='/health/operators' />
 			<div className=' text-4xl mt-10'>{operator.name}</div>
 			<div className='divider'></div>
 			<div className='grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-3 mb-8 md:gap-8'>
@@ -81,18 +73,21 @@ const Operadora = () => {
 								<div className='stat'>
 									<div className='stat-title text-md'>Nome</div>
 									<div className='text-lg stat-value'>
-										{contact.name?.firstName} {contact.name?.lastName}
+										{operator.contact?.name?.firstName}{' '}
+										{operator.contact?.name?.lastName}
 									</div>
 								</div>
 								<div className='stat'>
 									<div className='stat-title text-md'>Telephone</div>
 									<div className='text-lg stat-value'>
-										{contact.cellphone}
+										{operator.contact?.cellphone}
 									</div>
 								</div>
 								<div className='stat'>
 									<div className='stat-title text-md'>email</div>
-									<div className='text-lg stat-value'>{contact.email}</div>
+									<div className='text-lg stat-value'>
+										{operator.contact?.email}
+									</div>
 								</div>
 							</div>
 						</div>
@@ -110,7 +105,7 @@ const Operadora = () => {
 						{/* Planos  */}
 						<h1 className='text-xl  font-semibold mb-5'>Planos</h1>
 						<div className='grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-3'>
-							{plans.map((plano) => (
+							{operator.plans?.map((plano) => (
 								<PlanoItem key={plano._id} plano={plano} />
 							))}
 						</div>

@@ -215,7 +215,7 @@ const Home = () => {
 					</div>
 				</div>
 			</div>
-			<div class='divider mb-40'></div>
+			<div className='divider mb-40'></div>
 			{/* Tipos de Seguros */}
 			<div className='grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-3 mb-8 md:gap-8'>
 				<div className='col-span-4 lg:col-span-8 md:col-span-12'>

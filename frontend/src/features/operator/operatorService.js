@@ -5,62 +5,63 @@
 import axios from 'axios'
 
 // @api
-const API_URL = '/api/operators/'
+const API_URL = '/api/v1/operators/'
 
 // @desc get operators
-// --------------------------------------
-const getOperators = async () => {
+// ------------------------------------------------------------------------
+const getOperators = async (token) => {
 	// config (token will enter here)
-
+	const config = {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	}
 	// response
-	const response = await axios.get(API_URL)
+	const response = await axios.get(API_URL, config)
 	return response.data
 }
 
-//* --------------------------------------
+//* -----------------------------------------------------------------------
 
 // @desc get operator
-// --------------------------------------
-const getOperator = async (operatorId) => {
+// ------------------------------------------------------------------------
+const getOperator = async (operatorId, token) => {
 	// config (token will enter here)
+	const config = {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	}
 
 	// response
-	const response = await axios.get(API_URL + operatorId)
+	const response = await axios.get(API_URL + operatorId, config)
 	return response.data
 }
 
-//* --------------------------------------
+//*-----------------------------------------------------------------------
 
-// @desc get operator plans
-// --------------------------------------
-const getOperatorPlans = async (operatorId) => {
+// @desc get operator
+// ------------------------------------------------------------------------
+const createOperator = async (operatorData, token) => {
 	// config (token will enter here)
+	const config = {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	}
 
 	// response
-	const response = await axios.get(API_URL + operatorId + '/plans')
+	const response = await axios.post(API_URL, operatorData, config)
 	return response.data
 }
 
-//* --------------------------------------
-
-// @desc get operator contact
-// --------------------------------------
-const getOperatorContact = async (operatorId) => {
-	// config (token will enter here)
-
-	// response
-	const response = await axios.get(API_URL + operatorId + '/contact')
-	return response.data
-}
-
-//* --------------------------------------
+//* -----------------------------------------------------------------------
 
 // @export
 const operatorService = {
 	getOperators,
 	getOperator,
-	getOperatorPlans,
-	getOperatorContact
+	createOperator
 }
 
 export default operatorService

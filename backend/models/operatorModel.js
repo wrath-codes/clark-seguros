@@ -110,7 +110,7 @@ operatorSchema.virtual('contact', {
 	ref: 'Contact',
 	localField: '_id',
 	foreignField: 'operator',
-	justOne: false
+	justOne: true
 })
 
 const Operator = mongoose.model('Operator', operatorSchema)

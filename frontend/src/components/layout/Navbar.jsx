@@ -1,123 +1,91 @@
 //*                  Navbar
 //* ----------------------------------------
 // @imports
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 // @icons
 import { FaUser } from 'react-icons/fa'
 // @components
 import Logo from './Logo'
 // @flowbite
-import { Dropdown, Navbar, Avatar, Label, TextInput, Checkbox, Button } from 'flowbite-react'
+import { Navbar } from 'flowbite-react'
+// @features
+import { logoutUser, reset } from '../../features/auth/authSlice'
 
 function NavbarClark({ title }) {
-	const [formData, setFormData] = useState({
-		email: '',
-		password: ''
-	})
+	const navigate = useNavigate()
+	const dispatch = useDispatch()
 
-	const { email, password } = formData
+	const { user } = useSelector((state) => state.auth)
+
+	// @on functions
+	const onLogout = () => {
+		dispatch(logoutUser())
+		dispatch(reset())
+		navigate('/')
+	}
 
 	return (
 		<Navbar
 			fluid={true}
 			rounded={true}
-			className='shadow-lg text-gray-500  bg-base-100 top-0 z-50 alig'
+			className='shadow-lg text-gray-500  bg-base-100 top-0 z-50 align-middle sticky'
 		>
 			<Link to='/' className='inline-flex'>
 				<Logo className='mr-5' />
 				<span className=' text-xl font-semibold dark:text-white'>{title}</span>
 			</Link>
-
 			<div className='flex md:order-2'>
 				<Navbar.Toggle />
 			</div>
-			<Navbar.Collapse>
-				<Link to='/' className='btn btn-ghost btn-sm rounded-btn'>
-					Home
-				</Link>
-				<Link to='/about' className='btn btn-ghost btn-sm rounded-btn'>
-					Quem Somos?
-				</Link>
-				<Link to='/products' className='btn btn-ghost btn-sm rounded-btn'>
-					Produtos
-				</Link>
-				<Link to='/contact' className='btn btn-ghost btn-sm rounded-btn'>
-					Contato
-				</Link>
-				<Link to='/resolution' className='btn btn-ghost btn-sm rounded-btn'>
-					Resolução 382/2020
-				</Link>
+			{user ? (
+				<Navbar.Collapse>
+					<Link to='/health/operators' className='btn btn-ghost btn-sm rounded-btn'>
+						Operadoras
+					</Link>
+					<Link to='/health/clients' className='btn btn-ghost btn-sm rounded-btn'>
+						Clientes
+					</Link>
+					<Link to='/health/contracts' className='btn btn-ghost btn-sm rounded-btn'>
+						Contratos
+					</Link>
+					<Link to='/health/fileupload' className='btn btn-ghost btn-sm rounded-btn'>
+						Importar Arquivo
+					</Link>
 
-				{/* <Dropdown
-					arrowIcon={false}
-					inline={true}
-					placement='bottom'
-					label={
-						<div className='btn btn-ghost btn-sm rounded-btn text-secondary align-middle'>
-							<FaUser />
-							<Link to='/login' className='mx-2'>
-								Login
-							</Link>
-						</div>
-					}
-				>
-					<Dropdown.Header>
-						<span className='block text-sm'>Bonnie Green</span>
-						<span className='block truncate text-sm font-medium'>
-							name@flowbite.com
-						</span>
-					</Dropdown.Header>
-					<Dropdown.Item>Dashboard</Dropdown.Item>
-					<Dropdown.Item>Settings</Dropdown.Item>
-					<Dropdown.Item>Earnings</Dropdown.Item>
-					<Dropdown.Divider />
-					<Dropdown.Item>Sign out</Dropdown.Item>
-				</Dropdown>
-				 */}
-				<Dropdown
-					arrowIcon={false}
-					inline={true}
-					placement='bottom'
-					label={
-						<div className='btn btn-ghost btn-sm rounded-btn text-secondary align-middle'>
-							<FaUser />
-							<Link to='/login' className='mx-2'>
-								Login
-							</Link>
-						</div>
-					}
-				>
-					<Dropdown.Item>
-						<form className='flex flex-col gap-4'>
-							<div>
-								<TextInput
-									id='email'
-									type='email'
-									placeholder='Email'
-									required={true}
-								/>
-							</div>
-							<div>
-								<TextInput
-									id='password'
-									type='password'
-									placeholder='Password'
-									required={true}
-								/>
-							</div>
-							<div className='flex items-center gap-2'>
-								<Checkbox id='remember' />
-								<Label htmlFor='remember'>Remember me</Label>
-							</div>
-							<button className='btn btn-secondary text-center' type='submit'>
-								Entrar
-							</button>
-						</form>
-					</Dropdown.Item>
-				</Dropdown>
-			</Navbar.Collapse>
+					<div className='btn btn-ghost btn-sm rounded-btn text-secondary align-middle'>
+						<FaUser />
+						<Link onClick={onLogout} to='/' className='mx-2'>
+							Logout
+						</Link>
+					</div>
+				</Navbar.Collapse>
+			) : (
+				<Navbar.Collapse>
+					<Link to='/' className='btn btn-ghost btn-sm rounded-btn'>
+						Home
+					</Link>
+					<Link to='/about' className='btn btn-ghost btn-sm rounded-btn'>
+						Quem Somos?
+					</Link>
+					<Link to='/products' className='btn btn-ghost btn-sm rounded-btn'>
+						Produtos
+					</Link>
+					<Link to='/contact' className='btn btn-ghost btn-sm rounded-btn'>
+						Contato
+					</Link>
+					<Link to='/resolution' className='btn btn-ghost btn-sm rounded-btn'>
+						Resolução 382/2020
+					</Link>
+					<div className='btn btn-ghost btn-sm rounded-btn text-secondary align-middle'>
+						<FaUser />
+						<Link to='/login' className='mx-2'>
+							Login
+						</Link>
+					</div>
+				</Navbar.Collapse>
+			)}
 		</Navbar>
 	)
 }

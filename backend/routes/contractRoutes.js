@@ -20,7 +20,7 @@ import { protect, authorize } from '../middleware/authProtectMiddleware.js'
 import { advancedResults } from '../middleware/advancedResults.js'
 // uses
 router.use(protect)
-router.use(authorize('admin', 'staff-all', 'staff-health'))
+router.use(authorize('admin', 'staff'))
 
 //* @routes
 //* -------------------------------------------------------------

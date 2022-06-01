@@ -40,7 +40,7 @@ const getOperator = asyncHandler(async (req, res, next) => {
 	const operator = await Operator.findById(req.params.operatorId)
 		.populate({
 			path: 'plans contact',
-			select: 'name cnpj cellphone ansRegister'
+			select: 'name cnpj cellphone ansRegister email'
 		})
 		.populate({
 			path: 'contracts',
