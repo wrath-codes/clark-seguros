@@ -11,6 +11,11 @@ const planCardSchema = mongoose.Schema(
 			required: true,
 			ref: 'Employee'
 		},
+		titular: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'Employee'
+		},
 		identifier: {
 			type: String,
 			required: true,
@@ -292,6 +297,9 @@ planCardSchema.pre('remove', async function () {
 	await this.constructor.getSumCostContract(this.contract)
 	await this.constructor.getAverageCostContract(this.contract)
 })
+
+// adds titular pre-save
+planCardSchema.pre('save', async function () {})
 
 // method to recalculate planValue
 planCardSchema.method.recalculatePlanValue = async function (employee, plan) {

@@ -130,6 +130,12 @@ const importData = async () => {
 			const contract = await Contract.findOne({ identifier: planCards[i].contract })
 			const age = employee.age
 			let planValue = 0
+			let titular
+			if (planCards[i].titular) {
+				titular = await Employee.findOne({ cpf: planCards[i].titular })
+			} else {
+				titular = await Employee.findOne({ cpf: planCards[i].employee })
+			}
 
 			if (age >= 0 && age <= 18) {
 				planValue = plan.ageRangeValue.from0To18
@@ -156,6 +162,7 @@ const importData = async () => {
 			await PlanCard.create({
 				...planCards[i],
 				planValue: planValue,
+				titular: titular,
 				employee: employee._id,
 				employer: employer._id,
 				contract: contract._id,

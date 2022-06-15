@@ -19,12 +19,12 @@ const getPlanCards = asyncHandler(async (req, res, next) => {
 
 	if (req.params.employerId) {
 		query = PlanCard.find({ employer: req.params.employerId }).populate({
-			path: 'employer plan contract employee',
+			path: 'employer plan contract employee titular',
 			select: 'name cnpj ansRegister identifier cpf dateOfBirth mothersName sex age maritalStatus address email cellphone reach slug startDate endDate isValid contractFile'
 		})
 	} else {
 		query = PlanCard.find({}).populate({
-			path: 'employer plan contract employee',
+			path: 'employer plan contract employee titular',
 			select: 'name cnpj ansRegister identifier cpf dateOfBirth mothersName sex age maritalStatus address email cellphone reach slug startDate endDate isValid contractFile'
 		})
 	}

@@ -13,7 +13,8 @@ const planCards = [
 		contract: '1',
 		identifier: '2',
 		plan: '482398192',
-		kind: 'Conjuge'
+		kind: 'Conjuge',
+		titular: '141.828.987-61'
 	},
 	{
 		employee: '134.434.123-11',
@@ -21,7 +22,8 @@ const planCards = [
 		contract: '1',
 		identifier: '3',
 		plan: '482398192',
-		kind: 'Mãe/Pai'
+		kind: 'Mãe/Pai',
+		titular: '141.828.987-61'
 	}
 ]
 

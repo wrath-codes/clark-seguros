@@ -18,7 +18,7 @@ import { GrTextAlignLeft } from 'react-icons/gr'
 import { TextInput, Select } from 'flowbite-react'
 
 const Plano = () => {
-	const { planId, operatorId } = useParams()
+	const { planId } = useParams()
 
 	const { plan, isSuccess, isError, isLoading, message } = useSelector((state) => state.plan)
 
@@ -86,7 +86,25 @@ const Plano = () => {
 			from54To58: plan.ageRangeValue?.from54To58,
 			from59AndAbove: plan.ageRangeValue?.from59AndAbove
 		})
-	}, [dispatch, planId, isError, message, plan.name, plan.ansRegister, plan.reach])
+	}, [
+		dispatch,
+		planId,
+		isError,
+		message,
+		plan.name,
+		plan.ansRegister,
+		plan.reach,
+		plan.ageRangeValue?.from0To18,
+		plan.ageRangeValue?.from19To23,
+		plan.ageRangeValue?.from24To28,
+		plan.ageRangeValue?.from29To33,
+		plan.ageRangeValue?.from34To38,
+		plan.ageRangeValue?.from39To43,
+		plan.ageRangeValue?.from44To48,
+		plan.ageRangeValue?.from49To53,
+		plan.ageRangeValue?.from54To58,
+		plan.ageRangeValue?.from59AndAbove
+	])
 
 	const getPlanData = (e) => {
 		setPlanData({

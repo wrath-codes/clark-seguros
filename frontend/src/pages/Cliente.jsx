@@ -15,17 +15,19 @@ import {
 	updateContactToEmployer
 } from '../features/employer/employerSlice'
 // @components
-import PlanoItem from '../components/planos/PlanoItem'
 import Spinner from '../components/layout/Spinner'
 import BackButton from '../components/layout/BackButton'
-// @flowbite
-import { TextInput, Select } from 'flowbite-react'
-// @icons
-import { MdEdit, MdEmail, MdOutlineExpandMore } from 'react-icons/md'
-import { HiTrash } from 'react-icons/hi'
-import { GrTextAlignLeft } from 'react-icons/gr'
-import { BsTelephoneFill } from 'react-icons/bs'
 import FuncionarioItem from '../components/layout/fucionarios/FuncionarioItem'
+// @flowbite
+import { TextInput, Select, Accordion, Label } from 'flowbite-react'
+// @icons
+import { FaRoad } from 'react-icons/fa'
+import { MdEdit, MdEmail, MdOutlineExpandMore } from 'react-icons/md'
+import { HiTrash, HiIdentification, HiLocationMarker } from 'react-icons/hi'
+import { GrTextAlignLeft } from 'react-icons/gr'
+import { BsTelephoneFill, BsCalendar3 } from 'react-icons/bs'
+import { AiOutlineNumber } from 'react-icons/ai'
+import { IoIosAdd } from 'react-icons/io'
 
 const Cliente = () => {
 	// @reducers
@@ -42,6 +44,62 @@ const Cliente = () => {
 		email: ''
 	})
 	const { firstName, lastName, telephone, cellphone, email } = contactData
+
+	// set employee data
+	const [employeeData, setEmployeeData] = useState({
+		nome: '',
+		sobrenome: '',
+		cpf: '',
+		ddn: '',
+		sexo: '',
+		estadoCivil: '',
+		nomeDaMae: '',
+		sobrenomeDaMae: '',
+		eMail: '',
+		celular: '',
+		street: '',
+		streetNumber: '',
+		complement: '',
+		neighborhood: '',
+		city: '',
+		cep: '',
+		state: '',
+		country: '',
+		cliente: '',
+		contrato: '',
+		plano: '',
+		cardIdentifier: '',
+		titular: '',
+		kind: '',
+		lives: 1
+	})
+	const {
+		nome,
+		sobrenome,
+		cpf,
+		ddn,
+		sexo,
+		estadoCivil,
+		nomeDaMae,
+		sobrenomeDaMae,
+		eMail,
+		celular,
+		street,
+		streetNumber,
+		complement,
+		neighborhood,
+		city,
+		cep,
+		state,
+		country,
+		cliente,
+		contrato,
+		plano,
+		cardIdentifier,
+		titular,
+		kind,
+		lives
+	} = employeeData
 
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
@@ -82,6 +140,10 @@ const Cliente = () => {
 		}
 	}
 
+	const onEmployeeAdd = (e) => {
+		e.preventDefault()
+	}
+
 	const onContactAdd = (e) => {
 		e.preventDefault()
 		const sendData = {
@@ -111,6 +173,13 @@ const Cliente = () => {
 
 	const onChange = (e) => {
 		setContactData((prevState) => ({
+			...prevState,
+			[e.target.name]: e.target.value
+		}))
+	}
+
+	const onEmployeeChange = (e) => {
+		setEmployeeData((prevState) => ({
 			...prevState,
 			[e.target.name]: e.target.value
 		}))
@@ -319,16 +388,21 @@ const Cliente = () => {
 						{/* Funcionários */}
 						<h1 className='text-3xl font-semibold my-5'>Funcionários</h1>
 						<label
-							htmlFor='addPlanModal'
+							htmlFor='addEmployeeModal'
 							className='btn btn-outline btn-secondary btn-md mb-2 justify-around transform transition duration-200 hover:scale-105'
 						>
 							adicionar Funcionário
 						</label>
-						<div className='grid grid-cols-1 gap-0.5'>
+
+						<Accordion
+							flush={true}
+							className='grid grid-cols-1 gap-0.5 mx-10'
+							arrowIcon={MdOutlineExpandMore}
+						>
 							{employer.employees?.map((employee) => (
 								<FuncionarioItem key={employee.id} funcionario={employee} />
 							))}
-						</div>
+						</Accordion>
 					</div>
 				</div>
 				{/* modal delete */}
@@ -433,6 +507,347 @@ const Cliente = () => {
 									className='btn btn-outline btn-success btn-sm mb-2 '
 								>
 									Editar
+								</button>
+							</form>
+						</div>
+					</label>
+				</label>
+
+				{/* Add Employee Modal */}
+				<input type='checkbox' id='addEmployeeModal' className='modal-toggle' />
+				<label htmlFor='addEmployeeModal' className='modal cursor-pointer'>
+					<label className='modal-box relative' htmlFor=''>
+						<h3 className='text-lg font-bold'>Contato</h3>
+						<div className='mt-5 items-center'>
+							<form onSubmit={onEmployeeAdd} className='flex flex-col gap-3'>
+								<div>
+									<TextInput
+										id='nome'
+										type='nome'
+										placeholder='Nome do Funcionário'
+										name='nome'
+										value={nome}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={GrTextAlignLeft}
+										addon='Nome'
+									/>
+								</div>
+								<div>
+									<TextInput
+										id='sobrenome'
+										type='sobrenome'
+										placeholder='Sobrenome do Funcionário'
+										name='sobrenome'
+										value={sobrenome}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={GrTextAlignLeft}
+										addon='Sobrenome'
+									/>
+								</div>
+
+								<div>
+									<TextInput
+										id='cpf'
+										type='cpf'
+										placeholder='XXX.XXX.XXX-XX'
+										name='cpf'
+										value={cpf}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={HiIdentification}
+										addon='CPF'
+									/>
+								</div>
+
+								<div>
+									<Select
+										id='sexo'
+										name='sexo'
+										onChange={onEmployeeChange}
+										addon='Sexo'
+										required={true}
+									>
+										<option disabled value='Sexo'>
+											Sexo
+										</option>
+										<option value='Masculino'>Masculino</option>
+										<option value='Feminino'>Feminino</option>
+									</Select>
+								</div>
+
+								<div>
+									<TextInput
+										id='ddn'
+										type='ddn'
+										placeholder='AAAA-MM-DD'
+										name='ddn'
+										value={ddn}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={BsCalendar3}
+										addon='DDN'
+									/>
+								</div>
+
+								<div>
+									<TextInput
+										id='nomeDaMae'
+										type='nomeDaMae'
+										placeholder='Nome da Mãe'
+										name='nomeDaMae'
+										value={nomeDaMae}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={GrTextAlignLeft}
+										addon='Nome da Mãe'
+									/>
+								</div>
+
+								<div>
+									<TextInput
+										id='sobrenomeDaMae'
+										type='sobrenomeDaMae'
+										placeholder='Sobrenome da Mãe'
+										name='sobrenomeDaMae'
+										value={sobrenomeDaMae}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={GrTextAlignLeft}
+										addon='Sobrenome da Mãe'
+									/>
+								</div>
+
+								<div>
+									<TextInput
+										id='eMail'
+										type='eMail'
+										placeholder='Email do Funcionário'
+										name='eMail'
+										value={email}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={MdEmail}
+										addon='Email'
+									/>
+								</div>
+
+								<div>
+									<TextInput
+										id='celular'
+										type='celular'
+										placeholder='(XX)XXXXX-XXXX'
+										name='celular'
+										value={celular}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={BsTelephoneFill}
+										addon='Celular'
+									/>
+								</div>
+
+								<div>
+									<Label
+										className='mb-2 block text-left text-xs'
+										htmlFor='street'
+									>
+										Rua
+									</Label>
+									<TextInput
+										id='street'
+										type='street'
+										placeholder='Rua'
+										name='street'
+										value={street}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={FaRoad}
+									/>
+								</div>
+								<div className='grid grid-cols-1 xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-5 md:gap-2'>
+									<div className='col-span-1'>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='streetNumber'
+										>
+											Numero
+										</Label>
+										<TextInput
+											id='streetNumber'
+											type='streetNumber'
+											placeholder='Nº'
+											name='streetNumber'
+											value={streetNumber}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={AiOutlineNumber}
+											width={10}
+										/>
+									</div>
+									<div className='xl:col-span-3 lg:col-span-3 md:col-span-4'>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='complement'
+										>
+											Complemento
+										</Label>
+										<TextInput
+											id='complement'
+											type='complement'
+											placeholder='Complemento'
+											name='complement'
+											value={complement}
+											onChange={onEmployeeChange}
+											required={false}
+											icon={IoIosAdd}
+											width={10}
+										/>
+									</div>
+								</div>
+								<div className='grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 md:gap-2'>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='neighborhood'
+										>
+											Bairro
+										</Label>
+										<TextInput
+											id='neighborhood'
+											type='neighborhood'
+											placeholder='Bairro'
+											name='neighborhood'
+											value={neighborhood}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={AiOutlineNumber}
+											width={10}
+										/>
+									</div>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='city'
+										>
+											Cidade
+										</Label>
+										<TextInput
+											id='city'
+											type='city'
+											placeholder='Cidade'
+											name='city'
+											value={city}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={HiLocationMarker}
+											width={10}
+										/>
+									</div>
+								</div>
+								<div className='grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-3 md:gap-2 mb-5'>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='cep'
+										>
+											CEP
+										</Label>
+										<TextInput
+											id='cep'
+											type='cep'
+											placeholder='XXXXX-XXX'
+											name='cep'
+											value={cep}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={AiOutlineNumber}
+											width={10}
+										/>
+									</div>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='state'
+										>
+											Estado
+										</Label>
+										<TextInput
+											id='state'
+											type='state'
+											placeholder='Estado'
+											name='state'
+											value={state}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={HiLocationMarker}
+											width={10}
+										/>
+									</div>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='country'
+										>
+											País
+										</Label>
+										<TextInput
+											id='country'
+											type='country'
+											placeholder='País'
+											name='country'
+											value={country}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={HiLocationMarker}
+											width={10}
+										/>
+									</div>
+								</div>
+
+								<div>
+									<Select
+										id='contrato'
+										name='contrato'
+										onChange={onEmployeeChange}
+										addon='Contrato'
+										required={true}
+									>
+										<option disabled value='Contrato'>
+											Contrato
+										</option>
+										{employer.contracts?.map((contract) => (
+											<option
+												onChange={onEmployeeChange}
+												name='contrato'
+												value={contract._id}
+											>
+												{contract.name}
+											</option>
+										))}
+									</Select>
+								</div>
+
+								<div>
+									<Select
+										id='cliente'
+										name='cliente'
+										onChange={onEmployeeChange}
+										addon='Cliente'
+										required={true}
+									>
+										<option disabled value={employer._id}>
+											{employer.name}
+										</option>
+										<option value={employer._id}>{employer.name}</option>
+									</Select>
+								</div>
+
+								<button
+									type='submit'
+									className='btn btn-outline btn-success btn-sm mb-5 '
+								>
+									Adicionar
 								</button>
 							</form>
 						</div>

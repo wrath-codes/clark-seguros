@@ -138,7 +138,7 @@ const createEmployee = asyncHandler(async (req, res, next) => {
 		contract,
 		plan,
 		cardIdentifier,
-		planValue,
+		titular,
 		kind,
 		lives
 	} = req.body
@@ -166,6 +166,9 @@ const createEmployee = asyncHandler(async (req, res, next) => {
 		res.status(400)
 		throw new Error('Please add all the Employee required fields!')
 	}
+
+	// gets titular
+	const checkTitular = await Employee.findOne({ cpf: titular })
 
 	// check if employer exists
 	const checkEmployer = await Employer.findById(employer)
@@ -234,7 +237,8 @@ const createEmployee = asyncHandler(async (req, res, next) => {
 			lives: lives,
 			identifier: cardIdentifier,
 			contract: contract,
-			employer: employer
+			employer: employer,
+			titular: titular ? checkTitular._id : employee._id
 		})
 
 		//adds current plan value to planHistory
