@@ -20,10 +20,7 @@ const getContacts = asyncHandler(async (req, res, next) => {
 	let query
 
 	if (req.params.operatorId) {
-		query = Contact.find({ operator: req.params.operatorId }).populate({
-			path: 'operator',
-			select: 'name cnpj'
-		})
+		query = Contact.find({ operator: req.params.operatorId })
 	} else {
 		query = Contact.find({}).populate({
 			path: 'operator employer',
@@ -87,6 +84,7 @@ const createContact = asyncHandler(async (req, res, next) => {
 		res.status(400)
 		throw new Error('Please add all fields for the Contact!')
 	}
+
 	// find operator
 	const operator = await Operator.findOne({ cnpj: cnpj })
 	// find employer

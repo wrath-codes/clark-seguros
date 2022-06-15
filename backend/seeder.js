@@ -68,7 +68,7 @@ const importData = async () => {
 				operator: operator._id
 			})
 		}
-		await Plan.insertMany(samplePlans)
+		// await Plan.insertMany(samplePlans)
 		console.log('Plans Imported!'.green.inverse)
 
 		//? import employers
@@ -128,9 +128,34 @@ const importData = async () => {
 			const plan = await Plan.findOne({ ansRegister: planCards[i].plan })
 			const employer = await Employer.findOne({ cnpj: planCards[i].employer })
 			const contract = await Contract.findOne({ identifier: planCards[i].contract })
+			const age = employee.age
+			let planValue = 0
 
-			samplePlanCards.push({
+			if (age >= 0 && age <= 18) {
+				planValue = plan.ageRangeValue.from0To18
+			} else if (age >= 19 && age <= 23) {
+				planValue = plan.ageRangeValue.from19To23
+			} else if (age >= 24 && age <= 28) {
+				planValue = plan.ageRangeValue.from24To28
+			} else if (age >= 29 && age <= 33) {
+				planValue = plan.ageRangeValue.from29To33
+			} else if (age >= 34 && age <= 38) {
+				planValue = plan.ageRangeValue.from34To38
+			} else if (age >= 39 && age <= 43) {
+				planValue = plan.ageRangeValue.from39To43
+			} else if (age >= 44 && age <= 48) {
+				planValue = plan.ageRangeValue.from44To48
+			} else if (age >= 49 && age <= 53) {
+				planValue = plan.ageRangeValue.from49To53
+			} else if (age >= 54 && age <= 58) {
+				planValue = plan.ageRangeValue.from54To58
+			} else {
+				planValue = plan.ageRangeValue.from59AndAbove
+			}
+
+			await PlanCard.create({
 				...planCards[i],
+				planValue: planValue,
 				employee: employee._id,
 				employer: employer._id,
 				contract: contract._id,
@@ -144,7 +169,7 @@ const importData = async () => {
 					startDate: new Date()
 				},
 				planValueHistory: {
-					value: planCards[i].planValue,
+					value: planValue,
 					change: new Date()
 				},
 				contractHistory: {
@@ -152,6 +177,7 @@ const importData = async () => {
 					startDate: new Date()
 				}
 			})
+			console.log(planValue)
 			// PlanCard.create({
 			// 	...planCards[i],
 			// 	employee: employee._id,
@@ -177,7 +203,8 @@ const importData = async () => {
 			// })
 		}
 
-		await PlanCard.insertMany(samplePlanCards)
+		// await PlanCard.insertMany(samplePlanCards)
+
 		console.log('Plan Cards Imported!'.green)
 
 		// End process message

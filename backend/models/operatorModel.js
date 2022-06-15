@@ -75,9 +75,6 @@ operatorSchema.pre('update', function (next) {
 
 // cascade delete plans when operator is deleted
 operatorSchema.pre('remove', async function (next) {
-	await this.model('Plan').deleteMany({ operator: this._id })
-	await this.model('Contact').deleteMany({ operator: this._id })
-
 	await this.model('Contract').updateMany(
 		{ operator: this._id },
 		{

@@ -76,7 +76,7 @@ employerSchema.virtual('contact', {
 	ref: 'Contact',
 	localField: '_id',
 	foreignField: 'employer',
-	justOne: false
+	justOne: true
 })
 
 // add employees field

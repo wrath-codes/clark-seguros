@@ -1,4 +1,4 @@
-//*                  Operadora
+//*                  Cliente
 //* ----------------------------------------
 // @imports
 import { useEffect, useState } from 'react'
@@ -7,15 +7,13 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 // @features
 import {
-	getOperator,
-	getOperators,
-	deleteOperator,
-	addContactToOperator,
-	updateContactToOperator,
-	reset
-} from '../features/operator/operatorSlice'
-import { createPlan } from '../features/plan/planSlice'
-
+	deleteEmployer,
+	getEmployer,
+	getEmployers,
+	addContactToEmployer,
+	reset,
+	updateContactToEmployer
+} from '../features/employer/employerSlice'
 // @components
 import PlanoItem from '../components/planos/PlanoItem'
 import Spinner from '../components/layout/Spinner'
@@ -23,19 +21,17 @@ import BackButton from '../components/layout/BackButton'
 // @flowbite
 import { TextInput, Select } from 'flowbite-react'
 // @icons
-import { MdEdit, MdEmail } from 'react-icons/md'
+import { MdEdit, MdEmail, MdOutlineExpandMore } from 'react-icons/md'
 import { HiTrash } from 'react-icons/hi'
 import { GrTextAlignLeft } from 'react-icons/gr'
 import { BsTelephoneFill } from 'react-icons/bs'
+import FuncionarioItem from '../components/layout/fucionarios/FuncionarioItem'
 
-const Operadora = () => {
-	// modal state
-	const [modalStatus, setModalStatus] = useState(false)
+const Cliente = () => {
 	// @reducers
-	const { operator, isSuccess, isError, isLoading, message } = useSelector(
-		(state) => state.operator
+	const { employer, isSuccess, isError, isLoading, message } = useSelector(
+		(state) => state.employer
 	)
-	const { plans } = useSelector((state) => state.plan)
 
 	// set contact data
 	const [contactData, setContactData] = useState({
@@ -45,21 +41,11 @@ const Operadora = () => {
 		cellphone: '',
 		email: ''
 	})
-
-	// set planData
-	const [planData, setPlanData] = useState({
-		name: '',
-		ansRegister: '',
-		kind: 'health',
-		reach: ''
-	})
-
-	const { name, ansRegister, reach } = planData
-
 	const { firstName, lastName, telephone, cellphone, email } = contactData
+
 	const dispatch = useDispatch()
-	const { operatorId } = useParams()
 	const navigate = useNavigate()
+	const { employerId } = useParams()
 
 	useEffect(() => {
 		return () => {
@@ -73,11 +59,11 @@ const Operadora = () => {
 		if (isError) {
 			toast.error(message)
 		}
-		dispatch(getOperator(operatorId))
-	}, [dispatch, operatorId, isError, message])
+		dispatch(getEmployer(employerId))
+	}, [dispatch, employerId, isError, message])
 
 	const getContactData = (e) => {
-		if (!operator.contact) {
+		if (!employer.contact) {
 			setContactData({
 				firstName: '',
 				lastName: '',
@@ -87,32 +73,27 @@ const Operadora = () => {
 			})
 		} else {
 			setContactData({
-				firstName: operator.contact.name?.firstName,
-				lastName: operator.contact.name?.lastName,
-				telephone: operator.contact.telephone,
-				cellphone: operator.contact.cellphone,
-				email: operator.contact.email
+				firstName: employer.contact.name?.firstName,
+				lastName: employer.contact.name?.lastName,
+				telephone: employer.contact.telephone,
+				cellphone: employer.contact.cellphone,
+				email: employer.contact.email
 			})
 		}
 	}
 
-	const onChange = (e) => {
-		setContactData((prevState) => ({
-			...prevState,
-			[e.target.name]: e.target.value
-		}))
-	}
-
-	const onPlanChange = (e) => {
-		setPlanData((prevState) => ({
-			...prevState,
-			[e.target.name]: e.target.value
-		}))
-	}
-
-	const onPlanAdd = (e) => {
+	const onContactAdd = (e) => {
 		e.preventDefault()
-		dispatch(createPlan(planData))
+		const sendData = {
+			firstName: firstName,
+			lastName: lastName,
+			telephone: telephone,
+			cellphone: cellphone,
+			email: email,
+			kind: 'Cliente',
+			cnpj: employer.cnpj
+		}
+		dispatch(addContactToEmployer(sendData))
 		window.location.reload()
 	}
 
@@ -124,28 +105,21 @@ const Operadora = () => {
 			cellphone: cellphone,
 			email: email
 		}
-		dispatch(updateContactToOperator(sendData))
-		dispatch(getOperator(operatorId))
+		dispatch(updateContactToEmployer(sendData))
+		dispatch(getEmployer(employerId))
 	}
-	const onContactAdd = (e) => {
-		e.preventDefault()
-		const sendData = {
-			firstName: firstName,
-			lastName: lastName,
-			telephone: telephone,
-			cellphone: cellphone,
-			email: email,
-			kind: 'Operadora',
-			cnpj: operator.cnpj
-		}
-		dispatch(addContactToOperator(sendData))
-		window.location.reload()
+
+	const onChange = (e) => {
+		setContactData((prevState) => ({
+			...prevState,
+			[e.target.name]: e.target.value
+		}))
 	}
 
 	const onDelete = (e) => {
-		dispatch(deleteOperator(operatorId))
-		navigate('/health/operators')
-		dispatch(getOperators())
+		dispatch(deleteEmployer())
+		navigate('/health/employers')
+		dispatch(getEmployers())
 		dispatch(reset())
 	}
 
@@ -156,11 +130,11 @@ const Operadora = () => {
 	return (
 		<>
 			<div className='card-title text-secondary text-left justify-between'>
-				<BackButton url='/health/operators' />
+				<BackButton url='/health/employers' />
 				<div>
 					<Link
 						className='btn btn-warning btn-md mb-10 mr-2 transform transition duration-200 hover:scale-105'
-						to={`/health/operators/${operator._id}/edit`}
+						to={`/health/employers/${employer._id}/edit`}
 					>
 						<MdEdit />
 					</Link>
@@ -173,32 +147,32 @@ const Operadora = () => {
 				</div>
 			</div>
 
-			<div className=' text-4xl font-bold mt-10'>{operator.name}</div>
+			<div className=' text-4xl font-bold mt-10'>{employer.name}</div>
 			<div className='divider'></div>
 			<div className='grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-3 mb-8 md:gap-8'>
 				<div className='col-span-4 lg:col-span-8 md:col-span-12'>
 					<div className='mb-6'>
 						{/* info */}
 						<div className='card-actions justify-evenly mb-5'>
-							<h1 className='text-2xl card-title inline'>{operator.name}</h1>
+							<h1 className='text-2xl card-title inline'>{employer.name}</h1>
 							<div className='ml-2 mr-1 badge badge-success mt-2'>
 								<strong>CNPJ: &nbsp;</strong>
-								{operator.cnpj}
+								{employer.cnpj}
 							</div>
 							<div className='ml-2 mr-1 px-3 card bg-info rounded-2xl text-sm mt-2 inline'>
 								<strong>Endereço: &nbsp;</strong>
-								{operator.address?.street}, {operator.address?.streetNumber},{' '}
-								{operator.address?.complement
-									? operator.address?.complement + ', '
+								{employer.address?.street}, {employer.address?.streetNumber},{' '}
+								{employer.address?.complement
+									? employer.address?.complement + ', '
 									: ''}
-								{operator.address?.neighborhood}, {operator.address?.city} -{' '}
-								{operator.address?.state}, {operator.address?.cep},{' '}
-								{operator.address?.country}
+								{employer.address?.neighborhood}, {employer.address?.city} -{' '}
+								{employer.address?.state}, {employer.address?.cep},{' '}
+								{employer.address?.country}
 							</div>
 						</div>
 
 						{/* contato */}
-						{operator.contact ? (
+						{employer.contact ? (
 							<div className='mt-5 text-xl font-semibold contact mb-2'>
 								Contato{' '}
 								<label
@@ -213,28 +187,28 @@ const Operadora = () => {
 									<div className='stat'>
 										<div className='stat-title text-md'>Nome</div>
 										<div className='text-lg stat-value'>
-											{operator.contact?.name?.firstName}{' '}
-											{operator.contact?.name?.lastName}
+											{employer.contact?.name?.firstName}{' '}
+											{employer.contact?.name?.lastName}
 										</div>
 									</div>
-									{operator.telephone && (
+									{employer.telephone && (
 										<div className='stat'>
 											<div className='stat-title text-md'>Telephone</div>
 											<div className='text-lg stat-value'>
-												{operator.contact?.telephone}
+												{employer.contact?.telephone}
 											</div>
 										</div>
 									)}
 									<div className='stat'>
 										<div className='stat-title text-md'>Celular</div>
 										<div className='text-lg stat-value'>
-											{operator.contact?.cellphone}
+											{employer.contact?.cellphone}
 										</div>
 									</div>
 									<div className='stat'>
 										<div className='stat-title text-md'>email</div>
 										<div className='text-lg stat-value'>
-											{operator.contact?.email}
+											{employer.contact?.email}
 										</div>
 									</div>
 								</div>
@@ -341,125 +315,43 @@ const Operadora = () => {
 								</label>
 							</>
 						)}
-						{/* login */}
-						{!(operator.login?.username === 'username') ? (
-							<div className='mt-5 text-xl font-semibold contact mb-10'>
-								Login do Site
-								<div className=' w-full rounded-lg shadow-lg border-2 bg-base-100 mt-3 stats stats-vertical lg:stats-horizontal md:stats-vertical sm:stats-vertical '>
-									<div className='stat'>
-										<div className='stat-title text-md'>Username</div>
-										<div className='text-lg stat-value'>
-											{operator.login?.username}
-										</div>
-									</div>
-									<div className='stat'>
-										<div className='stat-title text-md'>Senha</div>
-										<div className='text-lg stat-value'>
-											{operator.login?.password}
-										</div>
-									</div>
-								</div>
-							</div>
-						) : (
-							<Link
-								to={`/health/operators/${operator._id}/edit`}
-								className='btn btn-secondary text-base-100 btn-lg justify-around btn-block'
-							>
-								Adicionar login
-							</Link>
-						)}
 
-						{/* Website */}
-						<div className='mt-4 mb-4 card-actions justify-around'>
-							<a
-								href={operator.website}
-								target='_blank'
-								rel='noreferrer'
-								className='btn btn-outline btn-secondary btn-lg btn-block transform transition duration-200 hover:scale-y-110'
-							>
-								visitar o website
-							</a>
-						</div>
-
-						{/* Planos  */}
-
-						<h1 className='text-3xl font-semibold mb-5'>Planos</h1>
+						{/* Funcionários */}
+						<h1 className='text-3xl font-semibold my-5'>Funcionários</h1>
 						<label
 							htmlFor='addPlanModal'
 							className='btn btn-outline btn-secondary btn-md mb-2 justify-around transform transition duration-200 hover:scale-105'
 						>
-							adicionar plano
+							adicionar Funcionário
 						</label>
-
-						<div className='grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-0.5'>
-							{operator.plans?.map((plano) => (
-								<PlanoItem key={plano._id} plano={plano} />
+						<div className='grid grid-cols-1 gap-0.5'>
+							{employer.employees?.map((employee) => (
+								<FuncionarioItem key={employee.id} funcionario={employee} />
 							))}
 						</div>
 					</div>
 				</div>
-				{/* add plan modal */}
-				<input type='checkbox' id='addPlanModal' className='modal-toggle' />
-				<label htmlFor='addPlanModal' className='modal cursor-pointer'>
-					<label className='modal-box relative' htmlFor=''>
-						<h3 className='text-lg font-bold'>Contato</h3>
-						<div className='mt-5 items-center'>
-							<form onSubmit={onPlanAdd} className='flex flex-col gap-3'>
-								<div>
-									<TextInput
-										id='name'
-										type='name'
-										placeholder='Nome do Plano'
-										name='name'
-										value={name}
-										onChange={onPlanChange}
-										required={true}
-										icon={GrTextAlignLeft}
-										addon='Nome'
-									/>
-								</div>
-								<div>
-									<TextInput
-										id='ansRegister'
-										type='ansRegister'
-										placeholder='Registro ANS XXXXXXXXX'
-										name='ansRegister'
-										value={ansRegister}
-										onChange={onPlanChange}
-										required={true}
-										icon={GrTextAlignLeft}
-										addon='ANS'
-									/>
-								</div>
-								<div id='select'>
-									<Select
-										id='reach'
-										name='reach'
-										onChange={onPlanChange}
-										addon='Abrangência'
-										required={true}
-									>
-										<option disabled value='Grupo de Municipios'>
-											Grupo de Municipios
-										</option>
-										<option value='Grupo de Municipios'>
-											Grupo de Municipios
-										</option>
-										<option value='Estadual'>Estadual</option>
-										<option value='Grupo de Estados'>
-											Grupo de Estados
-										</option>
-										<option value='Nacional'>Nacional</option>
-									</Select>
-								</div>
+				{/* modal delete */}
 
-								<button
-									type='submit'
-									className='btn btn-outline btn-success btn-sm mb-5 '
-								>
-									Adicionar
-								</button>
-							</form>
+				<input type='checkbox' id='deleteModal' className='modal-toggle' />
+				<label htmlFor='deleteModal' className='modal cursor-pointer'>
+					<label className='modal-box relative' htmlFor=''>
+						<h3 className='text-lg font-bold'>
+							Tem certeza que quer deletar esta Operadora?
+						</h3>
+						<div className='mt-5 items-center'>
+							<label
+								htmlFor='deleteModal'
+								className='btn btn-outline btn-success btn-md mb-5 mr-2 '
+							>
+								no
+							</label>
+							<button
+								onClick={onDelete}
+								className='btn btn-outline btn-error btn-md mb-5 '
+							>
+								yes
+							</button>
 						</div>
 					</label>
 				</label>
@@ -546,34 +438,9 @@ const Operadora = () => {
 						</div>
 					</label>
 				</label>
-
-				{/* modal delete */}
-
-				<input type='checkbox' id='deleteModal' className='modal-toggle' />
-				<label htmlFor='deleteModal' className='modal cursor-pointer'>
-					<label className='modal-box relative' htmlFor=''>
-						<h3 className='text-lg font-bold'>
-							Tem certeza que quer deletar esta Operadora?
-						</h3>
-						<div className='mt-5 items-center'>
-							<label
-								htmlFor='deleteModal'
-								className='btn btn-outline btn-success btn-md mb-5 mr-2 '
-							>
-								no
-							</label>
-							<button
-								onClick={onDelete}
-								className='btn btn-outline btn-error btn-md mb-5 '
-							>
-								yes
-							</button>
-						</div>
-					</label>
-				</label>
 			</div>
 		</>
 	)
 }
 
-export default Operadora
+export default Cliente

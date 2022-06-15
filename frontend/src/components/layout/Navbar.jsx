@@ -44,7 +44,7 @@ function NavbarClark({ title }) {
 					<Link to='/health/operators' className='btn btn-ghost btn-sm rounded-btn'>
 						Operadoras
 					</Link>
-					<Link to='/health/clients' className='btn btn-ghost btn-sm rounded-btn'>
+					<Link to='/health/employers' className='btn btn-ghost btn-sm rounded-btn'>
 						Clientes
 					</Link>
 					<Link to='/health/contracts' className='btn btn-ghost btn-sm rounded-btn'>

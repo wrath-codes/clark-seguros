@@ -1,4 +1,4 @@
-//*           Adicionar Operadora
+//*           Adicionar Cliente
 //* ----------------------------------------
 // @imports
 import { useState, useEffect } from 'react'
@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 // @features
-import { createOperator, reset } from '../features/operator/operatorSlice'
+import { createEmployer, reset } from '../features/employer/employerSlice'
 // @components
 import BackButton from '../components/layout/BackButton'
 import Spinner from '../components/layout/Spinner'
@@ -20,15 +20,15 @@ import { MdOutlineWebAsset } from 'react-icons/md'
 import { AiOutlineNumber } from 'react-icons/ai'
 import { IoIosAdd } from 'react-icons/io'
 
-const AdicionarOperadora = () => {
+const AdicionarCliente = () => {
 	// navigatge and dispatch
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
 
 	// reducers
-	const { isLoading, isError, isSuccess, message } = useSelector((state) => state.operator)
+	const { isLoading, isError, isSuccess, message } = useSelector((state) => state.employer)
 	// operator to be created
-	const [operatorData, setOperatorData] = useState({
+	const [employerData, setEmployerData] = useState({
 		name: '',
 		cnpj: '',
 		website: '',
@@ -39,11 +39,9 @@ const AdicionarOperadora = () => {
 		city: '',
 		cep: '',
 		state: '',
-		country: '',
-		username: '',
-		password: ''
+		country: ''
 	})
-	// destructure operator data
+	// destructure employer data
 	const {
 		name,
 		cnpj,
@@ -55,33 +53,28 @@ const AdicionarOperadora = () => {
 		city,
 		cep,
 		state,
-		country,
-		username,
-		password
-	} = operatorData
+		country
+	} = employerData
 
 	useEffect(() => {
 		if (isError) {
 			toast.error(message)
 		}
 
-		if (isSuccess) {
-			dispatch(reset())
-			navigate('/health/operators')
-		}
-
 		return () => dispatch(reset())
-	}, [isError, isSuccess, message, dispatch, navigate])
+	}, [isError, message, dispatch])
 
 	const onSubmit = (e) => {
 		// prevents default form action
 		e.preventDefault()
-		// calls create operator
-		dispatch(createOperator(operatorData))
+		// calls create employer
+		dispatch(createEmployer(employerData))
+		dispatch(reset())
+		navigate('/health/employers')
 	}
 
 	const onChange = (e) => {
-		setOperatorData((prevState) => ({
+		setEmployerData((prevState) => ({
 			...prevState,
 			[e.target.name]: e.target.value
 		}))
@@ -93,10 +86,10 @@ const AdicionarOperadora = () => {
 
 	return (
 		<>
-			<BackButton url='/health/operators' />
+			<BackButton url='/health/employers' />
 			<div className='flex flex-row mx-auto text-3xl text-neutral gap-2 items-center justify-center mb-5'>
 				<RiBuilding2Fill size={40} className=' text-secondary' />
-				<div className=''>Adicionar Operadora</div>
+				<div className=''>Adicionar Cliente</div>
 			</div>
 			<div className='w-full max-w-md mx-auto flex flex-col gap-6'>
 				<form onSubmit={onSubmit} className='flex flex-col gap-3'>
@@ -104,13 +97,13 @@ const AdicionarOperadora = () => {
 						<TextInput
 							id='name'
 							type='name'
-							placeholder='Nome da Operadora'
+							placeholder='Nome do Cliente'
 							name='name'
 							value={name}
 							onChange={onChange}
 							required={true}
 							icon={RiBuildingFill}
-							addon='Operadora'
+							addon='Cliente'
 						/>
 					</div>
 					<div>
@@ -281,34 +274,7 @@ const AdicionarOperadora = () => {
 							/>
 						</div>
 					</div>
-					<div className=''>
-						<Label className='mb-2 block text-left text-md' htmlFor='username'>
-							Login Info
-						</Label>
-						<TextInput
-							className='mb-2'
-							id='username'
-							type='username'
-							placeholder='Usuário'
-							name='username'
-							value={username}
-							onChange={onChange}
-							required={false}
-							icon={FaUser}
-							width={10}
-						/>
-						<TextInput
-							id='password'
-							type='password'
-							placeholder='Senha'
-							name='password'
-							value={password}
-							onChange={onChange}
-							required={false}
-							icon={FaLock}
-							width={10}
-						/>
-					</div>
+
 					<button
 						className='btn btn-secondary text-base-100 text-center'
 						type='submit'
@@ -321,4 +287,4 @@ const AdicionarOperadora = () => {
 	)
 }
 
-export default AdicionarOperadora
+export default AdicionarCliente

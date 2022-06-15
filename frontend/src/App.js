@@ -14,6 +14,12 @@ import Operadora from './pages/Operadora'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import AdicionarOperadora from './pages/AdicionarOperadora'
+import EditarOperadora from './pages/EditarOperadora'
+import Plano from './pages/Plano'
+import Clientes from './pages/Clientes'
+import Cliente from './pages/Cliente'
+import AdicionarCliente from './pages/AdicionarCliente'
+import EditarCliente from './pages/EditarCliente'
 
 //* ----------------------------------------
 
@@ -46,6 +52,57 @@ const App = () => {
 								<Route
 									path='/health/operators/:operatorId'
 									element={<Operadora />}
+								/>
+							</Route>
+							<Route
+								path='/health/operators/:operatorId/edit'
+								element={<PrivateRoute />}
+							>
+								<Route
+									path='/health/operators/:operatorId/edit'
+									element={<EditarOperadora />}
+								/>
+							</Route>
+							<Route
+								path='/health/operators/:operatorId/plans/:planId'
+								element={<PrivateRoute />}
+							>
+								<Route
+									path='/health/operators/:operatorId/plans/:planId'
+									element={<Plano />}
+								/>
+							</Route>
+
+							<Route path='/health/employers' element={<PrivateRoute />}>
+								<Route path='/health/employers' element={<Clientes />} />
+							</Route>
+
+							<Route
+								path='/health/employers/:employerId'
+								element={<PrivateRoute />}
+							>
+								<Route
+									path='/health/employers/:employerId'
+									element={<Cliente />}
+								/>
+							</Route>
+							<Route
+								path='/health/employers/add-employer'
+								element={<PrivateRoute />}
+							>
+								<Route
+									path='/health/employers/add-employer'
+									element={<AdicionarCliente />}
+								/>
+							</Route>
+
+							<Route
+								path='/health/employers/:employerId/edit'
+								element={<PrivateRoute />}
+							>
+								<Route
+									path='/health/employers/:employerId/edit'
+									element={<EditarCliente />}
 								/>
 							</Route>
 

@@ -1,4 +1,4 @@
-//*                  Item Operadora
+//*                  Item Cliente
 //* ----------------------------------------
 // @imports
 import { useState } from 'react'
@@ -7,9 +7,9 @@ import { useDispatch } from 'react-redux'
 // @icons
 import { RiContactsLine } from 'react-icons/ri'
 // @features
-import { reset } from '../../features/operator/operatorSlice'
+import { reset } from '../../features/employer/employerSlice'
 
-const OperadoraItem = ({ operadora }) => {
+const ClienteItem = ({ employer }) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const dispatch = useDispatch()
 
@@ -19,22 +19,22 @@ const OperadoraItem = ({ operadora }) => {
 				{/* info */}
 				<Link
 					className='card-title text-secondary text-left justify-between'
-					to={`/health/operators/${operadora._id}`}
+					to={`/health/employers/${employer._id}`}
 					onClick={() => dispatch(reset())}
 				>
-					{operadora.name}
+					{employer.name}
 				</Link>
 
 				<h3 className='text-md text-left'>
-					<strong>CNPJ:</strong> {operadora.cnpj}
+					<strong>CNPJ:</strong> {employer.cnpj}
 				</h3>
 				<h3 className='text-md text-left'>
-					<strong>Endereço:</strong> {operadora.address.street},{' '}
-					{operadora.address.streetNumber},{' '}
-					{operadora.address.complement ? operadora.address.complement + ', ' : ''}
-					{operadora.address.neighborhood}, {operadora.address.city} -{' '}
-					{operadora.address.state}, {operadora.address.cep},{' '}
-					{operadora.address.country}
+					<strong>Endereço:</strong> {employer.address.street},{' '}
+					{employer.address.streetNumber},{' '}
+					{employer.address.complement ? employer.address.complement + ', ' : ''}
+					{employer.address.neighborhood}, {employer.address.city} -{' '}
+					{employer.address.state}, {employer.address.cep},{' '}
+					{employer.address.country}
 				</h3>
 				{/* contact */}
 				<button
@@ -49,16 +49,16 @@ const OperadoraItem = ({ operadora }) => {
 						<div className='text-left'>
 							<h4 className='text-md text-gray-600'>
 								<strong>Nome: </strong>
-								{operadora.contact.name?.firstName}{' '}
-								{operadora.contact.name?.lastName}
+								{employer.contact.name?.firstName}{' '}
+								{employer.contact.name?.lastName}
 							</h4>
 							<h4 className='text-md text-gray-600'>
 								<strong>Telephone: </strong>
-								{operadora.contact.cellphone}
+								{employer.contact.cellphone}
 							</h4>
 							<h4 className='text-md text-gray-600'>
 								<strong>Email: </strong>
-								{operadora.contact.email}
+								{employer.contact.email}
 							</h4>
 						</div>
 					</>
@@ -68,4 +68,4 @@ const OperadoraItem = ({ operadora }) => {
 	)
 }
 
-export default OperadoraItem
+export default ClienteItem

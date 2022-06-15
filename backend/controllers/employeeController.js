@@ -352,9 +352,26 @@ const updateEmployee = asyncHandler(async (req, res, next) => {
 		throw new Error('Employee not found!')
 	}
 
+	const dob = employee.dateOfBirth
+
 	const updatedEmployee = await Employee.findByIdAndUpdate(req.params.id, req.body, {
 		new: true
 	})
+	console.log(updatedEmployee.dateOfBirth)
+	if (dob !== updatedEmployee.dateOfBirth) {
+		await Employee.findByIdAndUpdate(
+			updatedEmployee._id,
+			{
+				age: Math.floor(
+					(Date.now() - updatedEmployee.dateOfBirth.getTime()) /
+						(1000 * 3600 * 24 * 365)
+				)
+			},
+			{
+				new: true
+			}
+		)
+	}
 
 	const result = await Employee.findById(updatedEmployee._id)
 		.populate({

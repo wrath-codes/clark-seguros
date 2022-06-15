@@ -40,7 +40,7 @@ const getOperator = asyncHandler(async (req, res, next) => {
 	const operator = await Operator.findById(req.params.operatorId)
 		.populate({
 			path: 'plans contact',
-			select: 'name cnpj cellphone ansRegister email'
+			select: 'name cnpj cellphone ansRegister email reach'
 		})
 		.populate({
 			path: 'contracts',
@@ -144,7 +144,7 @@ const createOperator = asyncHandler(async (req, res, next) => {
 const deleteOperator = asyncHandler(async (req, res, next) => {
 	// get operator, contact and plans with id
 	const operator = await Operator.findById(req.params.operatorId)
-	const contact = await Contact.findOne({ cnpj: operator.cnpj })
+	const contact = await Contact.findOne({ operator: operator._id })
 	const plans = await Plan.find({ operator: operator._id })
 
 	// checks if operator exists

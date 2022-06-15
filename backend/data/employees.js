@@ -6,7 +6,6 @@ const employees = [
 		},
 		cpf: '141.828.987-61',
 		dateOfBirth: '1991-08-14',
-		age: 30,
 		sex: 'Masculino',
 		maritalStatus: 'Casado(a)',
 
@@ -35,7 +34,6 @@ const employees = [
 		},
 		cpf: '116.545.617-62',
 		dateOfBirth: '1995-09-06',
-		age: '26',
 		sex: 'Feminino',
 		maritalStatus: 'Casado(a)',
 
@@ -64,7 +62,6 @@ const employees = [
 		},
 		cpf: '134.434.123-11',
 		dateOfBirth: '1963-09-19',
-		age: 30,
 		sex: 'Masculino',
 		maritalStatus: 'Casado(a)',
 

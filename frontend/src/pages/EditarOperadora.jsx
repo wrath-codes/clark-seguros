@@ -1,12 +1,12 @@
-//*           Adicionar Operadora
+//*             Editar Operadora
 //* ----------------------------------------
 // @imports
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 // @features
-import { createOperator, reset } from '../features/operator/operatorSlice'
+import { updateOperator, getOperator, reset } from '../features/operator/operatorSlice'
 // @components
 import BackButton from '../components/layout/BackButton'
 import Spinner from '../components/layout/Spinner'
@@ -20,28 +20,40 @@ import { MdOutlineWebAsset } from 'react-icons/md'
 import { AiOutlineNumber } from 'react-icons/ai'
 import { IoIosAdd } from 'react-icons/io'
 
-const AdicionarOperadora = () => {
+const EditarOperadora = () => {
 	// navigatge and dispatch
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
+	const { operatorId } = useParams()
 
 	// reducers
-	const { isLoading, isError, isSuccess, message } = useSelector((state) => state.operator)
+	const { operator, isLoading, isError, isSuccess, message } = useSelector(
+		(state) => state.operator
+	)
+
+	// get operator
+	useEffect(() => {
+		if (isError) {
+			toast.error(message)
+		}
+		dispatch(getOperator(operatorId))
+	}, [dispatch, operatorId, isError, message])
+
 	// operator to be created
 	const [operatorData, setOperatorData] = useState({
-		name: '',
-		cnpj: '',
-		website: '',
-		street: '',
-		streetNumber: '',
-		complement: '',
-		neighborhood: '',
-		city: '',
-		cep: '',
-		state: '',
-		country: '',
-		username: '',
-		password: ''
+		name: operator.name,
+		cnpj: operator.cnpj,
+		website: operator.website,
+		street: operator.address?.street,
+		streetNumber: operator.address?.streetNumber,
+		complement: operator.address?.complement ? operator.address?.complement : '',
+		neighborhood: operator.address?.neighborhood,
+		city: operator.address?.city,
+		cep: operator.address?.cep,
+		state: operator.address?.state,
+		country: operator.address?.country,
+		username: operator.login?.username,
+		password: operator.login?.password
 	})
 	// destructure operator data
 	const {
@@ -64,20 +76,35 @@ const AdicionarOperadora = () => {
 		if (isError) {
 			toast.error(message)
 		}
-
-		if (isSuccess) {
-			dispatch(reset())
-			navigate('/health/operators')
-		}
-
-		return () => dispatch(reset())
-	}, [isError, isSuccess, message, dispatch, navigate])
+	}, [isError, isSuccess, message])
 
 	const onSubmit = (e) => {
 		// prevents default form action
 		e.preventDefault()
+		// prepare update data
+		const sendData = {
+			name: name,
+			cnpj: cnpj,
+			website: website,
+			address: {
+				street: street,
+				streetNumber: streetNumber,
+				complement: complement,
+				neighborhood: neighborhood,
+				city: city,
+				cep: cep,
+				state: state,
+				country: country
+			},
+			login: {
+				username: username,
+				password: password
+			}
+		}
 		// calls create operator
-		dispatch(createOperator(operatorData))
+		dispatch(updateOperator(sendData, operatorId))
+		navigate(`/health/operators/${operatorId}`)
+		dispatch(reset())
 	}
 
 	const onChange = (e) => {
@@ -93,10 +120,10 @@ const AdicionarOperadora = () => {
 
 	return (
 		<>
-			<BackButton url='/health/operators' />
+			<BackButton url={`/health/operators/${operator._id}`} />
 			<div className='flex flex-row mx-auto text-3xl text-neutral gap-2 items-center justify-center mb-5'>
 				<RiBuilding2Fill size={40} className=' text-secondary' />
-				<div className=''>Adicionar Operadora</div>
+				<div className=''>Editar Operadora</div>
 			</div>
 			<div className='w-full max-w-md mx-auto flex flex-col gap-6'>
 				<form onSubmit={onSubmit} className='flex flex-col gap-3'>
@@ -313,7 +340,7 @@ const AdicionarOperadora = () => {
 						className='btn btn-secondary text-base-100 text-center'
 						type='submit'
 					>
-						Adicionar
+						Editar
 					</button>
 				</form>
 			</div>
@@ -321,4 +348,4 @@ const AdicionarOperadora = () => {
 	)
 }
 
-export default AdicionarOperadora
+export default EditarOperadora

@@ -5,7 +5,6 @@ const planCards = [
 		contract: '1',
 		identifier: '1',
 		plan: '482398192',
-		planValue: '1164.58',
 		kind: 'Titular'
 	},
 	{
@@ -14,7 +13,6 @@ const planCards = [
 		contract: '1',
 		identifier: '2',
 		plan: '482398192',
-		planValue: '909.81',
 		kind: 'Conjuge'
 	},
 	{
@@ -23,7 +21,6 @@ const planCards = [
 		contract: '1',
 		identifier: '3',
 		plan: '482398192',
-		planValue: '540.51',
 		kind: 'Mãe/Pai'
 	}
 ]

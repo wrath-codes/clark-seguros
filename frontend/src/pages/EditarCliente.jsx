@@ -1,53 +1,62 @@
-//*           Adicionar Operadora
+//*             Editar Operadora
 //* ----------------------------------------
 // @imports
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 // @features
-import { createOperator, reset } from '../features/operator/operatorSlice'
+import { updateEmployer, getEmployer, reset } from '../features/employer/employerSlice'
 // @components
 import BackButton from '../components/layout/BackButton'
 import Spinner from '../components/layout/Spinner'
 // @flowbite
 import { TextInput, Label } from 'flowbite-react'
 // @icons
-import { FaRoad, FaUser, FaLock } from 'react-icons/fa'
+import { FaRoad, FaLock } from 'react-icons/fa'
 import { RiBuilding2Fill, RiBuildingFill } from 'react-icons/ri'
 import { HiIdentification, HiLocationMarker } from 'react-icons/hi'
-import { MdOutlineWebAsset } from 'react-icons/md'
 import { AiOutlineNumber } from 'react-icons/ai'
 import { IoIosAdd } from 'react-icons/io'
 
-const AdicionarOperadora = () => {
+const EditarCliente = () => {
 	// navigatge and dispatch
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
+	const { employerId } = useParams()
 
 	// reducers
-	const { isLoading, isError, isSuccess, message } = useSelector((state) => state.operator)
-	// operator to be created
-	const [operatorData, setOperatorData] = useState({
-		name: '',
-		cnpj: '',
-		website: '',
-		street: '',
-		streetNumber: '',
-		complement: '',
-		neighborhood: '',
-		city: '',
-		cep: '',
-		state: '',
-		country: '',
-		username: '',
-		password: ''
+	const { employer, isLoading, isError, isSuccess, message } = useSelector(
+		(state) => state.employer
+	)
+
+	// get employer
+	useEffect(() => {
+		if (isError) {
+			toast.error(message)
+		}
+		dispatch(getEmployer(employerId))
+	}, [dispatch, employerId, isError, message])
+
+	// employer to be created
+	const [employerData, setEmployerData] = useState({
+		name: employer.name,
+		cnpj: employer.cnpj,
+
+		street: employer.address?.street,
+		streetNumber: employer.address?.streetNumber,
+		complement: employer.address?.complement ? employer.address?.complement : '',
+		neighborhood: employer.address?.neighborhood,
+		city: employer.address?.city,
+		cep: employer.address?.cep,
+		state: employer.address?.state,
+		country: employer.address?.country
 	})
-	// destructure operator data
+	// destructure employer data
 	const {
 		name,
 		cnpj,
-		website,
+
 		street,
 		streetNumber,
 		complement,
@@ -55,33 +64,42 @@ const AdicionarOperadora = () => {
 		city,
 		cep,
 		state,
-		country,
-		username,
-		password
-	} = operatorData
+		country
+	} = employerData
 
 	useEffect(() => {
 		if (isError) {
 			toast.error(message)
 		}
-
-		if (isSuccess) {
-			dispatch(reset())
-			navigate('/health/operators')
-		}
-
-		return () => dispatch(reset())
-	}, [isError, isSuccess, message, dispatch, navigate])
+	}, [isError, isSuccess, message])
 
 	const onSubmit = (e) => {
 		// prevents default form action
 		e.preventDefault()
-		// calls create operator
-		dispatch(createOperator(operatorData))
+		// prepare update data
+		const sendData = {
+			name: name,
+			cnpj: cnpj,
+
+			address: {
+				street: street,
+				streetNumber: streetNumber,
+				complement: complement,
+				neighborhood: neighborhood,
+				city: city,
+				cep: cep,
+				state: state,
+				country: country
+			}
+		}
+		// calls create employer
+		dispatch(updateEmployer(sendData))
+		navigate(`/health/employers/${employerId}`)
+		dispatch(reset())
 	}
 
 	const onChange = (e) => {
-		setOperatorData((prevState) => ({
+		setEmployerData((prevState) => ({
 			...prevState,
 			[e.target.name]: e.target.value
 		}))
@@ -93,10 +111,10 @@ const AdicionarOperadora = () => {
 
 	return (
 		<>
-			<BackButton url='/health/operators' />
+			<BackButton url={`/health/employers/${employer._id}`} />
 			<div className='flex flex-row mx-auto text-3xl text-neutral gap-2 items-center justify-center mb-5'>
 				<RiBuilding2Fill size={40} className=' text-secondary' />
-				<div className=''>Adicionar Operadora</div>
+				<div className=''>Editar Cliente</div>
 			</div>
 			<div className='w-full max-w-md mx-auto flex flex-col gap-6'>
 				<form onSubmit={onSubmit} className='flex flex-col gap-3'>
@@ -104,13 +122,13 @@ const AdicionarOperadora = () => {
 						<TextInput
 							id='name'
 							type='name'
-							placeholder='Nome da Operadora'
+							placeholder='Nome da Cliente'
 							name='name'
 							value={name}
 							onChange={onChange}
 							required={true}
 							icon={RiBuildingFill}
-							addon='Operadora'
+							addon='Cliente'
 						/>
 					</div>
 					<div>
@@ -126,19 +144,7 @@ const AdicionarOperadora = () => {
 							addon='CNPJ'
 						/>
 					</div>
-					<div>
-						<TextInput
-							id='website'
-							type='website'
-							placeholder='https://clarkseguros.com.br/'
-							name='website'
-							value={website}
-							onChange={onChange}
-							required={true}
-							icon={MdOutlineWebAsset}
-							addon='Website'
-						/>
-					</div>
+
 					<div>
 						<Label className='mb-2 block text-left text-xs' htmlFor='street'>
 							Rua
@@ -281,39 +287,12 @@ const AdicionarOperadora = () => {
 							/>
 						</div>
 					</div>
-					<div className=''>
-						<Label className='mb-2 block text-left text-md' htmlFor='username'>
-							Login Info
-						</Label>
-						<TextInput
-							className='mb-2'
-							id='username'
-							type='username'
-							placeholder='Usuário'
-							name='username'
-							value={username}
-							onChange={onChange}
-							required={false}
-							icon={FaUser}
-							width={10}
-						/>
-						<TextInput
-							id='password'
-							type='password'
-							placeholder='Senha'
-							name='password'
-							value={password}
-							onChange={onChange}
-							required={false}
-							icon={FaLock}
-							width={10}
-						/>
-					</div>
+
 					<button
 						className='btn btn-secondary text-base-100 text-center'
 						type='submit'
 					>
-						Adicionar
+						Editar
 					</button>
 				</form>
 			</div>
@@ -321,4 +300,4 @@ const AdicionarOperadora = () => {
 	)
 }
 
-export default AdicionarOperadora
+export default EditarCliente

@@ -29,7 +29,7 @@ const getEmployers = asyncHandler(async (req, res, next) => {
 
 		.populate({
 			path: 'contact',
-			select: 'name cellphone'
+			select: 'name cellphone email'
 		})
 		.populate({
 			path: 'employees',
@@ -75,14 +75,14 @@ const getEmployer = asyncHandler(async (req, res, next) => {
 	const employer = await Employer.findById(req.params.id)
 		.populate({
 			path: 'contact',
-			select: 'name cellphone'
+			select: 'name cellphone email'
 		})
 		.populate({
 			path: 'employees',
 			select: 'employee plan contract',
 			populate: {
 				path: 'employee plan contract identifier planValue kind',
-				select: 'name cpf ansRegister employer identifier operator '
+				select: 'name cnpj ansRegister identifier cpf dateOfBirth mothersName sex age maritalStatus address email cellphone reach slug startDate endDate isValid contractFile '
 			}
 		})
 		.populate({

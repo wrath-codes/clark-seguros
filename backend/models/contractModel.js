@@ -16,6 +16,11 @@ const contractSchema = mongoose.Schema(
 			required: true,
 			ref: 'Employer'
 		},
+		name: {
+			type: String,
+			required: true,
+			unique: true
+		},
 		identifier: {
 			type: String,
 			required: true,
@@ -37,7 +42,9 @@ const contractSchema = mongoose.Schema(
 		contractFile: {
 			type: String,
 			default: 'no-photo.jpg'
-		}
+		},
+		averageCost: Number,
+		sumCost: Number
 	},
 	{
 		toJSON: { virtuals: true },

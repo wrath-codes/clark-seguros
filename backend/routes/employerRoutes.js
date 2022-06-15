@@ -15,6 +15,7 @@ import {
 } from '../controllers/employerController.js'
 // include other resource routers
 import employeeRouter from './employeeRoutes.js'
+import planCardRouter from './planCardRoutes.js'
 // @middleware
 import { protect, authorize } from '../middleware/authProtectMiddleware.js'
 // uses
@@ -23,6 +24,7 @@ router.use(authorize('admin', 'staff'))
 
 // re-route into other resource routers
 router.use('/:employerId/employees', employeeRouter) // add employee routes
+router.use('/:employerId/plan-cards', planCardRouter) // add planCard routes
 
 //* routes
 

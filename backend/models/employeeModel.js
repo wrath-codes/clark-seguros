@@ -35,7 +35,11 @@ const employeeSchema = mongoose.Schema(
 		age: {
 			type: Number,
 			required: true,
-			default: 0
+			default: function () {
+				return Math.floor(
+					(Date.now() - this.dateOfBirth.getTime()) / (1000 * 3600 * 24 * 365)
+				)
+			}
 		},
 		sex: {
 			type: String,
@@ -101,11 +105,6 @@ const employeeSchema = mongoose.Schema(
 // cascade delete planCard
 employeeSchema.pre('remove', async function (next) {
 	await this.model('PlanCard').findOneAndDelete({ employee: this._id })
-})
-
-// pre save get age
-employeeSchema.pre('save', async function (next) {
-	this.age = Math.floor((Date.now() - this.dateOfBirth.getTime()) / (1000 * 3600 * 24 * 365))
 })
 
 employeeSchema.virtual('planCard', {

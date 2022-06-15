@@ -1,15 +1,15 @@
 //* -----------------------------------------------------------------------
-//*                           	Operator Slice
+//*                           	Employer Slice
 //* -----------------------------------------------------------------------
 // @imports
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // @service
-import operatorService from './operatorService'
+import employerService from './employerService'
 
 // @initialState
 const initialState = {
-	operators: [],
-	operator: {},
+	employers: [],
+	employer: {},
 	isError: false,
 	isSuccess: false,
 	isLoading: false,
@@ -18,13 +18,13 @@ const initialState = {
 
 //* -----------------------------------------------------------------------
 
-// @desc get operators
+// @desc get employers
 // ------------------------------------------------------------------------
-export const getOperators = createAsyncThunk('operators/getAll', async (_, thunkAPI) => {
+export const getEmployers = createAsyncThunk('employers/getAll', async (_, thunkAPI) => {
 	try {
 		const token = thunkAPI.getState().auth.user.token
 		// get operators
-		return await operatorService.getOperators(token)
+		return await employerService.getEmployers(token)
 	} catch (error) {
 		const message =
 			(error.response && error.response.data && error.response.data.message) ||
@@ -35,13 +35,15 @@ export const getOperators = createAsyncThunk('operators/getAll', async (_, thunk
 	}
 })
 
-// @desc get operator
+//* -----------------------------------------------------------------------
+
+// @desc get employer
 // ------------------------------------------------------------------------
-export const getOperator = createAsyncThunk('operators/get', async (operatorId, thunkAPI) => {
+export const getEmployer = createAsyncThunk('employers/get', async (employerId, thunkAPI) => {
 	try {
 		const token = thunkAPI.getState().auth.user.token
 		// get operators
-		return await operatorService.getOperator(operatorId, token)
+		return await employerService.getEmployer(employerId, token)
 	} catch (error) {
 		const message =
 			(error.response && error.response.data && error.response.data.message) ||
@@ -52,15 +54,17 @@ export const getOperator = createAsyncThunk('operators/get', async (operatorId, 
 	}
 })
 
-// @desc creates an operator from data
+//* -----------------------------------------------------------------------
+
+// @desc add employer
 // ------------------------------------------------------------------------
-export const createOperator = createAsyncThunk(
-	'operators/create',
-	async (operatorData, thunkAPI) => {
+export const createEmployer = createAsyncThunk(
+	'employers/create',
+	async (employerData, thunkAPI) => {
 		try {
 			const token = thunkAPI.getState().auth.user.token
 			// get operators
-			return await operatorService.createOperator(operatorData, token)
+			return await employerService.createEmployer(employerData, token)
 		} catch (error) {
 			const message =
 				(error.response && error.response.data && error.response.data.message) ||
@@ -74,16 +78,36 @@ export const createOperator = createAsyncThunk(
 
 //* -----------------------------------------------------------------------
 
-// @desc updates an operator from data
+// @desc add employer
 // ------------------------------------------------------------------------
-export const updateOperator = createAsyncThunk(
-	'operators/update',
-	async (operatorData, thunkAPI) => {
+export const deleteEmployer = createAsyncThunk('employers/delete', async (_, thunkAPI) => {
+	try {
+		const token = thunkAPI.getState().auth.user.token
+		const employerId = thunkAPI.getState().employer.employer._id
+		// get operators
+		return await employerService.deleteEmployer(employerId, token)
+	} catch (error) {
+		const message =
+			(error.response && error.response.data && error.response.data.message) ||
+			error.message ||
+			error.toString()
+
+		return thunkAPI.rejectWithValue(message)
+	}
+})
+
+//* -----------------------------------------------------------------------
+
+// @desc update employer
+// ------------------------------------------------------------------------
+export const updateEmployer = createAsyncThunk(
+	'employers/update',
+	async (employerData, thunkAPI) => {
 		try {
 			const token = thunkAPI.getState().auth.user.token
-			const operatorId = thunkAPI.getState().operator.operator._id
+			const employerId = thunkAPI.getState().employer.employer._id
 			// get operators
-			return await operatorService.updateOperator(operatorData, operatorId, token)
+			return await employerService.updateEmployer(employerId, employerData, token)
 		} catch (error) {
 			const message =
 				(error.response && error.response.data && error.response.data.message) ||
@@ -97,36 +121,15 @@ export const updateOperator = createAsyncThunk(
 
 //* -----------------------------------------------------------------------
 
-// @desc updates an operator from data
+// @desc add contact to employer
 // ------------------------------------------------------------------------
-export const deleteOperator = createAsyncThunk('operators/delete', async (_, thunkAPI) => {
-	try {
-		const token = thunkAPI.getState().auth.user.token
-		const operatorId = thunkAPI.getState().operator.operator._id
-		// get operators
-		return await operatorService.deleteOperator(operatorId, token)
-	} catch (error) {
-		const message =
-			(error.response && error.response.data && error.response.data.message) ||
-			error.message ||
-			error.toString()
-
-		return thunkAPI.rejectWithValue(message)
-	}
-})
-
-//* -----------------------------------------------------------------------
-
-// @desc add contact to operator
-// ------------------------------------------------------------------------
-export const addContactToOperator = createAsyncThunk(
-	'operators/addContact',
+export const addContactToEmployer = createAsyncThunk(
+	'employers/addContact',
 	async (contactData, thunkAPI) => {
 		try {
 			const token = thunkAPI.getState().auth.user.token
-			const operatorId = thunkAPI.getState().operator.operator._id
 			// get operators
-			return await operatorService.addContactToOperator(contactData, operatorId, token)
+			return await employerService.addContactToEmployer(contactData, token)
 		} catch (error) {
 			const message =
 				(error.response && error.response.data && error.response.data.message) ||
@@ -140,23 +143,16 @@ export const addContactToOperator = createAsyncThunk(
 
 //* -----------------------------------------------------------------------
 
-// @desc updated contact of operator
+// @desc update contact of employer
 // ------------------------------------------------------------------------
-export const updateContactToOperator = createAsyncThunk(
-	'operators/updateContact',
+export const updateContactToEmployer = createAsyncThunk(
+	'employers/updateContact',
 	async (contactData, thunkAPI) => {
 		try {
 			const token = thunkAPI.getState().auth.user.token
-			const operatorId = thunkAPI.getState().operator.operator._id
-			const contactId = thunkAPI.getState().operator.operator?.contact?._id
-
+			const contactId = thunkAPI.getState().employer.employer?.contact?._id
 			// get operators
-			return await operatorService.updateContactToOperator(
-				contactData,
-				operatorId,
-				contactId,
-				token
-			)
+			return await employerService.updateContactToEmployer(contactData, contactId, token)
 		} catch (error) {
 			const message =
 				(error.response && error.response.data && error.response.data.message) ||
@@ -170,85 +166,97 @@ export const updateContactToOperator = createAsyncThunk(
 
 //* -----------------------------------------------------------------------
 
-// @operator slice
-export const operatorSlice = createSlice({
-	name: 'operator',
+// @employer slice
+export const employerSlice = createSlice({
+	name: 'employer',
 	initialState,
 	reducers: {
 		reset: (state) => initialState
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(createOperator.pending, (state) => {
+			.addCase(getEmployers.pending, (state) => {
 				state.isLoading = true
 			})
-			.addCase(createOperator.fulfilled, (state) => {
+			.addCase(getEmployers.fulfilled, (state, action) => {
 				state.isLoading = false
 				state.isSuccess = true
+				state.employers = action.payload.data
 			})
-			.addCase(createOperator.rejected, (state, action) => {
-				state.isLoading = false
-				state.isError = true
-				state.message = action.payload.data
-			})
-			.addCase(getOperators.pending, (state) => {
-				state.isLoading = true
-			})
-			.addCase(getOperators.fulfilled, (state, action) => {
-				state.isLoading = false
-				state.isSuccess = true
-				state.operators = action.payload.data
-			})
-			.addCase(getOperators.rejected, (state, action) => {
+			.addCase(getEmployers.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload
 			})
-			.addCase(getOperator.pending, (state) => {
+			.addCase(getEmployer.pending, (state) => {
 				state.isLoading = true
 			})
-			.addCase(getOperator.fulfilled, (state, action) => {
+			.addCase(getEmployer.fulfilled, (state, action) => {
 				state.isLoading = false
 				state.isSuccess = true
-				state.operator = action.payload.data
+				state.employer = action.payload.data
 			})
-			.addCase(getOperator.rejected, (state, action) => {
+			.addCase(getEmployer.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload
 			})
-			.addCase(updateOperator.pending, (state) => {
+			.addCase(createEmployer.pending, (state) => {
 				state.isLoading = true
 			})
-			.addCase(updateOperator.fulfilled, (state) => {
+			.addCase(createEmployer.fulfilled, (state, action) => {
 				state.isLoading = false
 				state.isSuccess = true
 			})
-			.addCase(updateOperator.rejected, (state, action) => {
+			.addCase(createEmployer.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload
 			})
-			.addCase(deleteOperator.pending, (state) => {
+			.addCase(deleteEmployer.pending, (state) => {
 				state.isLoading = true
 			})
-			.addCase(deleteOperator.fulfilled, (state) => {
+			.addCase(deleteEmployer.fulfilled, (state, action) => {
 				state.isLoading = false
 				state.isSuccess = true
 			})
-			.addCase(deleteOperator.rejected, (state, action) => {
+			.addCase(deleteEmployer.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload
 			})
-			.addCase(addContactToOperator.pending, (state) => {
+			.addCase(updateEmployer.pending, (state) => {
 				state.isLoading = true
 			})
-			.addCase(addContactToOperator.fulfilled, (state) => {
+			.addCase(updateEmployer.fulfilled, (state, action) => {
 				state.isLoading = false
 				state.isSuccess = true
 			})
-			.addCase(addContactToOperator.rejected, (state, action) => {
+			.addCase(updateEmployer.rejected, (state, action) => {
+				state.isLoading = false
+				state.isError = true
+				state.message = action.payload
+			})
+			.addCase(addContactToEmployer.pending, (state) => {
+				state.isLoading = true
+			})
+			.addCase(addContactToEmployer.fulfilled, (state, action) => {
+				state.isLoading = false
+				state.isSuccess = true
+			})
+			.addCase(addContactToEmployer.rejected, (state, action) => {
+				state.isLoading = false
+				state.isError = true
+				state.message = action.payload
+			})
+			.addCase(updateContactToEmployer.pending, (state) => {
+				state.isLoading = true
+			})
+			.addCase(updateContactToEmployer.fulfilled, (state, action) => {
+				state.isLoading = false
+				state.isSuccess = true
+			})
+			.addCase(updateContactToEmployer.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload
@@ -257,7 +265,5 @@ export const operatorSlice = createSlice({
 })
 
 //* -----------------------------------------------------------------------
-
-//@exports
-export const { reset } = operatorSlice.actions
-export default operatorSlice.reducer
+export const { reset } = employerSlice.actions
+export default employerSlice.reducer

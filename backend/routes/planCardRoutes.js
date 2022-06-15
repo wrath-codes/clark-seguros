@@ -10,7 +10,7 @@ import {
 	updatePlanCard
 } from '../controllers/planCardController.js'
 
-const router = express.Router()
+const router = express.Router({ mergeParams: true })
 // @middleware
 import { protect, authorize } from '../middleware/authProtectMiddleware.js'
 // uses
