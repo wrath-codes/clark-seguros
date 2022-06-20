@@ -9,9 +9,26 @@ const API_URL = '/api/v1/plans/'
 
 //*-----------------------------------------------------------------------
 
-// @desc get plan
+// @desc get plans
 // ------------------------------------------------------------------------
 const getPlans = async (operatorId, token) => {
+	// config (token will enter here)
+	const config = {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	}
+
+	// response
+	const response = await axios.get('/api/v1/operators/' + operatorId + '/plans', config)
+	return response.data
+}
+
+//*-----------------------------------------------------------------------
+
+// @desc get plans with operator id
+// ------------------------------------------------------------------------
+const getPlansWithId = async (operatorId, token) => {
 	// config (token will enter here)
 	const config = {
 		headers: {
@@ -99,6 +116,6 @@ const updatePlan = async (planData, planId, token) => {
 //*-----------------------------------------------------------------------
 
 // @export
-const planService = { getPlan, getPlans, createPlan, deletePlan, updatePlan }
+const planService = { getPlan, getPlans, createPlan, deletePlan, updatePlan, getPlansWithId }
 
 export default planService

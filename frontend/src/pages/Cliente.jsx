@@ -14,6 +14,8 @@ import {
 	reset,
 	updateContactToEmployer
 } from '../features/employer/employerSlice'
+import { getPlansWithId } from '../features/plan/planSlice'
+import { getContract } from '../features/contract/contractSlice'
 // @components
 import Spinner from '../components/layout/Spinner'
 import BackButton from '../components/layout/BackButton'
@@ -34,6 +36,10 @@ const Cliente = () => {
 	const { employer, isSuccess, isError, isLoading, message } = useSelector(
 		(state) => state.employer
 	)
+	const { plans } = useSelector((state) => state.plan)
+	const { contract } = useSelector((state) => state.contract)
+
+	const [contratoSelect, setContratoSelect] = useState('')
 
 	// set contact data
 	const [contactData, setContactData] = useState({
@@ -169,6 +175,7 @@ const Cliente = () => {
 		}
 		dispatch(updateContactToEmployer(sendData))
 		dispatch(getEmployer(employerId))
+		window.location.reload()
 	}
 
 	const onChange = (e) => {
@@ -183,6 +190,15 @@ const Cliente = () => {
 			...prevState,
 			[e.target.name]: e.target.value
 		}))
+	}
+
+	const getContractPlans = (e) => {
+		setContratoSelect(e.target.value)
+		console.log(contratoSelect)
+		dispatch(getContract(contratoSelect))
+		console.log(contract)
+		dispatch(getPlansWithId(contract.operator?._id))
+		console.log(plans)
 	}
 
 	const onDelete = (e) => {
@@ -517,7 +533,7 @@ const Cliente = () => {
 				<input type='checkbox' id='addEmployeeModal' className='modal-toggle' />
 				<label htmlFor='addEmployeeModal' className='modal cursor-pointer'>
 					<label className='modal-box relative' htmlFor=''>
-						<h3 className='text-lg font-bold'>Contato</h3>
+						<h3 className='text-lg font-bold'>Funcionário</h3>
 						<div className='mt-5 items-center'>
 							<form onSubmit={onEmployeeAdd} className='flex flex-col gap-3'>
 								<div>
@@ -812,6 +828,7 @@ const Cliente = () => {
 										onChange={onEmployeeChange}
 										addon='Contrato'
 										required={true}
+										onClick={getContractPlans}
 									>
 										<option disabled value='Contrato'>
 											Contrato
@@ -819,8 +836,8 @@ const Cliente = () => {
 										{employer.contracts?.map((contract) => (
 											<option
 												onChange={onEmployeeChange}
-												name='contrato'
 												value={contract._id}
+												key={contract._id}
 											>
 												{contract.name}
 											</option>
@@ -840,6 +857,27 @@ const Cliente = () => {
 											{employer.name}
 										</option>
 										<option value={employer._id}>{employer.name}</option>
+									</Select>
+								</div>
+
+								<div>
+									<Select
+										id='plano'
+										name='plano'
+										onChange={onEmployeeChange}
+										addon='Plano'
+										required={true}
+									>
+										<option disabled>Plano</option>
+										{plans.map((plan) => (
+											<option
+												onChange={onEmployeeChange}
+												value={plan._id}
+												key={plan._id}
+											>
+												{plan.name}
+											</option>
+										))}
 									</Select>
 								</div>
 

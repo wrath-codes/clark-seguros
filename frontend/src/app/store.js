@@ -7,6 +7,7 @@ import operatorReducer from '../features/operator/operatorSlice'
 import planReducer from '../features/plan/planSlice'
 import employerReducer from '../features/employer/employerSlice'
 import employeeReducer from '../features/employee/employeeSlice'
+import contractReducer from '../features/contract/contractSlice'
 import authReducer from '../features/auth/authSlice'
 
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
 		operator: operatorReducer,
 		employer: employerReducer,
 		employee: employeeReducer,
-		plan: planReducer
+		plan: planReducer,
+		contract: contractReducer
 	}
 })

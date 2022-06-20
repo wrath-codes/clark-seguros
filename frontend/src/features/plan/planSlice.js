@@ -38,7 +38,7 @@ export const createPlan = createAsyncThunk('plans/create', async (planData, thun
 
 //* -----------------------------------------------------------------------
 
-// @desc get operator
+// @desc get plans
 // ------------------------------------------------------------------------
 export const getPlans = createAsyncThunk('plans/getAll', async (_, thunkAPI) => {
 	try {
@@ -55,6 +55,29 @@ export const getPlans = createAsyncThunk('plans/getAll', async (_, thunkAPI) => 
 		return thunkAPI.rejectWithValue(message)
 	}
 })
+
+//* -----------------------------------------------------------------------
+
+// @desc get plans
+// ------------------------------------------------------------------------
+export const getPlansWithId = createAsyncThunk(
+	'plans/getAllWithId',
+	async (operatorId, thunkAPI) => {
+		try {
+			const token = thunkAPI.getState().auth.user.token
+
+			// get plan
+			return await planService.getPlansWithId(operatorId, token)
+		} catch (error) {
+			const message =
+				(error.response && error.response.data && error.response.data.message) ||
+				error.message ||
+				error.toString()
+
+			return thunkAPI.rejectWithValue(message)
+		}
+	}
+)
 
 //* -----------------------------------------------------------------------
 
@@ -147,6 +170,19 @@ export const planSlice = createSlice({
 				state.plans = action.payload.data
 			})
 			.addCase(getPlans.rejected, (state, action) => {
+				state.isLoading = false
+				state.isError = true
+				state.message = action.payload
+			})
+			.addCase(getPlansWithId.pending, (state) => {
+				state.isLoading = true
+			})
+			.addCase(getPlansWithId.fulfilled, (state, action) => {
+				state.isLoading = false
+				state.isSuccess = true
+				state.plans = action.payload.data
+			})
+			.addCase(getPlansWithId.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload

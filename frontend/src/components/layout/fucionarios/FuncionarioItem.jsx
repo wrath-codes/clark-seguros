@@ -5,9 +5,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Moment from 'moment'
 // @icons
-import { MdOutlineExpandMore, MdOutlineExpandLess } from 'react-icons/md'
 // @flowbite
-import { Accordion, Badge } from 'flowbite-react'
+import { Accordion } from 'flowbite-react'
 
 const FuncionarioItem = ({ funcionario }) => {
 	const formatedDate = Moment(funcionario.employee?.dateOfBirth).format('DD/MM/YYYY')
