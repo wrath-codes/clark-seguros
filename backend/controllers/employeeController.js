@@ -140,7 +140,9 @@ const createEmployee = asyncHandler(async (req, res, next) => {
 		cardIdentifier,
 		titular,
 		kind,
-		lives
+		lives,
+		isCoop,
+		coopPercentage
 	} = req.body
 
 	// check if all fields are filled
@@ -167,8 +169,9 @@ const createEmployee = asyncHandler(async (req, res, next) => {
 		throw new Error('Please add all the Employee required fields!')
 	}
 
-	// gets titular
+	// checks if titular exists
 	const checkTitular = await Employee.findOne({ cpf: titular })
+	console.log(req.body)
 
 	// check if employer exists
 	const checkEmployer = await Employer.findById(employer)
@@ -186,7 +189,7 @@ const createEmployee = asyncHandler(async (req, res, next) => {
 
 	// check if plan information is entered
 	const checkPlan = await Plan.findById(plan)
-	if (!checkPlan || !plan || !planValue || !kind || !lives) {
+	if (!checkPlan || !plan || !kind || !lives) {
 		res.status(400)
 		throw new Error('Please add all the Plan required fields!')
 	}
@@ -229,16 +232,46 @@ const createEmployee = asyncHandler(async (req, res, next) => {
 	})
 
 	if (employee) {
+		let planValue = 0
+		const age = employee.age
+		console.log(age)
+
+		if (age >= 0 && age <= 18) {
+			planValue = checkPlan.ageRangeValue.from0To18
+		} else if (age >= 19 && age <= 23) {
+			planValue = checkPlan.ageRangeValue.from19To23
+		} else if (age >= 24 && age <= 28) {
+			planValue = checkPlan.ageRangeValue.from24To28
+		} else if (age >= 29 && age <= 33) {
+			planValue = checkPlan.ageRangeValue.from29To33
+		} else if (age >= 34 && age <= 38) {
+			planValue = checkPlan.ageRangeValue.from34To38
+		} else if (age >= 39 && age <= 43) {
+			planValue = checkPlan.ageRangeValue.from39To43
+		} else if (age >= 44 && age <= 48) {
+			planValue = checkPlan.ageRangeValue.from44To48
+		} else if (age >= 49 && age <= 53) {
+			planValue = checkPlan.ageRangeValue.from49To53
+		} else if (age >= 54 && age <= 58) {
+			planValue = checkPlan.ageRangeValue.from54To58
+		} else {
+			planValue = checkPlan.ageRangeValue.from59AndAbove
+		}
+
+		console.log(planValue)
+
 		const planCard = await PlanCard.create({
 			employee: employee._id,
 			plan: plan,
-			planValue: planValue,
 			kind: kind,
 			lives: lives,
 			identifier: cardIdentifier,
 			contract: contract,
 			employer: employer,
-			titular: titular ? checkTitular._id : employee._id
+			titular: kind !== 'Titular' ? checkTitular._id : employee._id,
+			isCoop: isCoop,
+			coopPercentage: isCoop && coopPercentage,
+			planValue: planValue
 		})
 
 		//adds current plan value to planHistory
@@ -254,6 +287,7 @@ const createEmployee = asyncHandler(async (req, res, next) => {
 			},
 			{ new: true }
 		)
+
 		// add current plan to planHistory
 		await PlanCard.findByIdAndUpdate(
 			{ _id: planCard._id },

@@ -31,7 +31,13 @@ router.use(authorize('admin', 'staff'))
 // --------------------------------------------------------------
 router
 	.route('/')
-	.get(advancedResults(Contract, { path: 'employer operator' }), getContracts)
+	.get(
+		advancedResults(Contract, {
+			path: 'employer operator',
+			select: 'name cnpj plans'
+		}),
+		getContracts
+	)
 	.post(createContract)
 //* -------------------------------------------------------------
 

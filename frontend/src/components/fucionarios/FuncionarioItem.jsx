@@ -1,10 +1,8 @@
-//*                  Item Operadora
+//*                  Item Funcionario
 //* ----------------------------------------
 // @imports
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Moment from 'moment'
-// @icons
 // @flowbite
 import { Accordion } from 'flowbite-react'
 
@@ -13,19 +11,16 @@ const FuncionarioItem = ({ funcionario }) => {
 	const inicioContrato = Moment(funcionario.contract?.startDate).format('DD/MM/YYYY')
 	const fimContrato = Moment(funcionario.contract?.endDate).format('DD/MM/YYYY')
 
-	// get badge color
-	let color = ''
-	if (funcionario.kind === 'Titular') {
-		color = 'success'
-	}
-	if (funcionario.kind === 'Conjuge') {
-		color = 'accent'
-	}
-	if (funcionario.kind === 'Filho/Filha') {
-		color = 'info'
-	}
-	if (funcionario.kind === 'Mãe/Pai') {
-		color = 'primary'
+	const getColor = (kind) => {
+		if (kind === 'Titular') {
+			return 'success'
+		} else if (kind === 'Conjuge') {
+			return 'accent'
+		} else if (kind === 'Filho/Filha') {
+			return 'info'
+		} else {
+			return 'primary'
+		}
 	}
 
 	return (
@@ -34,7 +29,9 @@ const FuncionarioItem = ({ funcionario }) => {
 				<Accordion.Title className='flex flex-wrap gap-2'>
 					{funcionario.employee?.name?.firstName}{' '}
 					{funcionario.employee?.name?.lastName}
-					<span className={`mx-5 badge badge-${color}`}>{funcionario.kind}</span>
+					<span className={`mx-5 badge badge-${getColor(funcionario.kind)}`}>
+						{funcionario.kind}
+					</span>
 				</Accordion.Title>
 				<Accordion.Content>
 					<div className='grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-1 sm:grid-cols-1 gap-10'>

@@ -37,6 +37,28 @@ export const getContract = createAsyncThunk('contracts/get', async (contractId, 
 
 //* -----------------------------------------------------------------------
 
+// @desc get contracts
+// ------------------------------------------------------------------------
+export const getContracts = createAsyncThunk(
+	'contracts/getAll',
+	async (employerID, thunkAPI) => {
+		try {
+			const token = thunkAPI.getState().auth.user.token
+			// get operators
+			return await contractService.getContracts(employerID, token)
+		} catch (error) {
+			const message =
+				(error.response && error.response.data && error.response.data.message) ||
+				error.message ||
+				error.toString()
+
+			return thunkAPI.rejectWithValue(message)
+		}
+	}
+)
+
+//* -----------------------------------------------------------------------
+
 // @contract slice
 export const contractSlice = createSlice({
 	name: 'contract',
@@ -55,6 +77,19 @@ export const contractSlice = createSlice({
 				state.contract = action.payload.data
 			})
 			.addCase(getContract.rejected, (state, action) => {
+				state.isLoading = false
+				state.isError = true
+				state.message = action.payload
+			})
+			.addCase(getContracts.pending, (state) => {
+				state.isLoading = true
+			})
+			.addCase(getContracts.fulfilled, (state, action) => {
+				state.isLoading = false
+				state.isSuccess = true
+				state.contracts = action.payload.data
+			})
+			.addCase(getContracts.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload

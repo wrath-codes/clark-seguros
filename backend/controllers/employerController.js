@@ -87,7 +87,7 @@ const getEmployer = asyncHandler(async (req, res, next) => {
 		})
 		.populate({
 			path: 'contracts',
-			select: 'operator identifier isValid name',
+			select: 'operator identifier isValid name contractFile',
 			populate: {
 				path: 'operator',
 				select: 'name cnpj'

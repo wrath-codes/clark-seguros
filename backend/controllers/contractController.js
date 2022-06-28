@@ -44,7 +44,7 @@ const getContract = asyncHandler(async (req, res, next) => {
 		})
 		.populate({
 			path: 'operator',
-			select: 'name cnpj'
+			select: 'name cnpj '
 		})
 		.populate({
 			path: 'employees',
@@ -85,7 +85,7 @@ const getContract = asyncHandler(async (req, res, next) => {
 // --------------------------------------------------------------
 const createContract = asyncHandler(async (req, res, next) => {
 	// destructure contract
-	const { operator, employer, identifier } = req.body
+	const { operator, employer, identifier, name } = req.body
 
 	// check if operator exists
 	const checkOperator = await Operator.findById(operator)
@@ -101,9 +101,9 @@ const createContract = asyncHandler(async (req, res, next) => {
 		throw new Error('Employer not found!')
 	}
 	// checks if the contract identifier was inputed
-	if (!identifier) {
+	if (!identifier || !name) {
 		res.status(400)
-		throw new Error('Please add the contract identifier!')
+		throw new Error('Please add the contract identifier and/or name!')
 	}
 
 	// creates contract
@@ -111,6 +111,7 @@ const createContract = asyncHandler(async (req, res, next) => {
 		operator: operator,
 		employer: employer,
 		identifier: identifier,
+		name: name,
 		startDate: new Date()
 	})
 
@@ -144,7 +145,7 @@ const createContract = asyncHandler(async (req, res, next) => {
 	// response
 	res.status(200).json({
 		success: true,
-		msg: `Contract ${result.identifier} created`,
+		msg: `Contract ${result.name} created`,
 		data: result
 	})
 })

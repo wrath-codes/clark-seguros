@@ -1,6 +1,7 @@
 module.exports = {
 	content: [
 		'./src/**/*.{js,jsx,ts,tsx}',
+		'./src/styles/**/*.css',
 		'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}'
 	],
 	daisyui: {
@@ -26,7 +27,7 @@ module.exports = {
 	// add daisyUI plugin
 	plugins: [
 		require('@tailwindcss/typography'),
-		require('daisyui'),
-		require('flowbite/plugin')
+		require('flowbite/plugin'),
+		require('daisyui')
 	]
 }

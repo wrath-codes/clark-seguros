@@ -1,0 +1,616 @@
+//*                  Add Funcionario Modal
+//* ----------------------------------------
+// @imports
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+// @features
+import { createEmployee } from '../../features/employee/employeeSlice'
+import { getEmployer } from '../../features/employer/employerSlice'
+import { getPlansWithId } from '../../features/plan/planSlice'
+// @flowbite
+import { TextInput, Select, Label, Modal, Checkbox } from 'flowbite-react'
+// @icons
+import { FaRoad, FaPercentage } from 'react-icons/fa'
+import { MdEdit, MdEmail } from 'react-icons/md'
+import { HiIdentification, HiLocationMarker } from 'react-icons/hi'
+import { GrTextAlignLeft } from 'react-icons/gr'
+import { BsTelephoneFill, BsCalendar3 } from 'react-icons/bs'
+import { AiOutlineNumber } from 'react-icons/ai'
+import { IoIosAdd } from 'react-icons/io'
+
+const FuncionarioAddModal = ({ cliente, contrato }) => {
+	// reducers
+	const { plans } = useSelector((state) => state.plan)
+
+	// dispatch and navigate
+	const dispatch = useDispatch()
+
+	// modal open state
+	const [showModal, setShowModal] = useState(false)
+
+	const [employeeData, setEmployeeData] = useState({
+		firstName: '',
+		lastName: '',
+		cpf: '',
+		dateOfBirth: '',
+		sex: '',
+		maritalStatus: '',
+		mothersFirstName: '',
+		mothersLastName: '',
+		street: '',
+		streetNumber: '',
+		complement: '',
+		neighborhood: '',
+		city: '',
+		cep: '',
+		state: '',
+		country: '',
+		email: '',
+		cellphone: '',
+		employer: '',
+		contract: '',
+		plan: '',
+		cardIdentifier: '',
+		titular: '',
+		kind: '',
+		lives: 1,
+		isCoop: false,
+		coopPercentage: 10
+	})
+
+	const {
+		firstName,
+		lastName,
+		cpf,
+		dateOfBirth,
+		sex,
+		maritalStatus,
+		mothersFirstName,
+		mothersLastName,
+		street,
+		streetNumber,
+		complement,
+		neighborhood,
+		city,
+		cep,
+		state,
+		country,
+		email,
+		cellphone,
+		employer,
+		contract,
+		plan,
+		cardIdentifier,
+		titular,
+		kind,
+		lives,
+		isCoop,
+		coopPercentage
+	} = employeeData
+
+	//setup Open and Close of Modal
+	const onClick = (e) => {
+		setShowModal(!showModal)
+
+		setEmployeeData((prevState) => ({
+			...prevState,
+			contract: contrato._id,
+			employer: cliente._id
+		}))
+		dispatch(getPlansWithId(contrato.operator._id))
+	}
+
+	const onClose = (e) => {
+		setShowModal(!showModal)
+	}
+
+	// handle employee input change
+	const onEmployeeChange = (e) => {
+		setEmployeeData((prevState) => ({
+			...prevState,
+			[e.target.name]: e.target.value
+		}))
+		if (e.target.name === 'cpf') {
+			setEmployeeData((prevState) => ({
+				...prevState,
+				titular: e.target.value
+			}))
+		}
+		if (e.target.name === 'isCoop') {
+			setEmployeeData((prevState) => ({
+				...prevState,
+				isCoop: isCoop === false ? true : false
+			}))
+		}
+	}
+
+	const onEmployeeAdd = (e) => {
+		e.preventDefault()
+		setEmployeeData((prevState) => ({
+			...prevState,
+			isCoop: !isCoop,
+			coopPercentage: JSON.parse(coopPercentage)
+		}))
+		console.log(employeeData)
+		dispatch(createEmployee(employeeData))
+		dispatch(getEmployer(cliente._id))
+		window.location.reload()
+	}
+
+	return (
+		<>
+			<label
+				className='btn btn-outline btn-secondary btn-md mb-4 mx-2 justify-around transform transition duration-200 hover:scale-105'
+				onClick={onClick}
+				htmlFor='employeeAddModal'
+			>
+				Adicionar Funcionário
+			</label>
+
+			<input type='checkbox' id='employeeAddModal' className='modal-toggle' />
+			<label htmlFor='employeeAddModal' className='modal cursor-pointer'>
+				<label className='modal-box w-11/12 max-w-5xl relative' htmlFor=''>
+					<h3 className='text-xl font-bold text-center'>Adicionar Funcionário</h3>
+					<div>
+						<form
+							onSubmit={onEmployeeAdd}
+							className='grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5'
+						>
+							<div className='mt-5 mb-5 text-left mx-5'>
+								<div className=' text-lg font-semibold text-base-content justify-between mb-5'>
+									Informação Pessoal:
+								</div>
+
+								<div className='mb-1'>
+									<TextInput
+										id='cardIdentifier'
+										type='cardIdentifier'
+										placeholder='Número da Carteira'
+										name='cardIdentifier'
+										value={cardIdentifier}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={HiIdentification}
+										addon='Carteira'
+									/>
+								</div>
+
+								<div className='mb-1'>
+									<TextInput
+										id='firstName'
+										type='firstName'
+										placeholder='Nome do Funcionário'
+										name='firstName'
+										value={firstName}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={GrTextAlignLeft}
+										addon='Nome'
+									/>
+								</div>
+								<div className='mb-1'>
+									<TextInput
+										id='lastName'
+										type='lastName'
+										placeholder='Sobrenome do Funcionário'
+										name='lastName'
+										value={lastName}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={GrTextAlignLeft}
+										addon='Sobrenome'
+									/>
+								</div>
+
+								<div className='mb-1'>
+									<TextInput
+										id='cpf'
+										type='cpf'
+										placeholder='XXX.XXX.XXX-XX'
+										name='cpf'
+										value={cpf}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={HiIdentification}
+										addon='CPF'
+									/>
+								</div>
+
+								<div className='mb-1'>
+									<Select
+										id='sex'
+										name='sex'
+										addon='Sexo'
+										required={true}
+										onChange={onEmployeeChange}
+										defaultValue='Sexo'
+									>
+										<option disabled value='Sexo'>
+											Sexo
+										</option>
+										<option onClick={onEmployeeChange} value='Masculino'>
+											Masculino
+										</option>
+										<option onClick={onEmployeeChange} value='Feminino'>
+											Feminino
+										</option>
+									</Select>
+								</div>
+
+								<div className='mb-1'>
+									<Select
+										id='maritalStatus'
+										name='maritalStatus'
+										addon='Estado Civil'
+										required={true}
+										onChange={onEmployeeChange}
+										defaultValue='Estado Civil'
+									>
+										<option disabled value='Estado Civil'>
+											Estado Civil
+										</option>
+										<option onClick={onEmployeeChange} value='Solteiro(a)'>
+											Solteiro(a)
+										</option>
+										<option onClick={onEmployeeChange} value='Casado(a)'>
+											Casado(a)
+										</option>
+										<option
+											onClick={onEmployeeChange}
+											value='Divorciado(a)'
+										>
+											Divorciado(a)
+										</option>
+										<option onClick={onEmployeeChange} value='Viuvo(a)'>
+											Viuvo(a)
+										</option>
+									</Select>
+								</div>
+
+								<div className='mb-1'>
+									<Select
+										id='kind'
+										name='kind'
+										addon='Tipo'
+										required={true}
+										onChange={onEmployeeChange}
+										defaultValue='Tipo'
+									>
+										<option disabled value='Tipo'>
+											Tipo
+										</option>
+										<option onClick={onEmployeeChange} value='Titular'>
+											Titular
+										</option>
+										<option onClick={onEmployeeChange} value='Conjuge'>
+											Conjuge
+										</option>
+										<option onClick={onEmployeeChange} value='Filho/Filha'>
+											Filho/Filha
+										</option>
+										<option onClick={onEmployeeChange} value='Mãe/Pai'>
+											Mãe/Pai
+										</option>
+									</Select>
+								</div>
+
+								{kind !== 'Titular' && (
+									<div className='mb-1'>
+										<TextInput
+											id='titular'
+											type='titular'
+											placeholder='XXX.XXX.XXX-XX'
+											name='titular'
+											value={titular}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={HiIdentification}
+											addon='Titular'
+										/>
+									</div>
+								)}
+
+								<div className='mb-1'>
+									<TextInput
+										id='dateOfBirth'
+										type='dateOfBirth'
+										placeholder='AAAA-MM-DD'
+										name='dateOfBirth'
+										value={dateOfBirth}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={BsCalendar3}
+										addon='DDN'
+									/>
+								</div>
+
+								<div className='mb-1'>
+									<TextInput
+										id='mothersFirstName'
+										type='mothersFirstName'
+										placeholder='Nome da Mãe'
+										name='mothersFirstName'
+										value={mothersFirstName}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={GrTextAlignLeft}
+										addon='Nome da Mãe'
+									/>
+								</div>
+
+								<div className='mb-1'>
+									<TextInput
+										id='mothersLastName'
+										type='mothersLastName'
+										placeholder='Sobrenome da Mãe'
+										name='mothersLastName'
+										value={mothersLastName}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={GrTextAlignLeft}
+										addon='Sobrenome da Mãe'
+									/>
+								</div>
+
+								<div className='mb-1'>
+									<TextInput
+										id='email'
+										type='email'
+										placeholder='Email do Funcionário'
+										name='email'
+										value={email}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={MdEmail}
+										addon='Email'
+									/>
+								</div>
+
+								<div className='mb-1'>
+									<TextInput
+										id='cellphone'
+										type='cellphone'
+										placeholder='(XX)XXXXX-XXXX'
+										name='cellphone'
+										value={cellphone}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={BsTelephoneFill}
+										addon='Celular'
+									/>
+								</div>
+							</div>
+							<div className='mt-5 mb-5 text-left mx-5'>
+								<div className=' text-lg font-semibold text-base-content justify-between mb-3'>
+									Endereço:
+								</div>
+								<div>
+									<Label
+										className='mb-2 block text-left text-xs'
+										htmlFor='street'
+									>
+										Rua
+									</Label>
+									<TextInput
+										id='street'
+										type='street'
+										placeholder='Rua'
+										name='street'
+										value={street}
+										onChange={onEmployeeChange}
+										required={true}
+										icon={FaRoad}
+									/>
+								</div>
+								<div className='grid grid-cols-1 xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-5 md:gap-2'>
+									<div className='col-span-1'>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='streetNumber'
+										>
+											Numero
+										</Label>
+										<TextInput
+											id='streetNumber'
+											type='streetNumber'
+											placeholder='Nº'
+											name='streetNumber'
+											value={streetNumber}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={AiOutlineNumber}
+											width={10}
+										/>
+									</div>
+									<div className='xl:col-span-3 lg:col-span-3 md:col-span-4'>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='complement'
+										>
+											Complemento
+										</Label>
+										<TextInput
+											id='complement'
+											type='complement'
+											placeholder='Complemento'
+											name='complement'
+											value={complement}
+											onChange={onEmployeeChange}
+											required={false}
+											icon={IoIosAdd}
+											width={10}
+										/>
+									</div>
+								</div>
+								<div className='grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 md:gap-2'>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='neighborhood'
+										>
+											Bairro
+										</Label>
+										<TextInput
+											id='neighborhood'
+											type='neighborhood'
+											placeholder='Bairro'
+											name='neighborhood'
+											value={neighborhood}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={AiOutlineNumber}
+											width={10}
+										/>
+									</div>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='city'
+										>
+											Cidade
+										</Label>
+										<TextInput
+											id='city'
+											type='city'
+											placeholder='Cidade'
+											name='city'
+											value={city}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={HiLocationMarker}
+											width={10}
+										/>
+									</div>
+								</div>
+								<div className='grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-3 md:gap-2 mb-5'>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='cep'
+										>
+											CEP
+										</Label>
+										<TextInput
+											id='cep'
+											type='cep'
+											placeholder='XXXXX-XXX'
+											name='cep'
+											value={cep}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={AiOutlineNumber}
+											width={10}
+										/>
+									</div>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='state'
+										>
+											Estado
+										</Label>
+										<TextInput
+											id='state'
+											type='state'
+											placeholder='Estado'
+											name='state'
+											value={state}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={HiLocationMarker}
+											width={10}
+										/>
+									</div>
+									<div className=''>
+										<Label
+											className='mb-2 block text-left text-xs'
+											htmlFor='country'
+										>
+											País
+										</Label>
+										<TextInput
+											id='country'
+											type='country'
+											placeholder='País'
+											name='country'
+											value={country}
+											onChange={onEmployeeChange}
+											required={true}
+											icon={HiLocationMarker}
+											width={10}
+										/>
+									</div>
+								</div>
+								<div className=' text-lg font-semibold text-base-content justify-between mb-3'>
+									Plano:
+								</div>
+								<div className='mb-1'>
+									<Select
+										id='plan'
+										name='plan'
+										onChange={onEmployeeChange}
+										addon='Plano'
+										required={true}
+										defaultValue='Plano'
+									>
+										<option disabled>Plano</option>
+										{plans.map((plan) => (
+											<option
+												onClick={onEmployeeChange}
+												value={plan._id}
+												key={plan._id}
+											>
+												{plan.name}
+											</option>
+										))}
+									</Select>
+								</div>
+
+								<div className='mb-1 mt-2'>
+									<div>
+										<Checkbox
+											name='isCoop'
+											id='isCoop'
+											onChange={onEmployeeChange}
+										/>
+										<Label
+											className='ml-2 col-span-1 inline'
+											htmlFor='isCoop'
+										>
+											Coparticipação
+										</Label>
+
+										{isCoop && (
+											<TextInput
+												id='coopPercentage'
+												type='number'
+												placeholder='% Coparticipação'
+												name='coopPercentage'
+												value={coopPercentage}
+												onChange={onEmployeeChange}
+												required={true}
+												icon={FaPercentage}
+												width={10}
+												className='mt-2 col-span-1'
+											/>
+										)}
+									</div>
+								</div>
+							</div>
+							<div className='mt-5 text-center  xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-1'>
+								<button
+									type='submit'
+									className='btn btn-outline btn-success btn-xltransform transition duration-200 hover:scale-105'
+								>
+									Adicionar
+								</button>
+							</div>
+						</form>
+					</div>
+				</label>
+			</label>
+		</>
+	)
+}
+
+export default FuncionarioAddModal

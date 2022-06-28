@@ -38,6 +38,28 @@ export const getEmployee = createAsyncThunk('employees/get', async (planCardId, 
 
 //* -----------------------------------------------------------------------
 
+// @desc add employee
+// ------------------------------------------------------------------------
+export const createEmployee = createAsyncThunk(
+	'employees/create',
+	async (employeeData, thunkAPI) => {
+		try {
+			const token = thunkAPI.getState().auth.user.token
+			// get operators
+			return await employeeService.createEmployee(employeeData, token)
+		} catch (error) {
+			const message =
+				(error.response && error.response.data && error.response.data.message) ||
+				error.message ||
+				error.toString()
+
+			return thunkAPI.rejectWithValue(message)
+		}
+	}
+)
+
+//* -----------------------------------------------------------------------
+
 export const employeeSlice = createSlice({
 	name: 'employee',
 	initialState,
@@ -55,6 +77,18 @@ export const employeeSlice = createSlice({
 				state.employee = action.payload.data
 			})
 			.addCase(getEmployee.rejected, (state, action) => {
+				state.isLoading = false
+				state.isError = true
+				state.message = action.payload
+			})
+			.addCase(createEmployee.pending, (state) => {
+				state.isLoading = true
+			})
+			.addCase(createEmployee.fulfilled, (state, action) => {
+				state.isLoading = false
+				state.isSuccess = true
+			})
+			.addCase(createEmployee.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload

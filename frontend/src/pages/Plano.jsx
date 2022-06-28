@@ -396,7 +396,7 @@ const Plano = () => {
 			<label htmlFor='deleteModal' className='modal cursor-pointer'>
 				<label className='modal-box relative' htmlFor=''>
 					<h3 className='text-lg font-bold'>
-						Tem certeza que quer deletar esta Operadora?
+						Tem certeza que quer deletar este Operadora?
 					</h3>
 					<div className='mt-5 items-center'>
 						<label

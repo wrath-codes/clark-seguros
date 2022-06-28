@@ -6,7 +6,7 @@ import axios from 'axios'
 
 // @api
 const API_URL_PLANCARDS = '/api/v1/plan-cards/'
-const API_URL_EMPLOYEES = '/api/v1/plan-cards/'
+const API_URL_EMPLOYEES = '/api/v1/employees/'
 
 //* -----------------------------------------------------------------------
 
@@ -16,7 +16,8 @@ const getEmployee = async (planCardId, token) => {
 	// config (token will enter here)
 	const config = {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json'
 		}
 	}
 
@@ -27,9 +28,25 @@ const getEmployee = async (planCardId, token) => {
 
 //*-----------------------------------------------------------------------
 
+const createEmployee = async (employeeData, token) => {
+	// config (token will enter here)
+	const config = {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	}
+	console.log(employeeData)
+	// response
+	const response = await axios.post(API_URL_EMPLOYEES, employeeData, config)
+	return response.data
+}
+
+//*-----------------------------------------------------------------------
+
 // @export
 const employeeService = {
-	getEmployee
+	getEmployee,
+	createEmployee
 }
 
 export default employeeService
