@@ -1,8 +1,13 @@
 //*                  Item Funcionario
 //* ----------------------------------------
 // @imports
+import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import Moment from 'moment'
+// @features
+import { getEmployee } from '../../features/planCard/planCardSlice'
+import { getPlansWithId } from '../../features/plan/planSlice'
 // @flowbite
 import { Accordion } from 'flowbite-react'
 
@@ -34,6 +39,13 @@ const FuncionarioItem = ({ funcionario }) => {
 					</span>
 				</Accordion.Title>
 				<Accordion.Content>
+					<Link
+						to={`/health/employees/${funcionario._id}`}
+						className={`btn btn-sm btn-secondary text-base-100 mb-5 `}
+					>
+						ir para: {funcionario.employee?.name?.firstName}{' '}
+						{funcionario.employee?.name?.lastName}
+					</Link>
 					<div className='grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-1 sm:grid-cols-1 gap-10'>
 						<div className='mb-5 text-left mx-5'>
 							<div className=' text-lg font-semibold text-base-content justify-between mb-5'>

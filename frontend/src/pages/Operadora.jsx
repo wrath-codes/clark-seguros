@@ -6,14 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 // @features
-import {
-	getOperator,
-	getOperators,
-	deleteOperator,
-	addContactToOperator,
-	updateContactToOperator,
-	reset
-} from '../features/operator/operatorSlice'
+import { getOperator, reset } from '../features/operator/operatorSlice'
 import { createPlan } from '../features/plan/planSlice'
 // @components
 import PlanoItem from '../components/planos/PlanoItem'
@@ -24,13 +17,7 @@ import Info from '../components/layout/Info'
 import OperadoraContact from '../components/operadoras/OperadoraContact'
 import PlanoAddModal from '../components/planos/PlanoAddModal'
 import OperadoraLogin from '../components/operadoras/OperadoraLogin'
-// @flowbite
-import { TextInput, Select } from 'flowbite-react'
-// @icons
-import { MdEdit, MdEmail } from 'react-icons/md'
-import { HiTrash } from 'react-icons/hi'
-import { GrTextAlignLeft } from 'react-icons/gr'
-import { BsTelephoneFill } from 'react-icons/bs'
+import OperadoraDeleteModal from '../components/operadoras/OperadoraDeleteModal'
 
 const Operadora = () => {
 	// modal state
@@ -61,13 +48,6 @@ const Operadora = () => {
 		dispatch(getOperator(operatorId))
 	}, [dispatch, operatorId, isError, message])
 
-	const onDelete = (e) => {
-		dispatch(deleteOperator(operatorId))
-		navigate('/health/operators')
-		dispatch(getOperators())
-		dispatch(reset())
-	}
-
 	if (isLoading) {
 		return <Spinner />
 	}
@@ -78,12 +58,7 @@ const Operadora = () => {
 				<BackButton url='/health/operators' />
 				<div>
 					<EditButton url={`/health/operators/${operator._id}/edit`} />
-					<label
-						className='btn btn-error btn-md mb-10 transform transition duration-200 hover:scale-105'
-						htmlFor='deleteModal'
-					>
-						<HiTrash />
-					</label>
+					<OperadoraDeleteModal operatorId={operatorId} />
 				</div>
 			</div>
 
@@ -128,31 +103,6 @@ const Operadora = () => {
 						</div>
 					</div>
 				</div>
-
-				{/* modal delete */}
-
-				<input type='checkbox' id='deleteModal' className='modal-toggle' />
-				<label htmlFor='deleteModal' className='modal cursor-pointer'>
-					<label className='modal-box relative' htmlFor=''>
-						<h3 className='text-lg font-bold'>
-							Tem certeza que quer deletar esta Operadora?
-						</h3>
-						<div className='mt-5 items-center'>
-							<label
-								htmlFor='deleteModal'
-								className='btn btn-outline btn-success btn-md mb-5 mr-2 '
-							>
-								no
-							</label>
-							<button
-								onClick={onDelete}
-								className='btn btn-outline btn-error btn-md mb-5 '
-							>
-								yes
-							</button>
-						</div>
-					</label>
-				</label>
 			</div>
 		</>
 	)

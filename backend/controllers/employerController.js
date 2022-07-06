@@ -81,8 +81,8 @@ const getEmployer = asyncHandler(async (req, res, next) => {
 			path: 'employees',
 			select: 'employee plan contract titular',
 			populate: {
-				path: 'employee plan contract identifier planValue kind',
-				select: 'name cnpj ansRegister identifier cpf dateOfBirth mothersName sex age maritalStatus address email cellphone reach slug startDate endDate isValid contractFile '
+				path: 'employee plan contract identifier planValue kind lives isCoop coopPercentage titular',
+				select: 'name cnpj ansRegister identifier cpf dateOfBirth mothersName sex age maritalStatus address email cellphone reach slug startDate endDate isValid contractFile operator'
 			}
 		})
 		.populate({

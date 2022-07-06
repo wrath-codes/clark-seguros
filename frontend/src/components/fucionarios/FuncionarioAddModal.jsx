@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // @features
-import { createEmployee } from '../../features/employee/employeeSlice'
+import { createPlanCard } from '../../features/planCard/planCardSlice'
 import { getEmployer } from '../../features/employer/employerSlice'
 import { getPlansWithId } from '../../features/plan/planSlice'
 // @flowbite
@@ -28,7 +28,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 	// modal open state
 	const [showModal, setShowModal] = useState(false)
 
-	const [employeeData, setEmployeeData] = useState({
+	const [planCardData, setPlanCardData] = useState({
 		firstName: '',
 		lastName: '',
 		cpf: '',
@@ -86,13 +86,13 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 		lives,
 		isCoop,
 		coopPercentage
-	} = employeeData
+	} = planCardData
 
 	//setup Open and Close of Modal
 	const onClick = (e) => {
 		setShowModal(!showModal)
 
-		setEmployeeData((prevState) => ({
+		setPlanCardData((prevState) => ({
 			...prevState,
 			contract: contrato._id,
 			employer: cliente._id
@@ -105,34 +105,34 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 	}
 
 	// handle employee input change
-	const onEmployeeChange = (e) => {
-		setEmployeeData((prevState) => ({
+	const onPlanCardChange = (e) => {
+		setPlanCardData((prevState) => ({
 			...prevState,
 			[e.target.name]: e.target.value
 		}))
 		if (e.target.name === 'cpf') {
-			setEmployeeData((prevState) => ({
+			setPlanCardData((prevState) => ({
 				...prevState,
 				titular: e.target.value
 			}))
 		}
 		if (e.target.name === 'isCoop') {
-			setEmployeeData((prevState) => ({
+			setPlanCardData((prevState) => ({
 				...prevState,
 				isCoop: isCoop === false ? true : false
 			}))
 		}
 	}
 
-	const onEmployeeAdd = (e) => {
+	const onPlanCardAdd = (e) => {
 		e.preventDefault()
-		setEmployeeData((prevState) => ({
+		setPlanCardData((prevState) => ({
 			...prevState,
 			isCoop: !isCoop,
-			coopPercentage: JSON.parse(coopPercentage)
+			coopPercentage: Number(coopPercentage)
 		}))
-		console.log(employeeData)
-		dispatch(createEmployee(employeeData))
+		console.log(planCardData)
+		dispatch(createPlanCard(planCardData))
 		dispatch(getEmployer(cliente._id))
 		window.location.reload()
 	}
@@ -142,18 +142,18 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 			<label
 				className='btn btn-outline btn-secondary btn-md mb-4 mx-2 justify-around transform transition duration-200 hover:scale-105'
 				onClick={onClick}
-				htmlFor='employeeAddModal'
+				htmlFor='planCardAddModal'
 			>
 				Adicionar Funcionário
 			</label>
 
-			<input type='checkbox' id='employeeAddModal' className='modal-toggle' />
-			<label htmlFor='employeeAddModal' className='modal cursor-pointer'>
+			<input type='checkbox' id='planCardAddModal' className='modal-toggle' />
+			<label htmlFor='planCardAddModal' className='modal cursor-pointer'>
 				<label className='modal-box w-11/12 max-w-5xl relative' htmlFor=''>
 					<h3 className='text-xl font-bold text-center'>Adicionar Funcionário</h3>
 					<div>
 						<form
-							onSubmit={onEmployeeAdd}
+							onSubmit={onPlanCardAdd}
 							className='grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5'
 						>
 							<div className='mt-5 mb-5 text-left mx-5'>
@@ -168,7 +168,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='Número da Carteira'
 										name='cardIdentifier'
 										value={cardIdentifier}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={HiIdentification}
 										addon='Carteira'
@@ -182,7 +182,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='Nome do Funcionário'
 										name='firstName'
 										value={firstName}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={GrTextAlignLeft}
 										addon='Nome'
@@ -195,7 +195,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='Sobrenome do Funcionário'
 										name='lastName'
 										value={lastName}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={GrTextAlignLeft}
 										addon='Sobrenome'
@@ -209,7 +209,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='XXX.XXX.XXX-XX'
 										name='cpf'
 										value={cpf}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={HiIdentification}
 										addon='CPF'
@@ -222,16 +222,16 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										name='sex'
 										addon='Sexo'
 										required={true}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										defaultValue='Sexo'
 									>
 										<option disabled value='Sexo'>
 											Sexo
 										</option>
-										<option onClick={onEmployeeChange} value='Masculino'>
+										<option onClick={onPlanCardChange} value='Masculino'>
 											Masculino
 										</option>
-										<option onClick={onEmployeeChange} value='Feminino'>
+										<option onClick={onPlanCardChange} value='Feminino'>
 											Feminino
 										</option>
 									</Select>
@@ -243,25 +243,25 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										name='maritalStatus'
 										addon='Estado Civil'
 										required={true}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										defaultValue='Estado Civil'
 									>
 										<option disabled value='Estado Civil'>
 											Estado Civil
 										</option>
-										<option onClick={onEmployeeChange} value='Solteiro(a)'>
+										<option onClick={onPlanCardChange} value='Solteiro(a)'>
 											Solteiro(a)
 										</option>
-										<option onClick={onEmployeeChange} value='Casado(a)'>
+										<option onClick={onPlanCardChange} value='Casado(a)'>
 											Casado(a)
 										</option>
 										<option
-											onClick={onEmployeeChange}
+											onClick={onPlanCardChange}
 											value='Divorciado(a)'
 										>
 											Divorciado(a)
 										</option>
-										<option onClick={onEmployeeChange} value='Viuvo(a)'>
+										<option onClick={onPlanCardChange} value='Viuvo(a)'>
 											Viuvo(a)
 										</option>
 									</Select>
@@ -273,22 +273,22 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										name='kind'
 										addon='Tipo'
 										required={true}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										defaultValue='Tipo'
 									>
 										<option disabled value='Tipo'>
 											Tipo
 										</option>
-										<option onClick={onEmployeeChange} value='Titular'>
+										<option onClick={onPlanCardChange} value='Titular'>
 											Titular
 										</option>
-										<option onClick={onEmployeeChange} value='Conjuge'>
+										<option onClick={onPlanCardChange} value='Conjuge'>
 											Conjuge
 										</option>
-										<option onClick={onEmployeeChange} value='Filho/Filha'>
+										<option onClick={onPlanCardChange} value='Filho/Filha'>
 											Filho/Filha
 										</option>
-										<option onClick={onEmployeeChange} value='Mãe/Pai'>
+										<option onClick={onPlanCardChange} value='Mãe/Pai'>
 											Mãe/Pai
 										</option>
 									</Select>
@@ -302,7 +302,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 											placeholder='XXX.XXX.XXX-XX'
 											name='titular'
 											value={titular}
-											onChange={onEmployeeChange}
+											onChange={onPlanCardChange}
 											required={true}
 											icon={HiIdentification}
 											addon='Titular'
@@ -317,7 +317,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='AAAA-MM-DD'
 										name='dateOfBirth'
 										value={dateOfBirth}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={BsCalendar3}
 										addon='DDN'
@@ -331,7 +331,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='Nome da Mãe'
 										name='mothersFirstName'
 										value={mothersFirstName}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={GrTextAlignLeft}
 										addon='Nome da Mãe'
@@ -345,7 +345,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='Sobrenome da Mãe'
 										name='mothersLastName'
 										value={mothersLastName}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={GrTextAlignLeft}
 										addon='Sobrenome da Mãe'
@@ -359,7 +359,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='Email do Funcionário'
 										name='email'
 										value={email}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={MdEmail}
 										addon='Email'
@@ -373,7 +373,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='(XX)XXXXX-XXXX'
 										name='cellphone'
 										value={cellphone}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={BsTelephoneFill}
 										addon='Celular'
@@ -397,7 +397,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										placeholder='Rua'
 										name='street'
 										value={street}
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										required={true}
 										icon={FaRoad}
 									/>
@@ -416,7 +416,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 											placeholder='Nº'
 											name='streetNumber'
 											value={streetNumber}
-											onChange={onEmployeeChange}
+											onChange={onPlanCardChange}
 											required={true}
 											icon={AiOutlineNumber}
 											width={10}
@@ -435,7 +435,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 											placeholder='Complemento'
 											name='complement'
 											value={complement}
-											onChange={onEmployeeChange}
+											onChange={onPlanCardChange}
 											required={false}
 											icon={IoIosAdd}
 											width={10}
@@ -456,7 +456,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 											placeholder='Bairro'
 											name='neighborhood'
 											value={neighborhood}
-											onChange={onEmployeeChange}
+											onChange={onPlanCardChange}
 											required={true}
 											icon={AiOutlineNumber}
 											width={10}
@@ -475,7 +475,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 											placeholder='Cidade'
 											name='city'
 											value={city}
-											onChange={onEmployeeChange}
+											onChange={onPlanCardChange}
 											required={true}
 											icon={HiLocationMarker}
 											width={10}
@@ -496,7 +496,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 											placeholder='XXXXX-XXX'
 											name='cep'
 											value={cep}
-											onChange={onEmployeeChange}
+											onChange={onPlanCardChange}
 											required={true}
 											icon={AiOutlineNumber}
 											width={10}
@@ -515,7 +515,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 											placeholder='Estado'
 											name='state'
 											value={state}
-											onChange={onEmployeeChange}
+											onChange={onPlanCardChange}
 											required={true}
 											icon={HiLocationMarker}
 											width={10}
@@ -534,7 +534,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 											placeholder='País'
 											name='country'
 											value={country}
-											onChange={onEmployeeChange}
+											onChange={onPlanCardChange}
 											required={true}
 											icon={HiLocationMarker}
 											width={10}
@@ -548,7 +548,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 									<Select
 										id='plan'
 										name='plan'
-										onChange={onEmployeeChange}
+										onChange={onPlanCardChange}
 										addon='Plano'
 										required={true}
 										defaultValue='Plano'
@@ -556,7 +556,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										<option disabled>Plano</option>
 										{plans.map((plan) => (
 											<option
-												onClick={onEmployeeChange}
+												onClick={onPlanCardChange}
 												value={plan._id}
 												key={plan._id}
 											>
@@ -571,7 +571,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 										<Checkbox
 											name='isCoop'
 											id='isCoop'
-											onChange={onEmployeeChange}
+											onChange={onPlanCardChange}
 										/>
 										<Label
 											className='ml-2 col-span-1 inline'
@@ -587,7 +587,7 @@ const FuncionarioAddModal = ({ cliente, contrato }) => {
 												placeholder='% Coparticipação'
 												name='coopPercentage'
 												value={coopPercentage}
-												onChange={onEmployeeChange}
+												onChange={onPlanCardChange}
 												required={true}
 												icon={FaPercentage}
 												width={10}

@@ -16,7 +16,7 @@ import {
 } from '../features/employer/employerSlice'
 import { getPlansWithId } from '../features/plan/planSlice'
 import { getContract, getContracts } from '../features/contract/contractSlice'
-import { createEmployee } from '../features/employee/employeeSlice'
+import { getPlanCards } from '../features/planCard/planCardSlice'
 // @components
 import Spinner from '../components/layout/Spinner'
 import BackButton from '../components/layout/BackButton'
@@ -27,15 +27,10 @@ import ClienteDeleteModal from '../components/clientes/ClienteDeleteModal'
 import ClienteContact from '../components/clientes/ClienteContact'
 import Info from '../components/layout/Info'
 // @flowbite
-import { TextInput, Select, Accordion, Label } from 'flowbite-react'
+import { Accordion, Label } from 'flowbite-react'
 // @icons
-import { FaRoad } from 'react-icons/fa'
-import { MdEdit, MdEmail, MdOutlineExpandMore } from 'react-icons/md'
-import { HiTrash, HiIdentification, HiLocationMarker } from 'react-icons/hi'
-import { GrTextAlignLeft } from 'react-icons/gr'
-import { BsTelephoneFill, BsCalendar3 } from 'react-icons/bs'
-import { AiOutlineNumber } from 'react-icons/ai'
-import { IoIosAdd } from 'react-icons/io'
+
+import { MdOutlineExpandMore } from 'react-icons/md'
 
 const Cliente = () => {
 	// @reducers
@@ -44,6 +39,7 @@ const Cliente = () => {
 	)
 	const { plans } = useSelector((state) => state.plan)
 	const { contract, contracts } = useSelector((state) => state.contract)
+	const { planCards } = useSelector((state) => state.planCard)
 
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
@@ -62,6 +58,9 @@ const Cliente = () => {
 			toast.error(message)
 		}
 		dispatch(getEmployer(employerId))
+		dispatch(getPlanCards(employerId))
+		dispatch(getContracts(employerId))
+		console.log(planCards)
 	}, [dispatch, employerId, isError, message])
 
 	const onDelete = (e) => {
@@ -98,12 +97,13 @@ const Cliente = () => {
 
 						{/* Funcionários */}
 						<h1 className='text-3xl font-semibold my-5'>Contratos</h1>
+
 						<Accordion
 							flush={true}
 							className='grid grid-cols-1 gap-0.5 mx-10'
 							arrowIcon={MdOutlineExpandMore}
 						>
-							{employer.contracts?.map((contract) => (
+							{contracts.map((contract) => (
 								<Accordion.Panel key={contract._id}>
 									<Accordion.Title>{contract.name}</Accordion.Title>
 									<Accordion.Content>
@@ -112,15 +112,15 @@ const Cliente = () => {
 											contrato={contract}
 										/>
 
-										{employer.employees
+										{planCards
 											?.filter(
-												(employee) =>
-													employee.contract?._id === contract._id
+												(planCard) =>
+													planCard.contract?._id === contract._id
 											)
-											.map((employee) => (
+											.map((planCard) => (
 												<FuncionarioItem
-													key={employee._id}
-													funcionario={employee}
+													key={planCard._id}
+													funcionario={planCard}
 												/>
 											))}
 									</Accordion.Content>

@@ -409,6 +409,8 @@ const updateEmployee = asyncHandler(async (req, res, next) => {
 				new: true
 			}
 		)
+		const planCard = await PlanCard.findOne({ employee: employee._id })
+		planCard.recalculatePlanValue(planCard.employee, planCard.plan)
 	}
 
 	const result = await Employee.findById(updatedEmployee._id)
@@ -427,6 +429,51 @@ const updateEmployee = asyncHandler(async (req, res, next) => {
 		msg: `Employee ${result._id} updated`,
 		data: result
 	})
+})
+
+//* -------------------------------------------------------------
+
+// @desc    Fetch Single Employee ith Cpf
+// @route   GET - /api/employees/titular/:cpf
+// @access  Private
+// --------------------------------------------------------------
+const getEmployeeWithCpf = asyncHandler(async (req, res, next) => {
+	// get employee with id
+	const employee = await Employee.findOne(req.params.cpf)
+		.populate({
+			path: 'planCard',
+			select: 'employer plan contract',
+			populate: {
+				path: 'employer plan contract',
+				select: 'name cnpj ansRegister identifier'
+			}
+		})
+		.populate('age')
+		.populate({
+			path: 'planCard',
+			select: 'kind identifier planValue planHistory planValueHistory employmentHistory contractHistory',
+			populate: {
+				path: 'employmentHistory contractHistory planHistory',
+				select: 'name cnpj ansRegister identifier plan employer operator',
+				populate: {
+					path: 'employer operator',
+					select: 'name cnpj ansRegister identifier'
+				}
+			}
+		})
+
+	// check if there are no employees in the database
+	if (employee) {
+		res.status(200).json({
+			success: true,
+			msg: `Show employee ${employee._id}`,
+			count: employee.length,
+			data: employee
+		})
+	} else {
+		res.status(400)
+		throw new Error('Employee not found!')
+	}
 })
 
 //* -------------------------------------------------------------

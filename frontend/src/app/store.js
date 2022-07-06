@@ -6,7 +6,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import operatorReducer from '../features/operator/operatorSlice'
 import planReducer from '../features/plan/planSlice'
 import employerReducer from '../features/employer/employerSlice'
-import employeeReducer from '../features/employee/employeeSlice'
+import planCardReducer from '../features/planCard/planCardSlice'
 import contractReducer from '../features/contract/contractSlice'
 import authReducer from '../features/auth/authSlice'
 
@@ -15,7 +15,7 @@ export const store = configureStore({
 		auth: authReducer,
 		operator: operatorReducer,
 		employer: employerReducer,
-		employee: employeeReducer,
+		planCard: planCardReducer,
 		plan: planReducer,
 		contract: contractReducer
 	}

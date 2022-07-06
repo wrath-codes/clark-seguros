@@ -1,23 +1,20 @@
-//*                  Add Funcionario Modal
+//*             Plano Delete Modal
 //* ----------------------------------------
 // @imports
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 // @features
-import { deleteEmployer, getEmployers, reset } from '../../features/employer/employerSlice'
-// @flowbite
-import { TextInput, Select, Label, Modal, Checkbox } from 'flowbite-react'
+import { deletePlan, reset } from '../../features/plan/planSlice'
 // @icons
 import { HiTrash } from 'react-icons/hi'
 
-const ClienteDeleteModal = ({}) => {
+const PlanoDeleteModal = ({ plan }) => {
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
 
 	const onDelete = (e) => {
-		dispatch(deleteEmployer())
-		navigate('/health/employers')
-		dispatch(getEmployers())
+		dispatch(deletePlan(plan._id))
+		navigate(`/health/operators/${plan.operator?._id}`)
 		dispatch(reset())
 	}
 
@@ -30,13 +27,12 @@ const ClienteDeleteModal = ({}) => {
 				<HiTrash />
 			</label>
 
-			{/* modal delete */}
-
+			{/* delete modal */}
 			<input type='checkbox' id='deleteModal' className='modal-toggle' />
 			<label htmlFor='deleteModal' className='modal cursor-pointer'>
 				<label className='modal-box relative' htmlFor=''>
-					<h3 className='text-lg font-bold card-title text-base-content'>
-						Tem certeza que quer deletar este Cliente?
+					<h3 className='text-lg font-bold text-center text-base-content'>
+						Tem certeza que quer deletar este Plano?
 					</h3>
 					<div className='mt-5 items-center text-center'>
 						<label
@@ -58,4 +54,4 @@ const ClienteDeleteModal = ({}) => {
 	)
 }
 
-export default ClienteDeleteModal
+export default PlanoDeleteModal

@@ -20,6 +20,7 @@ import Clientes from './pages/Clientes'
 import Cliente from './pages/Cliente'
 import AdicionarCliente from './pages/AdicionarCliente'
 import EditarCliente from './pages/EditarCliente'
+import Funcionario from './pages/Funcionario'
 
 //* ----------------------------------------
 
@@ -103,6 +104,15 @@ const App = () => {
 								<Route
 									path='/health/employers/:employerId/edit'
 									element={<EditarCliente />}
+								/>
+							</Route>
+							<Route
+								path='/health/employees/:planCardId'
+								element={<PrivateRoute />}
+							>
+								<Route
+									path='/health/employees/:planCardId'
+									element={<Funcionario />}
 								/>
 							</Route>
 
