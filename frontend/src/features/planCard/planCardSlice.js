@@ -1,5 +1,5 @@
 //* -----------------------------------------------------------------------
-//*                           	Employee Slice
+//*                           	PlanCard Slice
 //* -----------------------------------------------------------------------
 // @imports
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
@@ -82,28 +82,6 @@ export const createPlanCard = createAsyncThunk(
 
 //* -----------------------------------------------------------------------
 
-// @desc add employee
-// ------------------------------------------------------------------------
-export const updatePlanCard = createAsyncThunk(
-	'planCards/update',
-	async (planCardData, thunkAPI) => {
-		try {
-			const token = thunkAPI.getState().auth.user.token
-			// get operators
-			return await planCardService.updatePlanCard(planCardData, token)
-		} catch (error) {
-			const message =
-				(error.response && error.response.data && error.response.data.message) ||
-				error.message ||
-				error.toString()
-
-			return thunkAPI.rejectWithValue(message)
-		}
-	}
-)
-
-//* -----------------------------------------------------------------------
-
 export const planCardSlice = createSlice({
 	name: 'planCard',
 	initialState,
@@ -146,18 +124,6 @@ export const planCardSlice = createSlice({
 				state.isSuccess = true
 			})
 			.addCase(createPlanCard.rejected, (state, action) => {
-				state.isLoading = false
-				state.isError = true
-				state.message = action.payload
-			})
-			.addCase(updatePlanCard.pending, (state) => {
-				state.isLoading = true
-			})
-			.addCase(updatePlanCard.fulfilled, (state, action) => {
-				state.isLoading = false
-				state.isSuccess = true
-			})
-			.addCase(updatePlanCard.rejected, (state, action) => {
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload

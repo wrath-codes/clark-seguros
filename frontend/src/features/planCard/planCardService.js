@@ -1,5 +1,5 @@
 //* -----------------------------------------------------------------------
-//*                           	Employee Service
+//*                           	PlanCard Service
 //* -----------------------------------------------------------------------
 // @libraries
 import axios from 'axios'
@@ -59,23 +59,6 @@ const createPlanCard = async (employeeData, token) => {
 	console.log(employeeData)
 	// response
 	const response = await axios.post(API_URL_EMPLOYEES, employeeData, config)
-	return response.data
-}
-
-//*-----------------------------------------------------------------------
-
-// @desc create employee
-// ------------------------------------------------------------------------
-const updatePlanCard = async (planCardData, token) => {
-	// config (token will enter here)
-	const config = {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
-	}
-	console.log(planCardData)
-	// response
-	const response = await axios.put(API_URL_EMPLOYEES, planCardData, config)
 	return response.data
 }
 

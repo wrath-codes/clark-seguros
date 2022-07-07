@@ -27,6 +27,7 @@ import FuncionarioAddModal from '../components/fucionarios/FuncionarioAddModal'
 import ClienteDeleteModal from '../components/clientes/ClienteDeleteModal'
 import ClienteContact from '../components/clientes/ClienteContact'
 import PlanoInfo from '../components/planos/PlanoInfo'
+import FuncionarioInfoEditModal from '../components/fucionarios/FuncionarioInfoEditModal'
 
 const Funcionario = () => {
 	const { planCardId } = useParams()
@@ -34,6 +35,7 @@ const Funcionario = () => {
 	const { planCard, isSuccess, isError, isLoading, message } = useSelector(
 		(state) => state.planCard
 	)
+	const { plans } = useSelector((state) => state.plan)
 
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
@@ -66,7 +68,9 @@ const Funcionario = () => {
 		<>
 			<div className='card-title text-secondary text-left justify-between'>
 				<BackButton url={`/health/employers/${planCard.employer?._id}`} />
-				<div></div>
+				<div>
+					<FuncionarioInfoEditModal />
+				</div>
 			</div>
 
 			<div className=' text-4xl font-bold mt-10'>

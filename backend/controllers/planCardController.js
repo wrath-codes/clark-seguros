@@ -3,6 +3,7 @@
 // imports
 // @libraries
 import asyncHandler from 'express-async-handler'
+import Employee from '../models/employeeModel.js'
 // @models
 import PlanCard from '../models/planCardModel.js'
 
@@ -82,6 +83,7 @@ const updatePlanCard = asyncHandler(async (req, res, next) => {
 	// get planCard with id
 	const planCard = await PlanCard.findById(req.params.id)
 	const employer = planCard.employer
+	const titular = planCard.titular
 	const plan = planCard.plan
 	const contract = planCard.contract
 	const planValue = planCard.planValue
@@ -190,6 +192,22 @@ const updatePlanCard = asyncHandler(async (req, res, next) => {
 						value: req.body.planValue,
 						change: new Date()
 					}
+				}
+			}
+		)
+	}
+
+	// checks if the titular changes
+	const bodyTitular = await Employee.findOne({ cpf: req.body.titular })
+	if (req.body.titular && bodyTitular != titular) {
+		// updates titular
+		await PlanCard.findOneAndUpdate(
+			{
+				_id: planCard._id
+			},
+			{
+				$set: {
+					titular: bodyTitular._id
 				}
 			}
 		)

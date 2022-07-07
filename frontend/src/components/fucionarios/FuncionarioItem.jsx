@@ -28,6 +28,10 @@ const FuncionarioItem = ({ funcionario }) => {
 		}
 	}
 
+	const { plans } = useSelector((state) => state.plan)
+
+	const dispatch = useDispatch()
+
 	return (
 		<>
 			<Accordion.Panel>
@@ -42,6 +46,9 @@ const FuncionarioItem = ({ funcionario }) => {
 					<Link
 						to={`/health/employees/${funcionario._id}`}
 						className={`btn btn-sm btn-secondary text-base-100 mb-5 `}
+						onClick={() =>
+							dispatch(getPlansWithId(funcionario.contract?.operator))
+						}
 					>
 						ir para: {funcionario.employee?.name?.firstName}{' '}
 						{funcionario.employee?.name?.lastName}
